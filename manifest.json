@@ -1,0 +1,19 @@
+{
+    "name": "Commander Markers",
+    "version": "1.0.0",
+    "namespace": "Manlaan.CommanderMarkers",
+    "package": "CommanderMarkers.dll",
+    "manifest_version": 1,
+
+    "description": "Place commander markers",
+    "dependencies": {
+        "bh.blishhud": ">=0.7.0"
+    },
+    "url": "https://github.com/manlaan/BlishHud-CommanderMarkers",
+    "contributors": [
+        {
+            "name": "Manlaan",
+            "username": "manlaan.8921"
+        }
+    ]
+}
