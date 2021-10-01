@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Blish_HUD.Graphics.UI;
 
 namespace Manlaan.CommanderMarkers
 {
@@ -27,51 +28,32 @@ namespace Manlaan.CommanderMarkers
         internal Gw2ApiManager Gw2ApiManager => this.ModuleParameters.Gw2ApiManager;
         #endregion
 
-        public enum Orientation { Horizontal, Vertical }
-        private SettingEntry<KeyBinding> _settingArrowGndBinding;
-        private SettingEntry<KeyBinding> _settingCircleGndBinding;
-        private SettingEntry<KeyBinding> _settingHeartGndBinding;
-        private SettingEntry<KeyBinding> _settingSpiralGndBinding;
-        private SettingEntry<KeyBinding> _settingSquareGndBinding;
-        private SettingEntry<KeyBinding> _settingStarGndBinding;
-        private SettingEntry<KeyBinding> _settingTriangleGndBinding;
-        private SettingEntry<KeyBinding> _settingXGndBinding;
-        private SettingEntry<KeyBinding> _settingClearGndBinding;
-        private SettingEntry<KeyBinding> _settingArrowObjBinding;
-        private SettingEntry<KeyBinding> _settingCircleObjBinding;
-        private SettingEntry<KeyBinding> _settingHeartObjBinding;
-        private SettingEntry<KeyBinding> _settingSpiralObjBinding;
-        private SettingEntry<KeyBinding> _settingSquareObjBinding;
-        private SettingEntry<KeyBinding> _settingStarObjBinding;
-        private SettingEntry<KeyBinding> _settingTriangleObjBinding;
-        private SettingEntry<KeyBinding> _settingXObjBinding;
-        private SettingEntry<KeyBinding> _settingClearObjBinding;
+        public static string[] _orientation = new string[] { "Horizontal", "Vertical" };
 
-        private SettingEntry<Orientation> _settingOrientation;
-        private SettingEntry<string> _settingLocX;
-        private SettingEntry<string> _settingLocY;
-        private SettingEntry<int> _settingImgWidth;
-        private SettingEntry<float> _settingOpacity;
+        public static SettingEntry<KeyBinding> _settingArrowGndBinding;
+        public static SettingEntry<KeyBinding> _settingCircleGndBinding;
+        public static SettingEntry<KeyBinding> _settingHeartGndBinding;
+        public static SettingEntry<KeyBinding> _settingSpiralGndBinding;
+        public static SettingEntry<KeyBinding> _settingSquareGndBinding;
+        public static SettingEntry<KeyBinding> _settingStarGndBinding;
+        public static SettingEntry<KeyBinding> _settingTriangleGndBinding;
+        public static SettingEntry<KeyBinding> _settingXGndBinding;
+        public static SettingEntry<KeyBinding> _settingClearGndBinding;
+        public static SettingEntry<KeyBinding> _settingArrowObjBinding;
+        public static SettingEntry<KeyBinding> _settingCircleObjBinding;
+        public static SettingEntry<KeyBinding> _settingHeartObjBinding;
+        public static SettingEntry<KeyBinding> _settingSpiralObjBinding;
+        public static SettingEntry<KeyBinding> _settingSquareObjBinding;
+        public static SettingEntry<KeyBinding> _settingStarObjBinding;
+        public static SettingEntry<KeyBinding> _settingTriangleObjBinding;
+        public static SettingEntry<KeyBinding> _settingXObjBinding;
+        public static SettingEntry<KeyBinding> _settingClearObjBinding;
 
-        private Image _btnArrowGnd;
-        private Image _btnCircleGnd;
-        private Image _btnHeartGnd;
-        private Image _btnSpiralGnd;
-        private Image _btnSquareGnd;
-        private Image _btnStarGnd;
-        private Image _btnTriangleGnd;
-        private Image _btnXGnd;
-        private Image _btnClearGnd;
-
-        private Image _btnArrowObj;
-        private Image _btnCircleObj;
-        private Image _btnHeartObj;
-        private Image _btnSpiralObj;
-        private Image _btnSquareObj;
-        private Image _btnStarObj;
-        private Image _btnTriangleObj;
-        private Image _btnXObj;
-        private Image _btnClearObj;
+        public static SettingEntry<string> _settingOrientation;
+        private SettingEntry<Point> _settingLoc;
+        public static SettingEntry<int> _settingImgWidth;
+        public static SettingEntry<float> _settingOpacity;
+        public static SettingEntry<bool> _settingDrag;
 
         private Texture2D _imgArrow;
         private Texture2D _imgCircle;
@@ -82,6 +64,10 @@ namespace Manlaan.CommanderMarkers
         private Texture2D _imgTriangle;
         private Texture2D _imgX;
         private Texture2D _imgClear;
+
+        private Panel _cmdPanel;
+        private bool _dragging;
+        private Point _dragStart = Point.Zero;
 
         private KeyBinding _tmpBinding;
         private Image _tmpButton;
@@ -125,11 +111,11 @@ namespace Manlaan.CommanderMarkers
             _settingXObjBinding = settings.DefineSetting("CmdMrkXObjBinding", new KeyBinding(ModifierKeys.Alt | ModifierKeys.Shift, Keys.D8), "X Object Binding", "");
             _settingClearObjBinding = settings.DefineSetting("CmdMrkClearObjBinding", new KeyBinding(ModifierKeys.Alt | ModifierKeys.Shift, Keys.D9), "Clear Object Binding", "");
 
-            _settingOrientation = settings.DefineSetting("CmdMrkOrientation", Orientation.Horizontal, "Orientation", "");
-            _settingLocX = settings.DefineSetting("CmdMrknLocX", "60", "X", "");
-            _settingLocY = settings.DefineSetting("CmdMrkLocY", "40", "Y", "");
+            _settingOrientation = settings.DefineSetting("CmdMrkOrientation2", "Horizontal", "Orientation", "");
+            _settingLoc = settings.DefineSetting("CmdMrkLoc", new Point(100,100), "Location", "");
             _settingImgWidth = settings.DefineSetting("CmdMrkImgWidth", 30, "Width", "");
             _settingOpacity = settings.DefineSetting("CmdMrkOpacity", 1.0f, "Opacity", "");
+            _settingDrag = settings.DefineSetting("CmdMrkDrag", false, "Enable Dragging (White Box)", "");
 
             _settingImgWidth.SetRange(0, 200);
             _settingOpacity.SetRange(0f, 1f);
@@ -155,10 +141,14 @@ namespace Manlaan.CommanderMarkers
             _settingClearObjBinding.SettingChanged += UpdateSettings;
 
             _settingOrientation.SettingChanged += UpdateSettings;
-            _settingLocX.SettingChanged += UpdateSettings;
-            _settingLocY.SettingChanged += UpdateSettings;
+            _settingLoc.SettingChanged += UpdateSettings;
             _settingImgWidth.SettingChanged += UpdateSettings;
             _settingOpacity.SettingChanged += UpdateSettings;
+            _settingDrag.SettingChanged += UpdateSettings;
+        }
+        public override IView GetSettingsView() {
+            return new CommanderMarkers.Views.SettingsView();
+            //return new SettingsView( (this.ModuleParameters.SettingsManager.ModuleSettings);
         }
 
         protected override async Task LoadAsync()
@@ -176,31 +166,18 @@ namespace Manlaan.CommanderMarkers
 
         protected override void Update(GameTime gameTime)
         {
+            if (_dragging) {
+                var nOffset = InputService.Input.Mouse.Position - _dragStart;
+                _cmdPanel.Location += nOffset;
 
+                _dragStart = InputService.Input.Mouse.Position;
+            }
         }
 
         /// <inheritdoc />
         protected override void Unload()
         {
-            _btnArrowGnd?.Dispose();
-            _btnCircleGnd?.Dispose();
-            _btnHeartGnd?.Dispose();
-            _btnSpiralGnd?.Dispose();
-            _btnSquareGnd?.Dispose();
-            _btnStarGnd?.Dispose();
-            _btnTriangleGnd?.Dispose();
-            _btnXGnd?.Dispose();
-            _btnClearGnd?.Dispose();
-
-            _btnArrowObj?.Dispose();
-            _btnCircleObj?.Dispose();
-            _btnHeartObj?.Dispose();
-            _btnSpiralObj?.Dispose();
-            _btnSquareObj?.Dispose();
-            _btnStarObj?.Dispose();
-            _btnTriangleObj?.Dispose();
-            _btnXObj?.Dispose();
-            _btnClearObj?.Dispose();
+            _cmdPanel?.Dispose();
 
             _settingArrowGndBinding.SettingChanged -= UpdateSettings;
             _settingCircleGndBinding.SettingChanged -= UpdateSettings;
@@ -223,20 +200,17 @@ namespace Manlaan.CommanderMarkers
             _settingClearObjBinding.SettingChanged -= UpdateSettings;
 
             _settingOrientation.SettingChanged -= UpdateSettings;
-            _settingLocX.SettingChanged -= UpdateSettings;
-            _settingLocY.SettingChanged -= UpdateSettings;
+            _settingLoc.SettingChanged -= UpdateSettings;
             _settingImgWidth.SettingChanged -= UpdateSettings;
             _settingOpacity.SettingChanged -= UpdateSettings;
-           
+            _settingDrag.SettingChanged -= UpdateSettings;
         }
 
 
-        private void UpdateSettings(object sender = null, ValueChangedEventArgs<KeyBinding> e = null)
-        {
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<KeyBinding> e = null) {
             DrawIcons();
         }
-        private void UpdateSettings(object sender = null, ValueChangedEventArgs<Orientation> e = null)
-        {
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<Point> e = null) {
             DrawIcons();
         }
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<float> e = null)
@@ -245,64 +219,52 @@ namespace Manlaan.CommanderMarkers
         }
         private void UpdateSettings(object sender = null, ValueChangedEventArgs<string> e = null)
         {
-            if (int.Parse(_settingLocX.Value) < 0)
-                _settingLocX.Value = "0";
-            if (int.Parse(_settingLocY.Value) < 0)
-                _settingLocY.Value = "0";
-
             DrawIcons();
         }
-        private void UpdateSettings(object sender = null, ValueChangedEventArgs<int> e = null)
-        {
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<int> e = null) {
+            DrawIcons();
+        }
+        private void UpdateSettings(object sender = null, ValueChangedEventArgs<bool> e = null) {
             DrawIcons();
         }
 
 
         protected void DrawIcons()
         {
-            _btnArrowGnd?.Dispose();
-            _btnCircleGnd?.Dispose();
-            _btnHeartGnd?.Dispose();
-            _btnSpiralGnd?.Dispose();
-            _btnSquareGnd?.Dispose();
-            _btnStarGnd?.Dispose();
-            _btnTriangleGnd?.Dispose();
-            _btnXGnd?.Dispose();
-            _btnClearGnd?.Dispose();
+            _cmdPanel?.Dispose();
 
-            _btnArrowObj?.Dispose();
-            _btnCircleObj?.Dispose();
-            _btnHeartObj?.Dispose();
-            _btnSpiralObj?.Dispose();
-            _btnSquareObj?.Dispose();
-            _btnStarObj?.Dispose();
-            _btnTriangleObj?.Dispose();
-            _btnXObj?.Dispose();
-            _btnClearObj?.Dispose();
+            int curX = 0;
+            int curY = 0;
+            bool horizontal = _settingOrientation.Value.Equals("Horizontal");
 
-            int curX = int.Parse(_settingLocX.Value);
-            int curY = int.Parse(_settingLocY.Value);
-
-            _btnArrowGnd = new Image
-            {
+            _cmdPanel = new Panel() {
                 Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Location = _settingLoc.Value,
+                Size = new Point(
+                    horizontal ? _settingImgWidth.Value * 9 : _settingImgWidth.Value * 2,
+                    horizontal ? _settingImgWidth.Value * 2 : _settingImgWidth.Value * 9),
+            };
+
+            Image _btnArrowGnd = new Image
+            {
+                Parent = _cmdPanel,
                 Texture = _imgArrow,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
-                Location = new Point(curX, curY),
+                Location = new Point(0, 0),
                 Opacity = _settingOpacity.Value,
                 BasicTooltipText = "Arrow Ground"
             };
             _btnArrowGnd.LeftMouseButtonPressed += delegate { AddGround(_btnArrowGnd, _settingArrowGndBinding.Value); };
             _btnArrowGnd.RightMouseButtonPressed += delegate { RemoveGround(_settingArrowGndBinding.Value); };
 
-            _btnArrowObj = new Image
+            Image _btnArrowObj = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgArrow,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(
-                    (_settingOrientation.Value == Orientation.Horizontal ? curX : curX + _settingImgWidth.Value),
-                    (_settingOrientation.Value == Orientation.Horizontal ? curY + _settingImgWidth.Value : curY)
+                    (horizontal ? curX : curX + _settingImgWidth.Value),
+                    (horizontal ? curY + _settingImgWidth.Value : curY)
                     ),
                 Opacity = _settingOpacity.Value,
                 BasicTooltipText = "Arrow Object"
@@ -310,14 +272,14 @@ namespace Manlaan.CommanderMarkers
             _btnArrowObj.LeftMouseButtonPressed += delegate { DoHotKey(_settingArrowObjBinding.Value); };
             _btnArrowObj.RightMouseButtonPressed += delegate { DoHotKey(_settingArrowObjBinding.Value); };
 
-            if (_settingOrientation.Value == Orientation.Horizontal)
+            if (horizontal)
                 curX += _settingImgWidth.Value;
             else
                 curY += _settingImgWidth.Value;
 
-            _btnCircleGnd = new Image
+            Image _btnCircleGnd = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgCircle,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(curX, curY),
@@ -327,14 +289,14 @@ namespace Manlaan.CommanderMarkers
             _btnCircleGnd.LeftMouseButtonPressed += delegate { AddGround(_btnCircleGnd, _settingCircleGndBinding.Value); };
             _btnCircleGnd.RightMouseButtonPressed += delegate { RemoveGround(_settingCircleGndBinding.Value); };
 
-            _btnCircleObj = new Image
+            Image _btnCircleObj = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgCircle,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(
-                    (_settingOrientation.Value == Orientation.Horizontal ? curX : curX + _settingImgWidth.Value),
-                    (_settingOrientation.Value == Orientation.Horizontal ? curY + _settingImgWidth.Value : curY)
+                    (horizontal ? curX : curX + _settingImgWidth.Value),
+                    (horizontal ? curY + _settingImgWidth.Value : curY)
                     ),
                 Opacity = _settingOpacity.Value,
                 BasicTooltipText = "Circle Object"
@@ -342,14 +304,14 @@ namespace Manlaan.CommanderMarkers
             _btnCircleObj.LeftMouseButtonPressed += delegate { DoHotKey(_settingCircleObjBinding.Value); };
             _btnCircleObj.RightMouseButtonPressed += delegate { DoHotKey(_settingCircleObjBinding.Value); };
 
-            if (_settingOrientation.Value == Orientation.Horizontal)
+            if (horizontal)
                 curX += _settingImgWidth.Value;
             else
                 curY += _settingImgWidth.Value;
 
-            _btnHeartGnd = new Image
+            Image _btnHeartGnd = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgHeart,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(curX, curY),
@@ -359,14 +321,14 @@ namespace Manlaan.CommanderMarkers
             _btnHeartGnd.LeftMouseButtonPressed += delegate { AddGround(_btnHeartGnd, _settingHeartGndBinding.Value); };
             _btnHeartGnd.RightMouseButtonPressed += delegate { RemoveGround(_settingHeartGndBinding.Value); };
 
-            _btnHeartObj = new Image
+            Image _btnHeartObj = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgHeart,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(
-                    (_settingOrientation.Value == Orientation.Horizontal ? curX : curX + _settingImgWidth.Value),
-                    (_settingOrientation.Value == Orientation.Horizontal ? curY + _settingImgWidth.Value : curY)
+                    (horizontal ? curX : curX + _settingImgWidth.Value),
+                    (horizontal ? curY + _settingImgWidth.Value : curY)
                     ),
                 Opacity = _settingOpacity.Value,
                 BasicTooltipText = "Heart Object"
@@ -374,14 +336,14 @@ namespace Manlaan.CommanderMarkers
             _btnHeartObj.LeftMouseButtonPressed += delegate { DoHotKey(_settingHeartObjBinding.Value); };
             _btnHeartObj.RightMouseButtonPressed += delegate { DoHotKey(_settingHeartObjBinding.Value); };
 
-            if (_settingOrientation.Value == Orientation.Horizontal)
+            if (horizontal)
                 curX += _settingImgWidth.Value;
             else
                 curY += _settingImgWidth.Value;
 
-            _btnSquareGnd = new Image
+            Image _btnSquareGnd = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgSquare,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(curX, curY),
@@ -391,14 +353,14 @@ namespace Manlaan.CommanderMarkers
             _btnSquareGnd.LeftMouseButtonPressed += delegate { AddGround(_btnSquareGnd, _settingSquareGndBinding.Value); };
             _btnSquareGnd.RightMouseButtonPressed += delegate { RemoveGround(_settingSquareGndBinding.Value); };
 
-            _btnSquareObj = new Image
+            Image _btnSquareObj = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgSquare,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(
-                    (_settingOrientation.Value == Orientation.Horizontal ? curX : curX + _settingImgWidth.Value),
-                    (_settingOrientation.Value == Orientation.Horizontal ? curY + _settingImgWidth.Value : curY)
+                    (horizontal ? curX : curX + _settingImgWidth.Value),
+                    (horizontal ? curY + _settingImgWidth.Value : curY)
                     ),
                 Opacity = _settingOpacity.Value,
                 BasicTooltipText = "Square Object"
@@ -406,14 +368,14 @@ namespace Manlaan.CommanderMarkers
             _btnSquareObj.LeftMouseButtonPressed += delegate { DoHotKey(_settingSquareObjBinding.Value); };
             _btnSquareObj.RightMouseButtonPressed += delegate { DoHotKey(_settingSquareObjBinding.Value); };
 
-            if (_settingOrientation.Value == Orientation.Horizontal)
+            if (horizontal)
                 curX += _settingImgWidth.Value;
             else
                 curY += _settingImgWidth.Value;
 
-            _btnStarGnd = new Image
+            Image _btnStarGnd = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgStar,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(curX, curY),
@@ -423,14 +385,14 @@ namespace Manlaan.CommanderMarkers
             _btnStarGnd.LeftMouseButtonPressed += delegate { AddGround(_btnStarGnd, _settingStarGndBinding.Value); };
             _btnStarGnd.RightMouseButtonPressed += delegate { RemoveGround(_settingStarGndBinding.Value); };
 
-            _btnStarObj = new Image
+            Image _btnStarObj = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgStar,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(
-                    (_settingOrientation.Value == Orientation.Horizontal ? curX : curX + _settingImgWidth.Value),
-                    (_settingOrientation.Value == Orientation.Horizontal ? curY + _settingImgWidth.Value : curY)
+                    (horizontal ? curX : curX + _settingImgWidth.Value),
+                    (horizontal ? curY + _settingImgWidth.Value : curY)
                     ),
                 Opacity = _settingOpacity.Value,
                 BasicTooltipText = "Star Object"
@@ -438,14 +400,14 @@ namespace Manlaan.CommanderMarkers
             _btnStarObj.LeftMouseButtonPressed += delegate { DoHotKey(_settingStarObjBinding.Value); };
             _btnStarObj.RightMouseButtonPressed += delegate { DoHotKey(_settingStarObjBinding.Value); };
 
-            if (_settingOrientation.Value == Orientation.Horizontal)
+            if (horizontal)
                 curX += _settingImgWidth.Value;
             else
                 curY += _settingImgWidth.Value;
 
-            _btnSpiralGnd = new Image
+            Image _btnSpiralGnd = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgSpiral,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(curX, curY),
@@ -455,14 +417,14 @@ namespace Manlaan.CommanderMarkers
             _btnSpiralGnd.LeftMouseButtonPressed += delegate { AddGround(_btnSpiralGnd, _settingSpiralGndBinding.Value); };
             _btnSpiralGnd.RightMouseButtonPressed += delegate { RemoveGround(_settingSpiralGndBinding.Value); };
 
-            _btnSpiralObj = new Image
+            Image _btnSpiralObj = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgSpiral,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(
-                    (_settingOrientation.Value == Orientation.Horizontal ? curX : curX + _settingImgWidth.Value),
-                    (_settingOrientation.Value == Orientation.Horizontal ? curY + _settingImgWidth.Value : curY)
+                    (horizontal ? curX : curX + _settingImgWidth.Value),
+                    (horizontal ? curY + _settingImgWidth.Value : curY)
                     ),
                 Opacity = _settingOpacity.Value,
                 BasicTooltipText = "Spiral Object"
@@ -470,14 +432,14 @@ namespace Manlaan.CommanderMarkers
             _btnSpiralObj.LeftMouseButtonPressed += delegate { DoHotKey(_settingSpiralObjBinding.Value); };
             _btnSpiralObj.RightMouseButtonPressed += delegate { DoHotKey(_settingSpiralObjBinding.Value); };
 
-            if (_settingOrientation.Value == Orientation.Horizontal)
+            if (horizontal)
                 curX += _settingImgWidth.Value;
             else
                 curY += _settingImgWidth.Value;
 
-            _btnTriangleGnd = new Image
+            Image _btnTriangleGnd = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgTriangle,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(curX, curY),
@@ -487,14 +449,14 @@ namespace Manlaan.CommanderMarkers
             _btnTriangleGnd.LeftMouseButtonPressed += delegate { AddGround(_btnTriangleGnd, _settingTriangleGndBinding.Value); };
             _btnTriangleGnd.RightMouseButtonPressed += delegate { RemoveGround(_settingTriangleGndBinding.Value); };
 
-            _btnTriangleObj = new Image
+            Image _btnTriangleObj = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgTriangle,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(
-                    (_settingOrientation.Value == Orientation.Horizontal ? curX : curX + _settingImgWidth.Value),
-                    (_settingOrientation.Value == Orientation.Horizontal ? curY + _settingImgWidth.Value : curY)
+                    (horizontal ? curX : curX + _settingImgWidth.Value),
+                    (horizontal ? curY + _settingImgWidth.Value : curY)
                     ),
                 Opacity = _settingOpacity.Value,
                 BasicTooltipText = "Triangle Object"
@@ -502,14 +464,14 @@ namespace Manlaan.CommanderMarkers
             _btnTriangleObj.LeftMouseButtonPressed += delegate { DoHotKey(_settingTriangleObjBinding.Value); };
             _btnTriangleObj.RightMouseButtonPressed += delegate { DoHotKey(_settingTriangleObjBinding.Value); };
 
-            if (_settingOrientation.Value == Orientation.Horizontal)
+            if (horizontal)
                 curX += _settingImgWidth.Value;
             else
                 curY += _settingImgWidth.Value;
 
-            _btnXGnd = new Image
+            Image _btnXGnd = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgX,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(curX, curY),
@@ -519,14 +481,14 @@ namespace Manlaan.CommanderMarkers
             _btnXGnd.LeftMouseButtonPressed += delegate { AddGround(_btnXGnd, _settingXGndBinding.Value); };
             _btnXGnd.RightMouseButtonPressed += delegate { RemoveGround(_settingXGndBinding.Value); };
 
-            _btnXObj = new Image
+            Image _btnXObj = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgX,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(
-                    (_settingOrientation.Value == Orientation.Horizontal ? curX : curX + _settingImgWidth.Value),
-                    (_settingOrientation.Value == Orientation.Horizontal ? curY + _settingImgWidth.Value : curY)
+                    (horizontal ? curX : curX + _settingImgWidth.Value),
+                    (horizontal ? curY + _settingImgWidth.Value : curY)
                     ),
                 Opacity = _settingOpacity.Value,
                 BasicTooltipText = "X Object"
@@ -534,14 +496,14 @@ namespace Manlaan.CommanderMarkers
             _btnXObj.LeftMouseButtonPressed += delegate { DoHotKey(_settingXObjBinding.Value); };
             _btnXObj.RightMouseButtonPressed += delegate { DoHotKey(_settingXObjBinding.Value); };
 
-            if (_settingOrientation.Value == Orientation.Horizontal)
+            if (horizontal)
                 curX += _settingImgWidth.Value;
             else
                 curY += _settingImgWidth.Value;
 
-            _btnClearGnd = new Image
+            Image _btnClearGnd = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgClear,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(curX, curY),
@@ -550,24 +512,42 @@ namespace Manlaan.CommanderMarkers
             };
             _btnClearGnd.LeftMouseButtonPressed += delegate { DoHotKey(_settingClearGndBinding.Value); };
 
-            _btnClearObj = new Image
+            Image _btnClearObj = new Image
             {
-                Parent = Blish_HUD.GameService.Graphics.SpriteScreen,
+                Parent = _cmdPanel,
                 Texture = _imgClear,
                 Size = new Point(_settingImgWidth.Value, _settingImgWidth.Value),
                 Location = new Point(
-                    (_settingOrientation.Value == Orientation.Horizontal ? curX : curX + _settingImgWidth.Value),
-                    (_settingOrientation.Value == Orientation.Horizontal ? curY + _settingImgWidth.Value : curY)
+                    (horizontal ? curX : curX + _settingImgWidth.Value),
+                    (horizontal ? curY + _settingImgWidth.Value : curY)
                     ),
                 Opacity = _settingOpacity.Value,
                 BasicTooltipText = "Clear Object"
             };
             _btnClearObj.LeftMouseButtonPressed += delegate { DoHotKey(_settingClearObjBinding.Value); };
 
-            if (_settingOrientation.Value == Orientation.Horizontal)
+            if (horizontal)
                 curX += _settingImgWidth.Value;
             else
                 curY += _settingImgWidth.Value;
+
+            if (_settingDrag.Value) {
+                Panel dragBox = new Panel() {
+                    Parent = _cmdPanel,
+                    Location = new Point(0, 0),
+                    Size = new Point(_settingImgWidth.Value / 2, _settingImgWidth.Value / 2),
+                    BackgroundColor = Color.White,
+                    ZIndex = 10,
+                };
+                dragBox.LeftMouseButtonPressed += delegate {
+                    _dragging = true;
+                    _dragStart = InputService.Input.Mouse.Position;
+                };
+                dragBox.LeftMouseButtonReleased += delegate {
+                    _dragging = false;
+                    _settingLoc.Value = _cmdPanel.Location;
+                };
+            }
         }
 
         private void OnMouseClick(object o, MouseEventArgs e)
@@ -583,7 +563,7 @@ namespace Manlaan.CommanderMarkers
         {
             _tmpBinding = key;
             _tmpButton = btn;
-            btn.BackgroundColor = Color.Blue;
+            btn.BackgroundColor = Color.Yellow;
         }
         protected void RemoveGround(KeyBinding key)
         {
@@ -625,14 +605,6 @@ namespace Manlaan.CommanderMarkers
             {
                 return new VirtualKeyShort();
             }
-            /*
-            foreach (VirtualKeyShort vkey in Enum.GetValues(typeof(VirtualKeyShort)))
-            {
-                if ((int)vkey == (int)key)
-                    return vkey;
-            }
-            return new VirtualKeyShort();
-            */
         }
     }
 
