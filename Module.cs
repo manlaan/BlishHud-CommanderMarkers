@@ -166,6 +166,12 @@ namespace Manlaan.CommanderMarkers
 
         protected override void Update(GameTime gameTime)
         {
+            if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen) {
+                _cmdPanel.Show();
+            }
+            else {
+                _cmdPanel.Hide();
+            }
             if (_dragging) {
                 var nOffset = InputService.Input.Mouse.Position - _dragStart;
                 _cmdPanel.Location += nOffset;
