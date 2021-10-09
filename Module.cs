@@ -166,7 +166,7 @@ namespace Manlaan.CommanderMarkers
 
         protected override void Update(GameTime gameTime)
         {
-            if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen) {
+            if (GameService.GameIntegration.Gw2Instance.IsInGame && !GameService.Gw2Mumble.UI.IsMapOpen && GameService.Gw2Mumble.PlayerCharacter.IsCommander) {
                 _cmdPanel.Show();
             }
             else {
