@@ -5,7 +5,7 @@
   "package": "CommanderMarkers.dll",
   "manifest_version": 1,
 
-  "description": "Place commander markers using the mouse",
+  "description": "Make squad markers 'Click-to-place'!\n\nLeft click to select a marker then click to place it in the world. Right click to remove the marker.\nBy default the markers only appear when you are the commander.",
   "dependencies": {
     "bh.blishhud": ">=1.0.0"
   },

@@ -65,7 +65,7 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
         _settingImgWidth = settings.DefineSetting("CmdMrkImgWidth", 30, ()=> "Width", ()=>"");
         _settingOpacity = settings.DefineSetting("CmdMrkOpacity", 1.0f, () => "Opacity", ()=>"");
         _settingDrag = settings.DefineSetting("CmdMrkDrag", false, ()=>"Enable Dragging", () => "Allow the markers to be repositioned");
-        _settingOnlyWhenCommander = settings.DefineSetting("CmdMrkOnlyCommander", false, ()=>"Only show when I am the Commander", () => "Hides the markers when you are not a Commander");
+        _settingOnlyWhenCommander = settings.DefineSetting("CmdMrkOnlyCommander", true, ()=>"Only show when I am the Commander", () => "Hides the markers when you are not a Commander");
         //_settingMapVisible = settings.DefineSetting("CmdMrkShow", VisibleOnMap.HideOnMap, ()=>"Show on map", () => "");
         
         _settingImgWidth.SetRange(16, 200);
