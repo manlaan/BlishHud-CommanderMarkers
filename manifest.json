@@ -1,25 +1,23 @@
 {
-    "name": "Commander Markers",
-    "version": "1.1.1",
-    "namespace": "Manlaan.CommanderMarkers",
-    "package": "CommanderMarkers.dll",
-    "manifest_version": 1,
+  "name": "Commander Markers",
+  "version": "2.0.0-beta-1",
+  "namespace": "Manlaan.CommanderMarkers",
+  "package": "CommanderMarkers.dll",
+  "manifest_version": 1,
 
-    "description": "Place commander markers",
-    "dependencies": {
-        "bh.blishhud": ">=0.11.0"
+  "description": "Place commander markers using the mouse",
+  "dependencies": {
+    "bh.blishhud": ">=1.0.0"
+  },
+  "url": "https://github.com/manlaan/BlishHud-CommanderMarkers",
+  "contributors": [
+    {
+      "name": "Manlaan",
+      "username": "manlaan.8921"
     },
-    "url": "https://github.com/manlaan/BlishHud-CommanderMarkers",
-    "contributors": [
-        {
-            "name": "Manlaan",
-            "username": "manlaan.8921"
-        }
-    ]
+    {
+      "name": "Soeed",
+      "username": "Soeed.4160"
+    }
+  ]
 }
-/*
-    "changelog": {
-        "1.1.1": "2021-10-09: Added check to hide if on loading screen, map open, or not commander",
-        "1.1.0": "2021-09-30: Upgraded to use Blish 0.11.0, Custom Settings Panel, Drag Panel instead of coords"
-    },
-*/
