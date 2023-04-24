@@ -1,6 +1,9 @@
-﻿using Blish_HUD.Controls;
+﻿using Blish_HUD;
+using Blish_HUD.Controls;
+using Manlaan.CommanderMarkers.Presets.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.BitmapFonts;
 using System.Collections.Generic;
 using static Blish_HUD.GameService;
 
@@ -54,6 +57,7 @@ public class ScreenMap : Control
     private readonly MapData _mapData;
     private readonly ScreenMapBounds _mapBounds;
 
+    private BitmapFont _bitmapFont = GameService.Content.DefaultFont32;
     public ScreenMap(MapData mapData)
     {
         _mapData = mapData;
@@ -79,11 +83,25 @@ public class ScreenMap : Control
     {
         if (!GameIntegration.Gw2Instance.IsInGame || _mapData.Current == null)
             return;
+        var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
 
         bounds.Location = Location;
         _mapBounds.Rectangle = bounds;
-
+        var promptDrawn = !GameService.Gw2Mumble.UI.IsMapOpen;
         foreach (var entity in _entities)
+        {
             entity.DrawToMap(spriteBatch, _mapBounds);
+            if(!promptDrawn && entity.DistanceFrom(playerPosition) < 15f){
+                promptDrawn = true;
+                DrawPrompt(spriteBatch, entity);
+            }
+        }
+    }
+
+    protected void DrawPrompt(SpriteBatch spriteBatch, IMapEntity marker)
+    {
+        Rectangle _promptRectangle = new Rectangle(GameService.Graphics.SpriteScreen.Width / 2 - 150, GameService.Graphics.SpriteScreen.Height - 100, 300, 40);
+        spriteBatch.DrawStringOnCtrl(this, $"Press Interact to place markers\n{marker.GetMarkerText()}", _bitmapFont, _promptRectangle, Color.Orange, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Center, verticalAlignment: VerticalAlignment.Top);
+
     }
 }

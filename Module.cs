@@ -76,22 +76,6 @@ namespace Manlaan.CommanderMarkers
             IconsPanel.Update(gameTime);
             Service.MapWatch.Update(gameTime);
 
-           /* _runningTime += gameTime.ElapsedGameTime.TotalMilliseconds;
-            if (_runningTime >= 5000)
-            {
-                _runningTime = 0;
-                //_sequence.PlaceMarkers(_map);
-                //PresetPlacementService.PlaceMarkers();
-                *//*_screenMap.DoUpdate(gameTime);
-                Vector3 v = new Vector3(-133.0958f, 53.42804f, 62.80207f);
-                var d = _map.WorldToScreenMap(v);
-                Mouse.SetPosition((int)d.X, (int)d.Y);
-                Thread.Sleep(10);
-                InputHelper.DoHotKey(new KeyBinding(ModifierKeys.Alt, Keys.D5));*//*
-                //GameService.Graphics.SpriteScreen.Width
-            }*/
-
-
         }
 
         /// <inheritdoc />
@@ -104,7 +88,6 @@ namespace Manlaan.CommanderMarkers
             Service.Settings?.Dispose();
             Service.Textures?.Dispose();
 
-            //_screenMap?.Dispose();
             _map?.Dispose();
         }
 

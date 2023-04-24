@@ -346,6 +346,32 @@ class ModuleSettingsView : View
         settingClearGnd_Keybind.BindingChanged += delegate {
             _settings._settingClearObjBinding.Value = settingClearObj_Keybind.KeyBinding;
         };
+
+
+        Label settingInteract_Label = new Label()
+        {
+            Location = new Point(0, settingClear_Label.Bottom + settingClear_Label.Height),
+            Width = labelWidth,
+            AutoSizeHeight = false,
+            WrapText = false,
+            Parent = keysPanel,
+            Text = "Interact",
+            BasicTooltipText = "The In-Game keybind for 'interact' (Default F)"
+        };
+        KeybindingAssigner settingInteract_Keybind = new KeybindingAssigner()
+        {
+            NameWidth = 0,
+            Size = new Point(bindingWidth, 18),
+            Parent = keysPanel,
+            KeyBinding = _settings._settingInteractKeyBinding.Value,
+            Location = new Point(settingInteract_Label.Right + 5, settingInteract_Label.Top - 1),
+            BasicTooltipText = "The In-Game keybind for 'interact' (Default F)"
+        };
+        settingInteract_Keybind.BindingChanged += delegate {
+            _settings._settingInteractKeyBinding.Value = settingInteract_Keybind.KeyBinding;
+        };
+
+
         #endregion
 
         #region manual Panel

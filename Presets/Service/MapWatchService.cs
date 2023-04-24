@@ -22,7 +22,6 @@ public class MapWatchService : IDisposable
     private SettingService _setting;
     private int _currentmap = 0;
     private List<MarkerSet> _markers= new List<MarkerSet>();
-    private KeyBinding _interactKeybind;
 
     private ScreenMap _screenMap;
     private List<BasicMarker> _triggerMarker = new();
@@ -35,10 +34,11 @@ public class MapWatchService : IDisposable
         _setting = settings;
         GameService.Gw2Mumble.CurrentMap.MapChanged += CurrentMap_MapChanged;
 
-        _interactKeybind= new KeyBinding(Microsoft.Xna.Framework.Input.Keys.F);
-        _interactKeybind.Enabled = true;
-        _interactKeybind.BlockSequenceFromGw2 = false;
-        _interactKeybind.Activated += _interactKeybind_Activated;
+        _setting._settingInteractKeyBinding.Value.Enabled= true;
+        _setting._settingInteractKeyBinding.Value.BlockSequenceFromGw2 = false;
+        _setting._settingInteractKeyBinding.Value.Activated += _interactKeybind_Activated;
+
+        CurrentMap_MapChanged(this, new ValueEventArgs<int>(GameService.Gw2Mumble.CurrentMap.Id));
 
     }
 
@@ -117,7 +117,7 @@ public class MapWatchService : IDisposable
         _screenMap.ClearEntities();
         foreach(var marker in _markers)
         {
-            _screenMap.AddEntity(new BasicMarker(_map, marker.trigger.ToVector3()));
+            _screenMap.AddEntity(new BasicMarker(_map, marker.trigger!.ToVector3(), marker.name, marker.description));
 
         }
     }
@@ -126,8 +126,8 @@ public class MapWatchService : IDisposable
     {
         _screenMap.Dispose();
 
-        GameService.Gw2Mumble.CurrentMap.MapChanged += CurrentMap_MapChanged;
-        _interactKeybind.Activated += _interactKeybind_Activated;
-        _interactKeybind.Enabled= false;
+        GameService.Gw2Mumble.CurrentMap.MapChanged -= CurrentMap_MapChanged;
+        _setting._settingInteractKeyBinding.Value.Enabled= false;
+        _setting._settingInteractKeyBinding.Value.Activated -= _interactKeybind_Activated;
     }
 }
