@@ -1,6 +1,6 @@
 {
   "name": "Commander Markers",
-  "version": "2.0.0-beta-1",
+  "version": "3.0.0-alpha-2",
   "namespace": "Manlaan.CommanderMarkers",
   "package": "CommanderMarkers.dll",
   "manifest_version": 1,
@@ -12,12 +12,19 @@
   "url": "https://github.com/manlaan/BlishHud-CommanderMarkers",
   "contributors": [
     {
-      "name": "Manlaan",
-      "username": "manlaan.8921"
-    },
-    {
       "name": "Soeed",
       "username": "Soeed.4160"
+    },
+    {
+      "name": "QuitarHero",
+    },
+    {
+      "name": "Manlaan",
+      "username": "manlaan.8921"
     }
+
+  ],
+  "directories": [
+    "commanderMarkers"
   ]
 }
