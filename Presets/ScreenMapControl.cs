@@ -83,6 +83,12 @@ public class ScreenMap : Control
     {
         if (!GameIntegration.Gw2Instance.IsInGame || _mapData.Current == null)
             return;
+        if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat) return;
+        if (
+            CommanderMarkers.Service.Settings._settingOnlyWhenCommander.Value
+            && !GameService.Gw2Mumble.PlayerCharacter.IsCommander
+            ) return;
+    
         var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
 
         bounds.Location = Location;
@@ -101,6 +107,7 @@ public class ScreenMap : Control
     protected void DrawPrompt(SpriteBatch spriteBatch, IMapEntity marker)
     {
         Rectangle _promptRectangle = new Rectangle(GameService.Graphics.SpriteScreen.Width / 2 - 150, GameService.Graphics.SpriteScreen.Height - 100, 300, 40);
+        spriteBatch.DrawStringOnCtrl(this, $"Press Interact to place markers\n{marker.GetMarkerText()}", _bitmapFont, _promptRectangle, Color.Black, false, true, 3, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Center, verticalAlignment: VerticalAlignment.Top);
         spriteBatch.DrawStringOnCtrl(this, $"Press Interact to place markers\n{marker.GetMarkerText()}", _bitmapFont, _promptRectangle, Color.Orange, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Center, verticalAlignment: VerticalAlignment.Top);
 
     }

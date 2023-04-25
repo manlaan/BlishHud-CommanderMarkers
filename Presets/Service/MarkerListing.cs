@@ -428,7 +428,7 @@ public class MarkerListing
             name = "EoD - Aetherblade CM Setup",
             description = "",
             mapId = 1432,
-            trigger = new WorldCoord { x=40.147f, y=36.52959f, z=46.19616f },
+            trigger = new WorldCoord { x = 33.61228f, y = 33.58646f, z = 46.45338f },
             marks = new List<MarkerCoord>
             {
             new MarkerCoord(){ x=46.50667f, y = 48.16092f, z = 46.28915f, icon =1, name="//cm setup Arrow"},
@@ -443,7 +443,7 @@ public class MarkerListing
             name = "EoD - Aetherblade CM Markers",
             description = "",
             mapId = 1432,
-            trigger = new WorldCoord { x = 55.63317f, y= 49.02966f, z= 45.73795f },
+            trigger = new WorldCoord { x = 58.76889f, y = 56.79849f, z = 45.76037f },
             marks = new List<MarkerCoord>
             {
             new MarkerCoord(){ x=81.10351f, y = 55.76778f, z = 45.73673f, icon =1, name="//CM Arrow"},
