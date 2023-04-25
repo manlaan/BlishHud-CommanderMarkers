@@ -96,7 +96,7 @@ public class ScreenMap : Control
         var promptDrawn = !GameService.Gw2Mumble.UI.IsMapOpen;
         foreach (var entity in _entities)
         {
-            entity.DrawToMap(spriteBatch, _mapBounds);
+            entity.DrawToMap(spriteBatch, _mapBounds,this);
             if(!promptDrawn && entity.DistanceFrom(playerPosition) < 15f){
                 promptDrawn = true;
                 DrawPrompt(spriteBatch, entity);
@@ -106,7 +106,7 @@ public class ScreenMap : Control
 
     protected void DrawPrompt(SpriteBatch spriteBatch, IMapEntity marker)
     {
-        Rectangle _promptRectangle = new Rectangle(GameService.Graphics.SpriteScreen.Width / 2 - 150, GameService.Graphics.SpriteScreen.Height - 100, 300, 40);
+        Rectangle _promptRectangle = new Rectangle(GameService.Graphics.SpriteScreen.Width / 2 - 150, GameService.Graphics.SpriteScreen.Height - 120, 300, 120);
         spriteBatch.DrawStringOnCtrl(this, $"Press Interact to place markers\n{marker.GetMarkerText()}", _bitmapFont, _promptRectangle, Color.Black, false, true, 3, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Center, verticalAlignment: VerticalAlignment.Top);
         spriteBatch.DrawStringOnCtrl(this, $"Press Interact to place markers\n{marker.GetMarkerText()}", _bitmapFont, _promptRectangle, Color.Orange, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Center, verticalAlignment: VerticalAlignment.Top);
 

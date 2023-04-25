@@ -105,7 +105,7 @@ public class MarkerListing
         var ms = new MarkerSet
         {
             name = "Sabetha Cannons",
-            description = "Sabetha Cannon",
+            description = "Cannon jumppads",
             mapId = 1062,
             trigger = new WorldCoord { x = -78.40887f, y = 133.5607f, z = 70.977f },
             marks = new List<MarkerCoord>
@@ -121,7 +121,7 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "Gorseval",
-            description = "Gorseval Spirit Spawns",
+            description = "Spirit Spawns",
             mapId = 1062,
             trigger = new WorldCoord { x=-2.034508f,y=-107.3541f, z=50.7478f },
             marks = new List<MarkerCoord>
@@ -136,7 +136,7 @@ public class MarkerListing
 
         ms = new MarkerSet
         {
-            name = "Slothazar",
+            name = "Slothasor",
             description = "Mushroom Locations",
             mapId = 1149,
             trigger = new WorldCoord { x=211.8357f, y=36.68708f, z=8.145153f },
@@ -153,7 +153,7 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "Bandit Trio",
-            description = "Boss Spawn",
+            description = "Boss Spawns, Square-Mortar",
             mapId = 1149,
             trigger = new WorldCoord { x = 64.95536f, y = -270.91f, z = 0.9945363f },
             marks = new List<MarkerCoord>
@@ -185,7 +185,7 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "keepconstruct",
-            description = "",
+            description = "Green Circles",
             mapId = 1,
             trigger = new WorldCoord(),
             marks = new List<MarkerCoord> { 
@@ -216,9 +216,9 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "Cairn",
-            description = "",
+            description = "Stack at arrow, Agony to other markers",
             mapId = 1188,
-            trigger = new WorldCoord { x = 446.0347f, y = 50.41829f, z = 49.39407f },
+            trigger = new WorldCoord { x = 438.4015f, y = 34.58722f, z = 49.29768f },
             marks = new List<MarkerCoord>
     {
     new MarkerCoord(){ x=368.6021f, y = 52.26963f, z = 33.72034f, icon =1, name=""},
@@ -249,7 +249,7 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "Eater of Souls",
-            description = "Orientation",
+            description = "Orientation Markers",
             mapId = 1264,
             trigger = new WorldCoord { x = 97.81354f, y = -161.2347f, z = 99.95564f },
             marks = new List<MarkerCoord>
@@ -299,7 +299,7 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "qadim1",
-            description = "",
+            description = "Stab/Prot pyres, Heart-Lamp3, Square-portal/stack",
             mapId = 1303,
             trigger = new WorldCoord { x = -152.3928f, y = 285.804f, z = 120.1688f },
             marks = new List<MarkerCoord>
@@ -312,7 +312,7 @@ public class MarkerListing
         };
         SaveMarker(ms);
 
-        ms = new MarkerSet
+        /*ms = new MarkerSet
         {
             name = "Cardinal Sabir",
             description = "",
@@ -323,7 +323,7 @@ public class MarkerListing
 
             }
         };
-        SaveMarker(ms);
+        SaveMarker(ms);*/
 
         ms = new MarkerSet
         {
@@ -345,7 +345,7 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "Qadim The Peerless - complex",
-            description = "",
+            description = "First fire clockwise, second counter-clockwise",
             mapId = 1323,
             trigger = new WorldCoord { x = 65.85422f, y = 187.6384f, z = 16.6768f },
             marks = new List<MarkerCoord>
@@ -381,7 +381,7 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "IBS - Fraenir",
-            description = "",
+            description = "Safe stack spots - start at arrow",
             mapId = 1341,
             trigger = new WorldCoord { x = 55.65976f, y = -18.19911f, z = 179.7118f },
             marks = new List<MarkerCoord>
@@ -395,7 +395,7 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "IBS - Voice and Claw",
-            description = "",
+            description = "Stack Spots - start at arrow",
             mapId = 1346,
             trigger = new WorldCoord { x = 52.28861f, y = -21.5971f, z = 179.7112f },
             marks = new List<MarkerCoord>
@@ -411,7 +411,7 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "IBS - Cold War",
-            description = "",
+            description = "Boss spawn location",
             mapId = 1374,
             trigger = new WorldCoord { x = 104.9626f, y = -151.5361f, z = 18.22491f },
             marks = new List<MarkerCoord>
@@ -426,7 +426,7 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "EoD - Aetherblade CM Setup",
-            description = "",
+            description = "Assign color groups for green circles",
             mapId = 1432,
             trigger = new WorldCoord { x = 33.61228f, y = 33.58646f, z = 46.45338f },
             marks = new List<MarkerCoord>
@@ -441,7 +441,7 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "EoD - Aetherblade CM Markers",
-            description = "",
+            description = "Kill X, Stack at for color groups",
             mapId = 1432,
             trigger = new WorldCoord { x = 58.76889f, y = 56.79849f, z = 45.76037f },
             marks = new List<MarkerCoord>
@@ -493,7 +493,7 @@ public class MarkerListing
         SaveMarker(ms);
 
 
-        ms = new MarkerSet
+        /*ms = new MarkerSet
         {
             name = "eod_kaineng",
             description = "",
@@ -513,12 +513,12 @@ public class MarkerListing
             }
         };
         SaveMarker(ms);
-
+*/
 
         ms = new MarkerSet
         {
             name = "EoD - Harvest Temple",
-            description = "",
+            description = "Boss location and Mordremoth stack",
             mapId = 1437,
             trigger = new WorldCoord { x = 14.88956f, y = -484.7346f, z = 391.7232f },
             marks = new List<MarkerCoord>
@@ -532,7 +532,7 @@ public class MarkerListing
         ms = new MarkerSet
             { 
                 name = "Aerodrome Wing Test",
-                description = "",
+                description = "Demo of automarker feature",
                 mapId = 1155,
                 trigger = new WorldCoord
                 {
@@ -556,7 +556,7 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "Arborstone Test",
-            description = "",
+            description = "Test marker keybinds",
             mapId = 1428,
             trigger = new WorldCoord { x = -783.0035f, y = 485.4295f, z = 1.958099f },
             marks = new List<MarkerCoord>

@@ -20,6 +20,15 @@ class ModuleSettingsView : View
         int labelWidth = 60;
         int bindingWidth = 145;
 
+        Image blishHeart = new Image(Service.Textures!._blishHeart)
+        {
+            Parent= buildPanel,
+            Width = 128,
+            Height = 128,
+            Location = new Point(buildPanel.Width - 128, buildPanel.Height - 128),
+        };
+        
+
         Panel keysPanel = new Panel()
         {
             CanScroll = false,
