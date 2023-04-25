@@ -5,6 +5,8 @@ For ground markers, click the icon, which highlights it, then click on the mini 
 
 
 ## Changelog
+### 3.0.0-beta-1: 2023-04-25
+* Added automarker feature.
 ### 2.0.0: 2023-04-20:
 * Updated repo to use SDK style
 * Made controls reusable instead of deleted on every change

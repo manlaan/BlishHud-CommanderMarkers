@@ -20,6 +20,7 @@ public class TextureService : IDisposable
         _imgTriangle = contentsManager.GetTexture(@"triangle.png");
         _imgX = contentsManager.GetTexture(@"x.png");
         _imgClear = contentsManager.GetTexture(@"clear.png");
+        _blishHeart = contentsManager.GetTexture(@"mapmarker.png");
 
     }
 
@@ -37,6 +38,7 @@ public class TextureService : IDisposable
         _imgTriangle.Dispose();
         _imgX.Dispose();
         _imgClear.Dispose();
+        _blishHeart.Dispose();
     }
 
     public Texture2D _imgArrow;
@@ -48,6 +50,7 @@ public class TextureService : IDisposable
     public Texture2D _imgTriangle;
     public Texture2D _imgX;
     public Texture2D _imgClear;
+    public Texture2D _blishHeart;
 
    
     public Texture2D CornerIconTexture { get; }

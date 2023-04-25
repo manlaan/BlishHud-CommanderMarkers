@@ -28,6 +28,7 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     public SettingEntry<KeyBinding> _settingTriangleObjBinding { get; private set; }
     public SettingEntry<KeyBinding> _settingXObjBinding { get; private set; }
     public SettingEntry<KeyBinding> _settingClearObjBinding { get; private set; }
+    public SettingEntry<KeyBinding> _settingInteractKeyBinding { get; private set; }
 
     public SettingEntry<string> _settingOrientation { get; private set; }
     public SettingEntry<Point> _settingLoc { get; private set; }
@@ -59,6 +60,10 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
         _settingTriangleObjBinding = settings.DefineSetting("CmdMrkTriangleObjBinding", new KeyBinding(ModifierKeys.Alt | ModifierKeys.Shift, Keys.D7), ()=>"Triangle Object Binding", ()=>"");
         _settingXObjBinding = settings.DefineSetting("CmdMrkXObjBinding", new KeyBinding(ModifierKeys.Alt | ModifierKeys.Shift, Keys.D8), ()=>"X Object Binding", ()=>"");
         _settingClearObjBinding = settings.DefineSetting("CmdMrkClearObjBinding", new KeyBinding(ModifierKeys.Alt | ModifierKeys.Shift, Keys.D9), ()=>"Clear Object Binding", ()=>"");
+
+        _settingInteractKeyBinding = settings.DefineSetting("CmdMrkInteractBinding", new KeyBinding(Keys.F), ()=>"Interact Key", ()=>"");
+
+        
 
         _settingOrientation = settings.DefineSetting("CmdMrkOrientation2", "Horizontal", () => "Orientation", ()=>"");
         _settingLoc = settings.DefineSetting("CmdMrkLoc", new Point(100, 100), ()=>"Location", ()=>"");

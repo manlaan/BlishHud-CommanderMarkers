@@ -1,0 +1,294 @@
+﻿            var placeit = new KeyBinding(ModifierKeys.Alt | ModifierKeys.Ctrl, Keys.N);
+            placeit.Enabled = true;
+
+            
+
+            List<Vector3> sabethaMarkers = new List<Vector3>()
+            {
+                new Vector3(-132.6262f, 56.29699f, 62.96119f),
+                new Vector3(-157.7033f, 87.01214f, 62.27411f),
+                new Vector3(-126.95f,111.8531f, 62.94498f),
+                new Vector3(-101.9202f,81.18908f, 63.03901f),
+                //new Vector3(-78.40887f, 133.5607f, 70.977f),
+            };
+            List<Vector3> gorseMarkers = new List<Vector3>()
+            {
+                new Vector3(21.407f, -92.894f, 48.572f),
+                new Vector3(64.096f,-93.094f,  48.908f),
+                new Vector3(62.752f, -131.938f, 48.868f),
+                new Vector3(22.018f, -134.791f, 48.618f),
+            };
+            List<Vector3> sloth = new List<Vector3>() {
+                new Vector3(208.928f, 25.562f, 4.933f),
+                new Vector3(174.839f, -9.068f, 2.414f),
+                new Vector3(192.947f, -35.956f, 0.846f),
+                new Vector3(224.945f, -13.404f, -0.177f)
+            };
+
+            List<Vector3> trio = new List<Vector3>() {
+                new Vector3(-1.953f, -235.489f, -0.132f),//berg
+                new Vector3(-0.567f, -290.812f, -0.619f),//zane
+                new Vector3(-32.935f, -221.024f, 4.176f),//Narella
+                new Vector3(64.95536f, -270.91f,  0.9945363f), //Placement location
+            };
+            /*Matt
+             * SW xpos="-171.0662" ypos="129.6464" zpos="131.7141"
+             * NW xpos="-171.065" ypos="170.2808" zpos="131.7728"
+             * NE xpos="-129.9426" ypos="170.2092" zpos="131.8336"
+             * SE xpos="-130.4628" ypos="128.2606" zpos="131.8334"
+             * trigger xpos="-151.2486" ypos="128.0474" zpos="131.5231"
+             * */
+            List<Vector3> mathias = new List<Vector3>() {
+                new Vector3(-171.0662f, 129.6464f,131.7141f),//SW
+                new Vector3(-171.065f, 170.2808f, 131.7728f),//nw
+                new Vector3(-129.9426f, 170.2092f, 131.8336f),//ne
+                new Vector3(-130.633f, 129.8348f, 131.5248f), //se
+            };
+
+
+
+
+            List<Vector3> keepconstruct = new List<Vector3>()
+            {
+
+            };
+
+            List < Vector3> xera = new List<Vector3>() {
+                new Vector3(-55.524f, -92.326f, 512.354f), //Xera P2-1 
+                new Vector3(-64.367f, -58.505f, 512.354f), //Xera P2-2 
+                new Vector3(-101.757f, -80.51f, 512.356f), //Xera P2-3 
+                new Vector3(-98.724f, -68.167f, 512.354f), //Xera P2-4 
+            };
+
+            List<Vector3> cairn = new List<Vector3>()
+            {
+                new Vector3(368.6021f, 52.26963f, 33.72034f),
+                new Vector3(366.5356f, 44.91729f, 33.72039f),
+                new Vector3(358.4903f, 49.50121f, 33.72039f),
+                new Vector3(363.007f, 57.25174f, 33.72039f),
+            };
+
+            /** MO
+             * topleft xpos="59.17005" ypos="93.23376" zpos="106.1874"\
+             * bottomright xpos="75.23009" ypos="109.3193" zpos="106.1874"
+             * 
+             */
+
+            /**sam cm
+             * xpos="-89.38434" ypos="96.8606" zpos="129.5106"
+             * xpos="-108.5722" ypos="99.14366" zpos="129.5106"
+             * xpos="-109.5685" ypos="79.47366" zpos="129.5507"
+             * xpos="-109.444" ypos="57.10186" zpos="129.5106"
+             * xpos="-90.3683" ypos="56.01464" zpos="129.5103"
+             * xpos="-90.56693" ypos="78.13013" zpos="129.5128"
+             */
+
+            /**SH orientation
+             * W xpos="-282.6898" ypos="18.40989" zpos="20.76256"
+             * s xpos="-266.5454" ypos="8.738229" zpos="20.76256"
+             * e xpos="-256.4738" ypos="24.84775" zpos="20.76256"
+             * n xpos="-272.7182" ypos="34.73028" zpos="20.76256"
+             * trigger xpos="-325.844" ypos="7.587688" zpos="40.9939"
+             * 
+             * 
+             * eater
+             * e xpos="100.8575" ypos="-206.0857" zpos="99.77229"
+             * s xpos="62.8086" ypos="-219.2261" zpos="99.59798"
+             * w xpos="51.52459" ypos="-187.0098" zpos="99.71339"
+             * n xpos="88.6095" ypos="-173.703" zpos="99.68482"
+             * trigger xpos="97.81354" ypos="-161.2347" zpos="99.95564"
+            */
+            List<Vector3> lightorbs = new List<Vector3>()
+            {
+                new Vector3(344.051f, 28.717f, 97.308f),
+                new Vector3(364.521f, 24.811f, 97.308f),
+                new Vector3(384.933f, 20.685f, 97.308f)
+                //trigger xpos="367.6696" ypos="37.40068" zpos="98.90854"
+            };
+
+            List<Vector3> dhuum = new List<Vector3>()
+            {
+                new Vector3(429.065f, 30.76263f, 157.8669f),
+                new Vector3(427.8602f, 2.028903f, 157.867f),
+                new Vector3(404.944f, -14.71885f, 157.8641f),
+                new Vector3(377.8015f, -6.618744f, 157.8605f),
+                new Vector3(365.9529f, 19.33479f, 157.8795f),
+                new Vector3(378.9905f, 44.77333f, 157.8602f),
+                new Vector3(407.5791f, 49.89919f, 157.864f)
+                //trigger xpos="351.7534" ypos="20.52355" zpos="159.6575"
+            };
+
+            List<Vector3> qadim1 = new List<Vector3>()
+            {
+                new Vector3(-146.6841f, 330.8714f, 120.1684f),//stability pyre,
+                new Vector3(-231.5254f, 331.0974f, 120.1693f),
+                new Vector3(-166.9229f, 295.0649f, 120.1684f),//lamp3
+                new Vector3(-185.8315f, 294.9296f, 120.1688f), //portal/stacl
+                //trigger -152.3928f, 285.804f, 120.1688f
+            };
+
+            List<Vector3> sabir = new List<Vector3>()
+            {
+
+            };
+            List<Vector3> adina = new List<Vector3>()
+            {
+                
+
+            };
+            List<Vector3> qtp = new List<Vector3>()//1323
+            {
+                new Vector3(22.89519f, 289.5503f, 16.81249f), //
+                new Vector3(59.32327f, 277.8169f, 16.81249f), //
+                new Vector3(79.97083f, 256.7198f, 16.81204f), //
+                new Vector3(51.55045f, 229.2897f, 16.81205f), //
+                new Vector3(22.88567f, 222.5481f, 16.81205f), //
+                new Vector3(13.20081f, 261.1675f, 16.81205f), // 
+
+                //three marker pug strat
+                //new Vector3(60.046f, 289.6017f, 16.81205f),
+                //new Vector3(3.21177f, 256.745f, 16.81205f),
+                //new Vector3(61.19013f, 223.1329f, 16.81205f),
+
+                
+                //trigger xpos="41.41181" ypos="204.974" zpos="16.81205"
+            };
+
+            List<Vector3> ibs_fraenir = new List<Vector3>() 
+            {
+                new Vector3(16.215f, -2.602f, 178.325f),
+                new Vector3(11.345f, 1.620f, 178.325f)
+            };
+
+
+            List<Vector3> ibs_bears = new List<Vector3>() //map 1346
+            {
+                new Vector3(8.01693599187199f, -10.2486639573279f, 178.338f), //VoiceBackStep
+                new Vector3(-8.690f, -5.287f, 178.538f),
+                new Vector3(16.201f, 22.438f, 178.112f)
+            };
+
+            List<Vector3> ibs_coldwar = new List<Vector3>() //map 1374
+            {
+                new Vector3(34.900f, -89.992f, 17.272f),//boss Varina
+                //new Vector3(29.084f, -51.671f, 18.002f)//Champ spawn - toofar from door
+            };
+            
+
+            List<Vector3> eod_aetherblade = new List<Vector3>()
+            {
+                new Vector3(81.10351f, 55.76778f, 45.73673f),//CM Arrow
+                new Vector3(79.9226f, 48.54653f, 45.7366f), //CM Circle
+                new Vector3(86.92951f, 47.29297f, 45.73663f), //CM heart
+
+                new Vector3(65.36295f, 32.88283f, 45.73687f),//X bomb
+                //new Vector3(79.75883f, 41.17043f, 45.73667f),//right bomb
+                //new Vector3(65.31778f, 49.443f, 45.73673f),//left bomb
+
+                //new Vector3(46.50667f, 48.16092f, 46.28915f),//cm setup Arrow
+                //new Vector3(49.2936f, 39.81492f, 45.88486f), //CM setup Circle
+                //new Vector3(51.49508f, 30.82986f, 46.10174f), //CM seteup heart
+
+                //trigger 39.42245f, 36.10994f, 46.26307f
+            };
+
+            List<Vector3> eod_xunlaijade = new List<Vector3>()//map-id1450 (1452open world)
+            {
+                //new Vector3(-100.121f, 1.696f, 90.1249f),
+                //new Vector3(53.688f, 32.763f, 116.172f),
+                //new Vector3(-53.279f, 127.418f, 156.726f),
+                //<!-- ========== CC Enemies ========== -->
+                //phase 2 cc adds
+                //trigger xpos="28.72438" ypos="5.002136" zpos="118.4035"
+                new Vector3(18.985f, 40.703f, 117.643f),
+                new Vector3(88.307f, 37.673f, 118.695f),
+                new Vector3(66.610f, -4.534f, 119.851f),
+                //Phase3 CC adds
+                //trigger xpos="-24.7418" ypos="123.3096" zpos="157.8843"
+                new Vector3(-78.353f, 136.421f, 157.493f),
+                new Vector3(-44.588f, 108.224f, 157.411f),
+                new Vector3(-41.937f, 151.549f, 157.431f),
+            };
+
+            List<Vector3> eod_kaineng = new List<Vector3>()//map-id 
+            {
+                new Vector3(-591.8914f, -419.4069f, 275.9595f)
+
+                //xpos="-597.3679" ypos="-410.3128" zpos="274.5604" //Li - normal back-center
+
+
+                // xpos="-590.149" ypos="-419.8066" zpos="274.5604" // Li - backleft
+                //xpos="-604.752" ypos="-400.647" zpos="274.5742" // Li - backright
+                //xpos="-585.4771" ypos="-386.282" zpos="274.5677"//Li - front-right
+                //xpos="-570.8882" ypos="-405.8025" zpos="274.5604" //Li - front-left
+
+                //xpos="-532.3221" ypos="-389.4334" zpos="266.1935" //left bait
+                //xpos="-558.7625" ypos="-353.8418" zpos="266.1942"//right bait
+
+                //xpos="-560.0508" ypos="-382.3326" zpos="266.1826" //sniper-mech by zipline
+            };
+
+            List<Vector3> eod_harvesttemple = new List<Vector3>()//map-id 
+            {
+                //xpos = "15.50351" ypos = "-554.128" zpos = "391.7127" //boss spawn
+                //xpos = "28.14585" ypos = "-551.954" zpos = "391.719" //side-stack
+            };
+
+            List<Vector3> eod_oldlions = new List<Vector3>()//map-id 
+            {
+
+            };
+
+
+
+            List<Vector3> aerodrome = new List<Vector3>()
+            {
+                new Vector3(57.05506f, -345.271f, 39.51918f),//W1
+                new Vector3(65.95273f, -370.6219f, 39.56038f),//W2
+                new Vector3(84.03487f, -386.6116f, 39.55384f),//W3
+                new Vector3(92.82407f, -414.263f, 39.59739f),//W4
+                new Vector3(127.0165f, -410.97f, 39.55385f),//W5
+                new Vector3(165.5569f, -390.4695f, 39.63842f),//W6
+                new Vector3(156.8735f, -412.6107f, 39.71187f),//W7
+                new Vector3(195.1904f, -323.7846f, 39.07505f),//RT
+
+                //trigger xpos="129.4865" ypos="-353.8891" zpos="34.18368"
+            };
+
+            //_sequence = new MarkerSequence(1062, sabethaMarkers);//wing1
+            //_sequence = new MarkerSequence(1149, mathias);//wing2
+            //_sequence = new MarkerSequence();//wing3
+            //_sequence = new MarkerSequence(1188, cairn);//wing4
+            //_sequence = new MarkerSequence(1264, lightorbs);//wing5
+            //_sequence = new MarkerSequence(1303, qadim1);//wing6
+            _sequence = new MarkerSequence(1323, qtp);//wing7
+            //_sequence = new MarkerSequence(1155, aerodrome);
+
+            //_sequence = new MarkerSequence(, eod_aetherblade);
+            //_sequence = new MarkerSequence(1452, eod_xunlaijade);
+            //_sequence = new MarkerSequence(1438, eod_kaineng);
+            //_sequence = new MarkerSequence(, eod_harvesttemple);
+            //_sequence = new MarkerSequence(, eod_oldlions);
+
+            //IBS
+            //_sequence = new MarkerSequence(,ibs_fraenir );//fraenir
+            //_sequence = new MarkerSequence(1346, ibs_bears);//bears
+            //_sequence = new MarkerSequence(1374, ibs_coldwar);//coldwar
+
+
+            placeit.Activated += (s, e) =>
+            {
+                _sequence.PlaceMarkers(_map);
+            };
+            // Spirit Vale map id 1062
+            // sabetha - top of bridge xpos="-78.40887" ypos="133.5607" zpos="70.977"
+            // Sabetha - south cannon xpos = "-133.0958" ypos = "53.42804" zpos = "62.80207"
+            // Sabetha - west cannon xpos="-160.8181" ypos="87.43507" zpos="62.06367"
+            // Sabetha - north cannon xpos="-126.355" ypos="115.1563" zpos="62.7944"
+            // Sabetha - east cannon xpos="-98.53242" ypos="81.10789" zpos="62.88632"
+            /*_screenMap = new ScreenMap(_map)
+            {
+                Parent = GameService.Graphics.SpriteScreen
+            };*/
+            //BasicMarker marker = new BasicMarker(_map);
+            //_screenMap.AddEntity(marker);
