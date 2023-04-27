@@ -384,9 +384,28 @@ class ModuleSettingsView : View
         #endregion
 
         #region manual Panel
+
+        IView settingMarkersVisibleView = SettingView.FromType(_settings._settingShowMarkersPanel, buildPanel.Width);
+        ViewContainer settingMarkersVisibleContainer = new ViewContainer()
+        {
+            WidthSizingMode = SizingMode.Fill,
+            Location = new Point(0, 0),
+            Parent = manualPanel
+        };
+        settingMarkersVisibleContainer.Show(settingMarkersVisibleView);
+
+        IView settingClickDrag_View = SettingView.FromType(_settings._settingDrag, buildPanel.Width);
+        ViewContainer settingClickDrag_Container = new ViewContainer()
+        {
+            WidthSizingMode = SizingMode.Fill,
+            Location = new Point((manualPanel.Width/2)+5, 0),
+            Parent = manualPanel
+        };
+        settingClickDrag_Container.Show(settingClickDrag_View);
+
         Label settingOrientation_Label = new Label()
         {
-            Location = new Point(0, 0),
+            Location = new Point(0, settingMarkersVisibleContainer.Bottom + 6),
             Width = 75,
             AutoSizeHeight = false,
             WrapText = false,
@@ -447,23 +466,39 @@ class ModuleSettingsView : View
         };
         settingOpacity_Slider.ValueChanged += delegate { _settings._settingOpacity.Value = settingOpacity_Slider.Value / 100; };
 
-        IView settingClickDrag_View = SettingView.FromType(_settings._settingDrag, buildPanel.Width);
-        ViewContainer settingClickDrag_Container = new ViewContainer()
-        {
-            WidthSizingMode = SizingMode.Fill,
-            Location = new Point(0, settingOpacity_Label.Bottom + 3),
-            Parent = manualPanel
-        };
-        settingClickDrag_Container.Show(settingClickDrag_View);
+        
 
         IView settingOnlyComm_View = SettingView.FromType(_settings._settingOnlyWhenCommander, buildPanel.Width);
         ViewContainer settingOnlyComm_Container = new ViewContainer()
         {
             WidthSizingMode = SizingMode.Fill,
-            Location = new Point(0, settingClickDrag_Container.Bottom + 15),
+            Location = new Point(0, settingOpacity_Label.Bottom + 15),
             Parent = manualPanel
         };
         settingOnlyComm_Container.Show(settingOnlyComm_View);
+
+        Label settingMarkerDelay_Label = new Label()
+        {
+            Location = new Point(0, settingOnlyComm_Container.Bottom + 6),
+            Width = 75,
+            AutoSizeHeight = false,
+            WrapText = false,
+            Parent = manualPanel,
+            Text = "Delay: ",
+            BasicTooltipText = "Delay in milliseconds to wait between marker placement\nFaster <-----> Slower"
+        };
+        TrackBar settingMarkerDelay_Slider = new TrackBar()
+        {
+            Location = new Point(settingMarkerDelay_Label.Right + 5, settingMarkerDelay_Label.Top),
+            Width = 220,
+            MaxValue = 300,
+            MinValue = 50,
+            Value = _settings._settingMarkerPlaceDelay.Value,
+            Parent = manualPanel,
+            BasicTooltipText = "Delay in milliseconds to wait between marker placement\nFaster <-----> Slower"
+
+        };
+        settingMarkerDelay_Slider.ValueChanged += delegate { _settings._settingMarkerPlaceDelay.Value = (int)settingMarkerDelay_Slider.Value; };
 
         /*IView settingMapVisible_View = SettingView.FromType(_settings._settingMapVisible, buildPanel.Width);
         ViewContainer settingMapVisible_Container = new ViewContainer()

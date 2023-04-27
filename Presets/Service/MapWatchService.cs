@@ -47,6 +47,7 @@ public class MapWatchService : IDisposable
         if(_markers.Count <=0) return;
         if(GameService.Gw2Mumble.UI.IsMapOpen ==false) return;
 
+        
         var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
         foreach(MarkerSet marker in _markers) {
             var d = (playerPosition - marker.trigger.ToVector3()).Length();
@@ -54,6 +55,7 @@ public class MapWatchService : IDisposable
             {
                 Debug.WriteLine($"Found a marker to activate (d={d})");
                 PlaceMarkers(marker, _map);
+                return;
             }
             else
             {
@@ -85,10 +87,11 @@ public class MapWatchService : IDisposable
             _setting._settingXGndBinding.Value,
             _setting._settingClearGndBinding.Value,
         };
+        var delay = _setting._settingMarkerPlaceDelay.Value;
 
         var originalMousePos = Mouse.GetState().Position;
         InputHelper.DoHotKey(keys[0]);
-        Thread.Sleep(40);
+        Thread.Sleep((int) delay/2);
 
         for (var i = 0; i < markers.marks.Count; i++)
         {
@@ -98,9 +101,9 @@ public class MapWatchService : IDisposable
 
             var d = mapData.WorldToScreenMap(marker.ToVector3()) * scale;
             Mouse.SetPosition((int)d.X, (int)d.Y);
-            Thread.Sleep(20);
+            Thread.Sleep((int) delay/2);
             InputHelper.DoHotKey(keys[marker.icon]);
-            Thread.Sleep(60);
+            Thread.Sleep(delay);
         }
 
         Mouse.SetPosition(originalMousePos.X, originalMousePos.Y);

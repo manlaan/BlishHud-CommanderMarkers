@@ -35,8 +35,11 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     public SettingEntry<int> _settingImgWidth { get; private set; }
     public SettingEntry<float> _settingOpacity { get; private set; }
     public SettingEntry<bool> _settingDrag { get; private set; }
+    public SettingEntry<bool> _settingShowMarkersPanel{ get; private set; }
     public SettingEntry<bool> _settingOnlyWhenCommander { get; private set; }
+
     //public SettingEntry<VisibleOnMap> _settingMapVisible { get; private set; }
+    public SettingEntry<int> _settingMarkerPlaceDelay { get; private set; }
 
 
     public SettingService(SettingCollection settings)
@@ -70,9 +73,12 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
         _settingImgWidth = settings.DefineSetting("CmdMrkImgWidth", 30, ()=> "Width", ()=>"");
         _settingOpacity = settings.DefineSetting("CmdMrkOpacity", 1.0f, () => "Opacity", ()=>"");
         _settingDrag = settings.DefineSetting("CmdMrkDrag", false, ()=>"Enable Dragging", () => "Allow the markers to be repositioned");
+        _settingShowMarkersPanel = settings.DefineSetting("CmdMrkShowMarkerPanelr", true, ()=>"Show marker panel", () => "Hide/show the mouse click markers panel");
         _settingOnlyWhenCommander = settings.DefineSetting("CmdMrkOnlyCommander", true, ()=>"Only show when I am the Commander", () => "Hides the markers when you are not a Commander");
+        _settingMarkerPlaceDelay = settings.DefineSetting("CmdMrkPlacementDelay", 100, ()=> "Delay between automarker placement (ms)", ()=>"Time in milliseconds to wait betweeen keypresses when placing markers");
         //_settingMapVisible = settings.DefineSetting("CmdMrkShow", VisibleOnMap.HideOnMap, ()=>"Show on map", () => "");
-        
+
+        _settingMarkerPlaceDelay.SetRange(50, 300);
         _settingImgWidth.SetRange(16, 200);
         _settingOpacity.SetRange(0.1f, 1f);
 

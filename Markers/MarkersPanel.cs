@@ -22,6 +22,9 @@ public class MarkersPanel : FlowPanel, IDisposable
 {
     private bool _draggable = false;
     private bool _isDraggedByMouse;
+
+    private bool _panelEnabled = true;
+
     private Point _dragStart = Point.Zero;
 
 
@@ -88,6 +91,10 @@ public class MarkersPanel : FlowPanel, IDisposable
         _settings._settingDrag.SettingChanged += (s, e) => _draggable = e.NewValue;
         _draggable = _settings._settingDrag.Value;
 
+        _panelEnabled = _settings._settingShowMarkersPanel.Value;
+        _settings._settingShowMarkersPanel.SettingChanged += (s, e) => { _panelEnabled = e.NewValue; };
+
+
 
         GameService.Input.Mouse.LeftMouseButtonPressed += OnMouseClick;
     }
@@ -111,6 +118,7 @@ public class MarkersPanel : FlowPanel, IDisposable
     {
 
         var shouldBeVisible =
+          _panelEnabled &&
           GameService.GameIntegration.Gw2Instance.Gw2IsRunning &&
           GameService.GameIntegration.Gw2Instance.IsInGame &&
           GameService.Gw2Mumble.IsAvailable;
