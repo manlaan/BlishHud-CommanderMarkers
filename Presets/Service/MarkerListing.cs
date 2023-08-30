@@ -32,6 +32,10 @@ public class MarkerListing
 
     }
 
+    public List<MarkerSet> GetAllMarkerSets()
+    {
+        return presets.ToList();
+    }
     public List<MarkerSet> GetMarkersForMap(int mapId)
     {
         return presets.Where(m => m.mapId == mapId).ToList();

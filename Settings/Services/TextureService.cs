@@ -8,8 +8,8 @@ public class TextureService : IDisposable
 {
     public TextureService(ContentsManager contentsManager)
     {
-        CornerIconTexture = contentsManager.GetTexture(@"raids\textures\raidIconDark.png");
-        CornerIconHoverTexture = contentsManager.GetTexture(@"raids\textures\raidIconBright.png");
+        SettingWindowBackground = contentsManager.GetTexture(@"window\background.png");
+
 
         _imgArrow = contentsManager.GetTexture(@"arrow.png");
         _imgCircle = contentsManager.GetTexture(@"circle.png");
@@ -26,9 +26,7 @@ public class TextureService : IDisposable
 
     public void Dispose()
     {
-        CornerIconTexture.Dispose();
-        CornerIconHoverTexture.Dispose();
-
+        SettingWindowBackground.Dispose(); 
         _imgArrow.Dispose();
         _imgCircle.Dispose();
         _imgHeart.Dispose();    
@@ -41,6 +39,7 @@ public class TextureService : IDisposable
         _blishHeart.Dispose();
     }
 
+    public Texture2D SettingWindowBackground;
     public Texture2D _imgArrow;
     public Texture2D _imgCircle;
     public Texture2D _imgHeart;
@@ -52,8 +51,5 @@ public class TextureService : IDisposable
     public Texture2D _imgClear;
     public Texture2D _blishHeart;
 
-   
-    public Texture2D CornerIconTexture { get; }
-    public Texture2D CornerIconHoverTexture { get; }
-
+ 
 }

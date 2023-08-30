@@ -1,5 +1,7 @@
 ﻿using Blish_HUD.Modules.Managers;
+using Manlaan.CommanderMarkers.Presets;
 using Manlaan.CommanderMarkers.Presets.Service;
+using Manlaan.CommanderMarkers.Settings.Controls;
 using Manlaan.CommanderMarkers.Settings.Services;
 
 namespace Manlaan.CommanderMarkers;
@@ -15,5 +17,10 @@ public static class Service
 
     public static MarkerListing MarkersListing { get; set; } = null!;
     public static MapWatchService MapWatch { get; set; } = null!;
+    public static MapData MapDataCache { get; set; } = null!;
+
+    public static SettingsPanel SettingsWindow { get; set; } = null!;
+
+
 
 }

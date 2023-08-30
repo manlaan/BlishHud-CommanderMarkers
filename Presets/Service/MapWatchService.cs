@@ -87,7 +87,7 @@ public class MapWatchService : IDisposable
             _setting._settingXGndBinding.Value,
             _setting._settingClearGndBinding.Value,
         };
-        var delay = _setting._settingMarkerPlaceDelay.Value;
+        var delay = _setting.AutoMarker_PlacementDelay.Value;
 
         var originalMousePos = Mouse.GetState().Position;
         InputHelper.DoHotKey(keys[0]);
