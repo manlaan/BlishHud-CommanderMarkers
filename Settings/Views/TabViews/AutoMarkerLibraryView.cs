@@ -31,13 +31,7 @@ public class AutoMarkerLibraryView : View
     protected override void Build(Container buildPanel)
     {
         base.Build(buildPanel);
-        new Image()
-        {
-            Parent = buildPanel,
-            Texture = Service.Textures!._blishHeart,
-            Size = new Point(98, 96),
-            Location = new Point(buildPanel.Width - 96, buildPanel.Height - 96),
-        };
+        
         _listingHeader = new Panel()
         {
             Parent = buildPanel,
