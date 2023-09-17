@@ -43,7 +43,7 @@ public class AutoMarkerLibraryView : View
         {
             Parent = buildPanel,
             Size = new Point(buildPanel.Width, HEADER_HEIGHT),
-            Location = new Point(0, 0),
+            Location = new Point(0, buildPanel.Height - HEADER_HEIGHT),
             ShowBorder = true,
             Visible = false,
             ClipsBounds = false
@@ -134,7 +134,7 @@ public class AutoMarkerLibraryView : View
             Parent = buildPanel,
             Size = buildPanel.Size + new Point(-10,-HEADER_HEIGHT),
             ShowBorder = true,
-            Location = new(0, HEADER_HEIGHT),
+            Location = new(0, 0),
         };
         _detailsPanel.Visible = _showingDetails;
         _detailsPanel.CanScroll = true;

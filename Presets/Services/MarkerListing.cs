@@ -1,12 +1,9 @@
-﻿using Blish_HUD;
-using Manlaan.CommanderMarkers.Presets.Model;
+﻿using Manlaan.CommanderMarkers.Presets.Model;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Service = Manlaan.CommanderMarkers;
 namespace Manlaan.CommanderMarkers.Presets.Services;
 
 
@@ -55,6 +52,12 @@ public class MarkerListing
         return presets.Where(m => m.mapId == mapId).ToList();
     }
 
+    public void ResetToDefault()
+    {
+        presets.Clear();
+        InitEmptyFile();
+        
+    }
 
     public void Save()
     {

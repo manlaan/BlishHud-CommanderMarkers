@@ -194,12 +194,18 @@ public static class FlowPanelExtensions
 
 
 
-    public static FlowPanel AddSpace(this FlowPanel panel)
+    public static FlowPanel AddSpace(this FlowPanel panel, int height=0)
     {
         var _ = new ViewContainer
         {
             Parent = panel,
+           
         };
+
+        if (height > 0)
+        {
+            _.Height = height;
+        }
         return panel;
     }
 

@@ -28,9 +28,22 @@ public class AutoMarkerSettingsView : View
             {
                 Text = $"  Delay Time: {_settings.AutoMarker_PlacementDelay.Value} ms",
 
-                AutoSizeWidth= true,
+                AutoSizeWidth = true,
             }, out var delayLabel)
-            .AddSpace();
+            .AddSpace(100)
+            .AddFlowControl(new StandardButton()
+            {
+                Text = $"Reset Library To Default",
+                BasicTooltipText = "Warning: This will delete ALL marker sets in your Library\nand restore the default markers.",
+                Width = 200,
+            }, out var ResetButton)
+             .AddSpace();
+        ResetButton.Click += (s, e) =>
+        {
+            Service.MarkersListing.ResetToDefault();
+            ScreenNotification.ShowNotification("AutoMarker Library has been reset", ScreenNotification.NotificationType.Gray, null, 4);
+
+        };
 
         new Image()
         {

@@ -2,6 +2,8 @@
 using Blish_HUD.Controls;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Schema;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -36,34 +38,86 @@ public class MarkerSetEditor : FlowPanel
             Parent = this,
             FlowDirection = ControlFlowDirection.LeftToRight,
             ControlPadding = new Vector2(10,5),
-            Size = new Point(420, 150),
+            Size = new Point(420, 185),
+        };
+        var export = new StandardButton()
+        {
+            Parent = metaFlow,
+            Text = "Export To Clipboard",
+            Width=200
+        };
+        var import = new StandardButton()
+        {
+            Parent = metaFlow,
+            Text = "Import From Clipboard",
+            Width=200
+        };
+
+        export.Click += (s, e) =>
+        {
+            string json = JsonConvert.SerializeObject(_markerSet);
+            string output = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+            Debug.WriteLine(json);
+            Debug.WriteLine(output);
+            System.Windows.Forms.Clipboard.SetText(json);
+            ScreenNotification.ShowNotification("Marker set copied to your clipboard!", ScreenNotification.NotificationType.Info, Service.Textures!._blishHeart, 4);
+        };
+        import.Click += (s, e) =>
+        {
+            ScreenNotification.ShowNotification("Attempting to import markers set", ScreenNotification.NotificationType.Green, Service.Textures!._blishHeart, 4);
+            try
+            {
+                string json = System.Windows.Forms.Clipboard.GetText();
+                MarkerSet? markerSet = JsonConvert.DeserializeObject<MarkerSet>(json);
+                if(markerSet == null)
+                {
+                    throw new Exception("Invalid JSON");
+                }
+                _markerSet.CloneFromMarkerSet(markerSet);
+                LoadMarkerSet(_markerSet,_updateListingIndex);
+
+            }
+            catch (Exception)
+            {
+                ScreenNotification.ShowNotification("Unable to import clipboard content", ScreenNotification.NotificationType.Red, null, 5);
+            }
+
         };
         new Label()
         {
             Parent = metaFlow,
-            Text = "Marker Set Name:",
-            Size = new Point(200, 30)
-        };
-        new Label()
-        {
-            Parent = metaFlow,
-            Text = "Description/Help text",
-            Size = new Point(200, 30)
+            Text = "Set Name:",
+            Size = new Point(100, 30),
+            BasicTooltipText = "The name shown on the map when you are within range of using the marker set"
+
         };
         var title = new TextBox()
         {
             Parent = metaFlow,
             Location = new Point(0, 0),
-            Size = new Point(200, 30),
-            Text = _markerSet.name
+            Size = new Point(300, 30),
+            Text = _markerSet.name,
+            BasicTooltipText = "The name shown on the map when you are within range of using the marker set"
+
         };
         title.TextChanged += (s, e) => _markerSet.name = title.Text;
+
+        new Label()
+        {
+            Parent = metaFlow,
+            Text = "Description",
+            Size = new Point(100, 30),
+            BasicTooltipText = "This text is shown on the map when you are within range of using the marker set"
+        };
+       
         var description = new TextBox()
         {
             Parent = metaFlow,
             Location = new Point(0, 0),
-            Size = new Point(200, 30),
-            Text = _markerSet.description
+            Size = new Point(300, 30),
+            Text = _markerSet.description,
+            BasicTooltipText = "This text is shown on the map when you are within range of using the marker set"
+
         };
         description.TextChanged += (s,e) => _markerSet.description = description.Text;
 
@@ -93,7 +147,7 @@ public class MarkerSetEditor : FlowPanel
         var AddMarkerButton = new StandardButton()
         {
             Parent = this,
-            Text = "Add another Marker",
+            Text = "Add Marker",
             Width = 410
             //Size = new Point(200, 30)
         };

@@ -28,8 +28,21 @@ public class MarkerSet
     [JsonProperty("enabled")]
     public bool enabled = true;
 
+    [JsonIgnore()]
     public WorldCoord Trigger { get => (trigger == null) ? new WorldCoord() : trigger; }
 
+    [JsonIgnore()]
     public int MapId { get => (mapId == null) ? 0 : (int)mapId; }
+
+
+    public void CloneFromMarkerSet(MarkerSet otherSet)
+    {
+        name = otherSet.name;
+        description = otherSet.description;
+        mapId = otherSet.mapId;
+        trigger = otherSet.trigger;
+        marks = otherSet.marks;
+        enabled = otherSet.enabled;
+    }
 
 }
