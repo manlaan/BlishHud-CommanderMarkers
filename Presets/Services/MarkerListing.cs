@@ -1,22 +1,22 @@
-﻿using Blish_HUD;
-using Manlaan.CommanderMarkers.Presets.Model;
+﻿using Manlaan.CommanderMarkers.Presets.Model;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Service = Manlaan.CommanderMarkers;
-namespace Manlaan.CommanderMarkers.Presets.Service;
+namespace Manlaan.CommanderMarkers.Presets.Services;
 
 
 [Serializable]
 public class MarkerListing
 {
+    public event EventHandler? MarkersChanged;
+    
     [JsonIgnore]
     public static string FILENAME = "custom_markers.json";
 
     [JsonProperty("version")]
-    public string Version { get; set; } = "1.0.0";
+    public string Version { get; set; } = "2.0.0";
 
     [JsonProperty("squadMarkerPreset")]
     public List<MarkerSet> presets { get; set; } = new();
@@ -31,12 +31,33 @@ public class MarkerListing
         Save();
 
     }
+    public void EditMarker(int index, MarkerSet markerSet) 
+    {
+        presets[index] = markerSet;
+        Save();
+    }
 
+    public void DeleteMarker(MarkerSet markerSet)
+    {
+        presets.Remove(markerSet);
+        Save();
+    }
+
+    public List<MarkerSet> GetAllMarkerSets()
+    {
+        return presets.ToList();
+    }
     public List<MarkerSet> GetMarkersForMap(int mapId)
     {
         return presets.Where(m => m.mapId == mapId).ToList();
     }
 
+    public void ResetToDefault()
+    {
+        presets.Clear();
+        InitEmptyFile();
+        
+    }
 
     public void Save()
     {
@@ -50,6 +71,7 @@ public class MarkerListing
         writer.Write(serializedContents);
         writer.Close();
 
+        MarkersChanged?.Invoke(this, null);;
         //PluginLog.Warning("Tried to save a config with invalid LocalContentID, aborting save.");
 
     }
@@ -59,6 +81,12 @@ public class MarkerListing
         var pluginConfigDirectory = CommanderMarkers.Service.DirectoriesManager.GetFullDirectoryPath(Module.DIRECTORY_PATH);
 
         return new FileInfo($@"{pluginConfigDirectory}\{FILENAME}");
+    }
+
+    public void ReloadFromFile()
+    {
+        var temp = Load();
+        presets = temp.presets;
     }
 
     public static MarkerListing Load()
@@ -85,6 +113,10 @@ public class MarkerListing
         {
             loadedCharacterConfiguration = new MarkerListing();
         }
+        if(loadedCharacterConfiguration.Version == "1.0.0")
+        {
+            loadedCharacterConfiguration = MigrateToVersion2(loadedCharacterConfiguration);
+        }
 
         return loadedCharacterConfiguration;
     }
@@ -97,6 +129,53 @@ public class MarkerListing
         return newCharacterConfiguration;
     }
 
+    protected static MarkerListing MigrateToVersion2(MarkerListing loadedFromFile)
+    {
+        var old_Kc = loadedFromFile.presets.Find(m => m.name == "keepconstruct");
+        if(old_Kc != null)
+        {
+            loadedFromFile.presets.Remove(old_Kc);
+            var kc = new MarkerSet
+            {
+                name = "Keep Construct",
+                description = "Green Circles",
+                mapId = 1156,
+                trigger = new WorldCoord() { x = -81.049f, y = 228.662f, z = 148.556f },
+                marks = new List<MarkerCoord> {
+                new MarkerCoord(){ x=-81.049f, y=228.662f, z=148.556f, icon =1, name="DPS"},
+                new MarkerCoord(){ x=-114.034f, y=229.050f, z=148.556f, icon =2, name="SupportDPS"},
+                new MarkerCoord(){ x=-97.019f, y=255.827f, z=148.556f, icon =3, name="Healers"},
+            }
+            };
+            loadedFromFile.presets.Add(kc);
+        }
+        var old_xera = loadedFromFile.presets.Find(m => m.name == "Xera");
+        if (old_xera != null)
+        {
+            loadedFromFile.presets.Remove(old_xera);
+            var xera = new MarkerSet
+            {
+                name = "Xera",
+                description = "Tanking Locations",
+                mapId = 1156,
+                trigger = new WorldCoord { x = -55.524f, y = -92.326f, z = 512.354f },
+                marks = new List<MarkerCoord>
+                {
+                    new MarkerCoord(){ x=-55.524f, y = -92.326f, z = 512.354f, icon =1, name="Xera P2-1"},
+                    new MarkerCoord(){ x=-64.367f, y = -58.505f, z = 512.354f, icon =2, name="Xera P2-2"},
+                    new MarkerCoord(){ x=-101.757f, y = -80.51f, z = 512.356f, icon =3, name="Xera P2-3"},
+                    new MarkerCoord(){ x=-98.724f, y = -68.167f, z = 512.354f, icon =4, name="Xera P2-4"},
+                }
+            };
+            loadedFromFile.presets.Add(xera);
+        }
+        loadedFromFile.Version = "2.0.0";
+        loadedFromFile.Save();
+
+
+       
+        return loadedFromFile;
+    }
 
 
     public void InitEmptyFile()
@@ -184,15 +263,16 @@ public class MarkerListing
 
         ms = new MarkerSet
         {
-            name = "keepconstruct",
+            name = "Keep Construct",
             description = "Green Circles",
-            mapId = 1,
-            trigger = new WorldCoord(),
-            marks = new List<MarkerCoord> { 
-                new MarkerCoord(){ x=-97.019f, y=255.827f, z=148.556f, icon =1, name = ""},
-                new MarkerCoord(){ x=-81.049f, y=228.662f, z=148.556f, icon =2, name=""},
-                new MarkerCoord(){ x=-114.034f, y=229.050f, z=148.556f, icon =3, name=""},
+            mapId = 1156,
+            trigger = new WorldCoord() { x = -81.049f, y = 228.662f, z = 148.556f },
+            marks = new List<MarkerCoord> {
+                new MarkerCoord(){ x=-81.049f, y=228.662f, z=148.556f, icon =1, name="DPS"},
+                new MarkerCoord(){ x=-114.034f, y=229.050f, z=148.556f, icon =2, name="SupportDPS"},
+                new MarkerCoord(){ x=-97.019f, y=255.827f, z=148.556f, icon =3, name="Healers"},
             }
+
         };
         SaveMarker(ms);
 
@@ -200,15 +280,15 @@ public class MarkerListing
         {
             name = "Xera",
             description = "Tanking Locations",
-            mapId = 1,
+            mapId = 1156,
             trigger = new WorldCoord { x = -55.524f, y = -92.326f, z = 512.354f },
             marks = new List<MarkerCoord>
-    {
-        new MarkerCoord(){ x=-55.524f, y = -92.326f, z = 512.354f, icon =1, name="Xera P2-1"},
-        new MarkerCoord(){ x=-64.367f, y = -58.505f, z = 512.354f, icon =2, name="Xera P2-2"},
-        new MarkerCoord(){ x=-101.757f, y = -80.51f, z = 512.356f, icon =3, name="Xera P2-3"},
-        new MarkerCoord(){ x=-98.724f, y = -68.167f, z = 512.354f, icon =4, name="Xera P2-4"},
-    }
+            {
+                new MarkerCoord(){ x=-55.524f, y = -92.326f, z = 512.354f, icon =1, name="Xera P2-1"},
+                new MarkerCoord(){ x=-64.367f, y = -58.505f, z = 512.354f, icon =2, name="Xera P2-2"},
+                new MarkerCoord(){ x=-101.757f, y = -80.51f, z = 512.356f, icon =3, name="Xera P2-3"},
+                new MarkerCoord(){ x=-98.724f, y = -68.167f, z = 512.354f, icon =4, name="Xera P2-4"},
+            }
         };
         SaveMarker(ms);
 
@@ -230,52 +310,6 @@ public class MarkerListing
         SaveMarker(ms);
 
 
-        ms = new MarkerSet
-        {
-            name = "Soulless Horror",
-            description = "Orientation Markers",
-            mapId = 1264,
-            trigger = new WorldCoord { x = -325.844f, y = 7.587688f, z = 40.9939f },
-            marks = new List<MarkerCoord>
-    {
-    new MarkerCoord(){ x = -282.6898f, y = 18.40989f, z = 20.76256f, icon =1, name="W"},
-    new MarkerCoord(){ x = -266.5454f, y = 8.738229f, z = 20.76256f, icon =2, name="S"},
-    new MarkerCoord(){ x = -256.4738f, y = 24.84775f, z = 20.76256f, icon =3, name="E"},
-    new MarkerCoord(){ x = -272.7182f, y = 34.73028f, z = 20.76256f, icon =4, name="N"},
-    }
-        };
-        SaveMarker(ms);
-
-        ms = new MarkerSet
-        {
-            name = "Eater of Souls",
-            description = "Orientation Markers",
-            mapId = 1264,
-            trigger = new WorldCoord { x = 97.81354f, y = -161.2347f, z = 99.95564f },
-            marks = new List<MarkerCoord>
-    {
-    new MarkerCoord(){ x = 100.8575f, y = -206.0857f, z = 99.77229f, icon =1, name=""},
-    new MarkerCoord(){ x = 62.8086f, y = -219.2261f, z = 99.59798f, icon =2, name=""},
-    new MarkerCoord(){ x = 51.52459f, y = -187.0098f, z = 99.71339f, icon =3, name=""},
-    new MarkerCoord(){ x = 88.6095f, y = -173.703f, z = 99.68482f, icon =3, name=""},
-    }
-        };
-        SaveMarker(ms);
-
-        ms = new MarkerSet
-        {
-            name = "lightorbs",
-            description = "",
-            mapId = 1264,
-            trigger = new WorldCoord { x = 367.6696f, y = 37.40068f, z = 98.90854f },
-            marks = new List<MarkerCoord>
-    {
-    new MarkerCoord(){ x=344.051f, y = 28.717f, z = 97.308f, icon =1, name=""},
-    new MarkerCoord(){ x=364.521f, y = 24.811f, z = 97.308f, icon =2, name=""},
-    new MarkerCoord(){ x=384.933f, y = 20.685f, z = 97.308f, icon =3, name=""},
-    }
-        };
-        SaveMarker(ms);
 
         ms = new MarkerSet
         {

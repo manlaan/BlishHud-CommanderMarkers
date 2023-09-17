@@ -30,8 +30,8 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     public SettingEntry<KeyBinding> _settingClearObjBinding { get; private set; }
     public SettingEntry<KeyBinding> _settingInteractKeyBinding { get; private set; }
 
-    public SettingEntry<string> _settingOrientation { get; private set; }
     public SettingEntry<Point> _settingLoc { get; private set; }
+    public SettingEntry<Layout> _settingOrientation { get; private set; }
     public SettingEntry<int> _settingImgWidth { get; private set; }
     public SettingEntry<float> _settingOpacity { get; private set; }
     public SettingEntry<bool> _settingDrag { get; private set; }
@@ -39,7 +39,8 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     public SettingEntry<bool> _settingOnlyWhenCommander { get; private set; }
 
     //public SettingEntry<VisibleOnMap> _settingMapVisible { get; private set; }
-    public SettingEntry<int> _settingMarkerPlaceDelay { get; private set; }
+    public SettingEntry<int> AutoMarker_PlacementDelay { get; private set; }
+    public SettingEntry<bool>AutoMarker_OnlyWhenCommander { get; private set; }
 
 
     public SettingService(SettingCollection settings)
@@ -66,106 +67,42 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
 
         _settingInteractKeyBinding = settings.DefineSetting("CmdMrkInteractBinding", new KeyBinding(Keys.F), ()=>"Interact Key", ()=>"");
 
-        
-
-        _settingOrientation = settings.DefineSetting("CmdMrkOrientation2", "Horizontal", () => "Orientation", ()=>"");
+       
         _settingLoc = settings.DefineSetting("CmdMrkLoc", new Point(100, 100), ()=>"Location", ()=>"");
-        _settingImgWidth = settings.DefineSetting("CmdMrkImgWidth", 30, ()=> "Width", ()=>"");
-        _settingOpacity = settings.DefineSetting("CmdMrkOpacity", 1.0f, () => "Opacity", ()=>"");
-        _settingDrag = settings.DefineSetting("CmdMrkDrag", false, ()=>"Enable Dragging", () => "Allow the markers to be repositioned");
-        _settingShowMarkersPanel = settings.DefineSetting("CmdMrkShowMarkerPanelr", true, ()=>"Show marker panel", () => "Hide/show the mouse click markers panel");
-        _settingOnlyWhenCommander = settings.DefineSetting("CmdMrkOnlyCommander", true, ()=>"Only show when I am the Commander", () => "Hides the markers when you are not a Commander");
-        _settingMarkerPlaceDelay = settings.DefineSetting("CmdMrkPlacementDelay", 100, ()=> "Delay between automarker placement (ms)", ()=>"Time in milliseconds to wait betweeen keypresses when placing markers");
+
+        _settingOrientation = settings.DefineSetting("CmdMrkOrientation2", Layout.Horizontal, () => "Orientation", ()=>"");
+        _settingImgWidth = settings.DefineSetting("CmdMrkImgWidth", 30, ()=> "Icon Size", ()=>"Set the size of the on screen marker icons");
+        _settingOpacity = settings.DefineSetting("CmdMrkOpacity", 1.0f, () => "Opacity", ()=>"Set the panel's transparency\nHidden<---->Visible");
+        _settingDrag = settings.DefineSetting("CmdMrkDrag", false, ()=>"Enable Dragging", () => "Allow the clickable markers to be repositioned");
+        _settingShowMarkersPanel = settings.DefineSetting("CmdMrkShowMarkerPanelr", true, ()=>"Show clickable markers on screen", () => "Hide/show the clickable markers panel");
+        _settingOnlyWhenCommander = settings.DefineSetting(
+            "CmdMrkOnlyCommander", 
+            false, 
+            ()=>"Only show when I am the Commander", 
+            () => "Hides the clickable markers when you are not a Commander");
+        AutoMarker_PlacementDelay = settings.DefineSetting(
+            "CmdMrkPlacementDelay", 
+            100, 
+            ()=> "Placement Delay", 
+            ()=> "Delay in milliseconds to wait between marker placement\nFaster <-----> Slower"
+            );
         //_settingMapVisible = settings.DefineSetting("CmdMrkShow", VisibleOnMap.HideOnMap, ()=>"Show on map", () => "");
 
-        _settingMarkerPlaceDelay.SetRange(50, 300);
+        AutoMarker_PlacementDelay.SetRange(50, 300);
         _settingImgWidth.SetRange(16, 200);
         _settingOpacity.SetRange(0.1f, 1f);
 
-       /* _settingArrowGndBinding.SettingChanged += UpdateSettings;
-        _settingCircleGndBinding.SettingChanged += UpdateSettings;
-        _settingHeartGndBinding.SettingChanged += UpdateSettings;
-        _settingSpiralGndBinding.SettingChanged += UpdateSettings;
-        _settingSquareGndBinding.SettingChanged += UpdateSettings;
-        _settingStarGndBinding.SettingChanged += UpdateSettings;
-        _settingTriangleGndBinding.SettingChanged += UpdateSettings;
-        _settingXGndBinding.SettingChanged += UpdateSettings;
-        _settingClearGndBinding.SettingChanged += UpdateSettings;
 
-        _settingArrowObjBinding.SettingChanged += UpdateSettings;
-        _settingCircleObjBinding.SettingChanged += UpdateSettings;
-        _settingHeartObjBinding.SettingChanged += UpdateSettings;
-        _settingSpiralObjBinding.SettingChanged += UpdateSettings;
-        _settingSquareObjBinding.SettingChanged += UpdateSettings;
-        _settingStarObjBinding.SettingChanged += UpdateSettings;
-        _settingTriangleObjBinding.SettingChanged += UpdateSettings;
-        _settingXObjBinding.SettingChanged += UpdateSettings;
-        _settingClearObjBinding.SettingChanged += UpdateSettings;
+        AutoMarker_OnlyWhenCommander = settings.DefineSetting(
+            "CmdMrkAMOnlyCommander",
+            true,
+            () => "Only show when I am the Commander",
+            () => "Only show the auto marker zones on the minimap when you are a commander");
 
-        _settingOrientation.SettingChanged += UpdateSettings;
-        _settingLoc.SettingChanged += UpdateSettings;
-        _settingImgWidth.SettingChanged += UpdateSettings;
-        _settingOpacity.SettingChanged += UpdateSettings;
-        _settingDrag.SettingChanged += UpdateSettings;*/
-    }
+        }
 
     public void Dispose()
     {
-       /* _settingArrowGndBinding!.SettingChanged -= UpdateSettings;
-        _settingCircleGndBinding!.SettingChanged -= UpdateSettings;
-        _settingHeartGndBinding!.SettingChanged -= UpdateSettings;
-        _settingSpiralGndBinding!.SettingChanged -= UpdateSettings;
-        _settingSquareGndBinding!.SettingChanged -= UpdateSettings;
-        _settingStarGndBinding!.SettingChanged -= UpdateSettings;
-        _settingTriangleGndBinding!.SettingChanged -= UpdateSettings;
-        _settingXGndBinding!.SettingChanged -= UpdateSettings;
-        _settingClearGndBinding!.SettingChanged -= UpdateSettings;
 
-        _settingArrowObjBinding!.SettingChanged -= UpdateSettings;
-        _settingCircleObjBinding!.SettingChanged -= UpdateSettings;
-        _settingHeartObjBinding!.SettingChanged -= UpdateSettings;
-        _settingSpiralObjBinding!.SettingChanged -= UpdateSettings;
-        _settingSquareObjBinding!.SettingChanged -= UpdateSettings;
-        _settingStarObjBinding!.SettingChanged -= UpdateSettings;
-        _settingTriangleObjBinding!.SettingChanged -= UpdateSettings;
-        _settingXObjBinding!.SettingChanged -= UpdateSettings;
-        _settingClearObjBinding!.SettingChanged -= UpdateSettings;
-
-        _settingOrientation!.SettingChanged -= UpdateSettings;
-        _settingLoc!.SettingChanged -= UpdateSettings;
-        _settingImgWidth!.SettingChanged -= UpdateSettings;
-        _settingOpacity!.SettingChanged -= UpdateSettings;
-        _settingDrag!.SettingChanged -= UpdateSettings;*/
     }
-
-/*    private void UpdateSettings(object sender = null, ValueChangedEventArgs<KeyBinding> e = null)
-    {
-        DrawIcons();
-    }
-    private void UpdateSettings(object sender = null, ValueChangedEventArgs<Point> e = null)
-    {
-        DrawIcons();
-    }
-    private void UpdateSettings(object sender = null, ValueChangedEventArgs<float> e = null)
-    {
-        DrawIcons();
-    }
-    private void UpdateSettings(object sender = null, ValueChangedEventArgs<string> e = null)
-    {
-        DrawIcons();
-    }
-    private void UpdateSettings(object sender = null, ValueChangedEventArgs<int> e = null)
-    {
-        DrawIcons();
-    }
-    private void UpdateSettings(object sender = null, ValueChangedEventArgs<bool> e = null)
-    {
-        DrawIcons();
-    }
-
-    protected void DrawIcons()
-    {
-
-    }*/
-
 }

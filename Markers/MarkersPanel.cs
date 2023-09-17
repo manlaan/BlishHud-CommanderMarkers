@@ -23,21 +23,23 @@ public class MarkersPanel : FlowPanel, IDisposable
     private bool _draggable = false;
     private bool _isDraggedByMouse;
 
+    private bool _mouseEventsEnabled;
+
     private bool _panelEnabled = true;
 
     private Point _dragStart = Point.Zero;
 
 
-    private KeyBinding _tmpBinding;
+    private KeyBinding _tmpBinding = new KeyBinding();
     private Image _tmpButton;
     protected SettingService _settings;
     protected TextureService _textures;
 
     private static readonly BitmapFont _dragFont = GameService.Content.DefaultFont16;
 
-    public MarkersPanel(SettingService settings, TextureService textures)
+    public MarkersPanel(SettingService settings, TextureService textures, bool mouseEventsEnabled=true)
     {
-
+        _mouseEventsEnabled = mouseEventsEnabled;
         _settings = settings;
         this._textures = textures;
 
@@ -85,8 +87,8 @@ public class MarkersPanel : FlowPanel, IDisposable
         CreateIconButton(groundIcons, _textures._imgClear, size, opacity, "Clear Ground", _settings._settingClearGndBinding, false);
         CreateIconButton(objectIcons, _textures._imgClear, size, opacity, "Clear Object", _settings._settingClearObjBinding, false);
 
-
-        AddDragDelegates();
+        if(_mouseEventsEnabled)
+            AddDragDelegates();
 
         _settings._settingDrag.SettingChanged += (s, e) => _draggable = e.NewValue;
         _draggable = _settings._settingDrag.Value;
@@ -95,28 +97,28 @@ public class MarkersPanel : FlowPanel, IDisposable
         _settings._settingShowMarkersPanel.SettingChanged += (s, e) => { _panelEnabled = e.NewValue; };
 
 
-
-        GameService.Input.Mouse.LeftMouseButtonPressed += OnMouseClick;
+        if(_mouseEventsEnabled)
+            GameService.Input.Mouse.LeftMouseButtonPressed += OnMouseClick;
     }
 
     public override void PaintAfterChildren(SpriteBatch spriteBatch, Rectangle bounds)
     {
-        if (_draggable)
+        if (_draggable && _mouseEventsEnabled)
         {
             spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(0,0,this.Width, this.Height), new Color(96,96,96,192));
             spriteBatch.DrawStringOnCtrl(this, "Drag", _dragFont, new Rectangle(0, 0, this.Width, this.Height), Color.Black, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Center, verticalAlignment: VerticalAlignment.Middle);
 
         }
     }
-    public void Dispose()
+    protected override void DisposeControl()
     {
-        GameService.Input.Mouse.LeftMouseButtonPressed -= OnMouseClick;
-        base.Dispose();
+        if(_mouseEventsEnabled)
+            GameService.Input.Mouse.LeftMouseButtonPressed -= OnMouseClick;
     }
 
-    public void Update(GameTime gt)
+    public new void Update(GameTime gt)
     {
-
+        base.Update(gt);
         var shouldBeVisible =
           _panelEnabled &&
           GameService.GameIntegration.Gw2Instance.Gw2IsRunning &&
@@ -192,6 +194,7 @@ public class MarkersPanel : FlowPanel, IDisposable
             Opacity = opacity,
             BasicTooltipText =  tooltip
         };
+        if (!_mouseEventsEnabled) return;
         if (groundTarget)
         {
             button.LeftMouseButtonPressed += delegate { AddGround(button, keybind.Value); };

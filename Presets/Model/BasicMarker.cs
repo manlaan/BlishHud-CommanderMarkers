@@ -31,10 +31,12 @@ public class BasicMarker : IMapEntity
         return (playerPosition - _trigger).Length();
     }
 
-    public void DrawToMap(SpriteBatch spriteBatch, IMapBounds map, Control control)
+    public void DrawToMap(SpriteBatch spriteBatch, IMapBounds map, Control control, Vector3 playerPosition)
     {
-
-       
+        //don't render when not within the same "floor" level
+        var heightDelta = playerPosition.Z - _trigger.Z;
+        if (Math.Abs(heightDelta) > 30) return;
+        
         var mapCoordinates = _mapData.WorldToScreenMap(_trigger);
         var blishIcon = new Rectangle((int)mapCoordinates.X - 16, (int)mapCoordinates.Y - 16, 32, 32);
         spriteBatch.Draw(CommanderMarkers.Service.Textures!._blishHeart, blishIcon, Color.White);

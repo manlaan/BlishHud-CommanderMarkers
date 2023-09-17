@@ -85,7 +85,7 @@ public class ScreenMap : Control
             return;
         if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat) return;
         if (
-            CommanderMarkers.Service.Settings._settingOnlyWhenCommander.Value
+            Service.Settings.AutoMarker_OnlyWhenCommander.Value
             && !GameService.Gw2Mumble.PlayerCharacter.IsCommander
             ) return;
     
@@ -96,7 +96,7 @@ public class ScreenMap : Control
         var promptDrawn = !GameService.Gw2Mumble.UI.IsMapOpen;
         foreach (var entity in _entities)
         {
-            entity.DrawToMap(spriteBatch, _mapBounds,this);
+            entity.DrawToMap(spriteBatch, _mapBounds,this, playerPosition);
             if(!promptDrawn && entity.DistanceFrom(playerPosition) < 15f){
                 promptDrawn = true;
                 DrawPrompt(spriteBatch, entity);
@@ -106,9 +106,10 @@ public class ScreenMap : Control
 
     protected void DrawPrompt(SpriteBatch spriteBatch, IMapEntity marker)
     {
+        var interactKey = Service.Settings._settingInteractKeyBinding.Value.GetBindingDisplayText();
         Rectangle _promptRectangle = new Rectangle(GameService.Graphics.SpriteScreen.Width / 2 - 150, GameService.Graphics.SpriteScreen.Height - 120, 300, 120);
-        spriteBatch.DrawStringOnCtrl(this, $"Press Interact to place markers\n{marker.GetMarkerText()}", _bitmapFont, _promptRectangle, Color.Black, false, true, 3, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Center, verticalAlignment: VerticalAlignment.Top);
-        spriteBatch.DrawStringOnCtrl(this, $"Press Interact to place markers\n{marker.GetMarkerText()}", _bitmapFont, _promptRectangle, Color.Orange, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Center, verticalAlignment: VerticalAlignment.Top);
+        spriteBatch.DrawStringOnCtrl(this, $"Press '{interactKey}' to place markers\n{marker.GetMarkerText()}", _bitmapFont, _promptRectangle, Color.Black, false, true, 3, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Center, verticalAlignment: VerticalAlignment.Top);
+        spriteBatch.DrawStringOnCtrl(this, $"Press '{interactKey}' to place markers\n{marker.GetMarkerText()}", _bitmapFont, _promptRectangle, Color.Orange, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Center, verticalAlignment: VerticalAlignment.Top);
 
     }
 }

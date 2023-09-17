@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Blish_HUD.Modules.Managers;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -8,8 +9,8 @@ public class TextureService : IDisposable
 {
     public TextureService(ContentsManager contentsManager)
     {
-        CornerIconTexture = contentsManager.GetTexture(@"raids\textures\raidIconDark.png");
-        CornerIconHoverTexture = contentsManager.GetTexture(@"raids\textures\raidIconBright.png");
+        SettingWindowBackground = contentsManager.GetTexture(@"window\background.png");
+
 
         _imgArrow = contentsManager.GetTexture(@"arrow.png");
         _imgCircle = contentsManager.GetTexture(@"circle.png");
@@ -20,15 +21,14 @@ public class TextureService : IDisposable
         _imgTriangle = contentsManager.GetTexture(@"triangle.png");
         _imgX = contentsManager.GetTexture(@"x.png");
         _imgClear = contentsManager.GetTexture(@"clear.png");
+        _imgCheck =contentsManager.GetTexture(@"check.png");
         _blishHeart = contentsManager.GetTexture(@"mapmarker.png");
 
     }
 
     public void Dispose()
     {
-        CornerIconTexture.Dispose();
-        CornerIconHoverTexture.Dispose();
-
+        SettingWindowBackground.Dispose(); 
         _imgArrow.Dispose();
         _imgCircle.Dispose();
         _imgHeart.Dispose();    
@@ -38,9 +38,11 @@ public class TextureService : IDisposable
         _imgTriangle.Dispose();
         _imgX.Dispose();
         _imgClear.Dispose();
+        _imgCheck.Dispose();
         _blishHeart.Dispose();
     }
 
+    public Texture2D SettingWindowBackground;
     public Texture2D _imgArrow;
     public Texture2D _imgCircle;
     public Texture2D _imgHeart;
@@ -50,10 +52,11 @@ public class TextureService : IDisposable
     public Texture2D _imgTriangle;
     public Texture2D _imgX;
     public Texture2D _imgClear;
+    public Texture2D _imgCheck;
     public Texture2D _blishHeart;
 
+
    
-    public Texture2D CornerIconTexture { get; }
-    public Texture2D CornerIconHoverTexture { get; }
+
 
 }

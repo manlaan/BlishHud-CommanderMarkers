@@ -24,7 +24,7 @@ using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
 using System.Collections.Generic;
 using SharpDX.Direct3D9;
 using SharpDX.XAudio2;
-using Manlaan.CommanderMarkers.Presets.Service;
+using Manlaan.CommanderMarkers.Presets.Services;
 using Manlaan.CommanderMarkers.Presets.Model;
 
 namespace Manlaan.CommanderMarkers
@@ -34,10 +34,6 @@ namespace Manlaan.CommanderMarkers
     {
         public static string DIRECTORY_PATH = "commanderMarkers"; //Defined folder in manifest.json
 
-        private double _runningTime = 0;
-        private MapData _map;
-        private ScreenMap _screenMap;
-        private MarkerSequence _sequence;
         private static readonly Logger Logger = Logger.GetLogger<Module>();
         public static SettingService Settings { get; set; } = null!;
         public static TextureService? Textures { get; set; } = null;
@@ -63,18 +59,20 @@ namespace Manlaan.CommanderMarkers
             Service.Textures = new TextureService(Service.ContentsManager);
             IconsPanel = new MarkersPanel(Settings, Service.Textures);
 
-            _map = new MapData(GetCacheFile().FullName);
+            Service.MapDataCache = new MapData(GetCacheFile().FullName);
 
             Service.MarkersListing = MarkerListing.Load();
-            Service.MapWatch = new MapWatchService(_map, Settings);
+            Service.MapWatch = new MapWatchService(Service.MapDataCache, Settings);
+
+            Service.SettingsWindow = new();
 
 
         }
 
         protected override void Update(GameTime gameTime)
         {
-            IconsPanel.Update(gameTime);
-            Service.MapWatch.Update(gameTime);
+            IconsPanel?.Update(gameTime);
+            Service.MapWatch?.Update(gameTime);
 
         }
 
@@ -82,13 +80,17 @@ namespace Manlaan.CommanderMarkers
         protected override void Unload()
         {
 
+            Service.SettingsWindow?.Dispose();
+
             Service.MapWatch?.Dispose();
+            Service.MapDataCache?.Dispose();
 
             IconsPanel?.Dispose();
             Service.Settings?.Dispose();
             Service.Textures?.Dispose();
 
-            _map?.Dispose();
+            
+
         }
 
         private FileInfo GetCacheFile()
@@ -100,22 +102,6 @@ namespace Manlaan.CommanderMarkers
 
     }
 
-/*    public class BasicMarker : IMapEntity
-    {
-        private MapData _mapData;
-        public BasicMarker(MapData mapData)
-        {
-            _mapData = mapData;
-        }
-        public void DrawToMap(SpriteBatch spriteBatch, IMapBounds map)
-        {
-
-            Vector3 v = new Vector3(-133.0958f, 53.42804f, 62.80207f);
-            var d = _mapData.WorldToScreenMap(v);
-            var r = new Rectangle((int)d.X - 10, (int)d.Y - 10, 20, 20);
-            spriteBatch.DrawRectangleFill(r, new Color(0, 0, 0, 200));
-        }
-    }*/
 
     public class MarkerSequence{
         private int _mapId;
