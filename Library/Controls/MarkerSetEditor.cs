@@ -123,7 +123,8 @@ public class MarkerSetEditor : FlowPanel
         {
             Parent = metaFlow,
             Size = new Point(100, 30),
-            Text = "Trigger Location: "
+            Text = "Trigger Location: ",
+            BasicTooltipText = "Location to be near to activate this marker set"
         };
         var label = new Label()
         {
