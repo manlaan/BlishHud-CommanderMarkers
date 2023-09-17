@@ -28,8 +28,7 @@ class ModuleSettingsView : View
             Size = buildPanel.Size.Scale(0.20f),
             Location = buildPanel.Size.Half() - buildPanel.Size.Scale(0.20f).Half(),
 
-        }, out var btn);
-        btn.Click += (_, _) => Service.SettingsWindow?.Show();
+        }, out var btn).Click += (_, _) => Service.SettingsWindow?.Show();
 
     }
 

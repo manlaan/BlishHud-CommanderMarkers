@@ -3,13 +3,9 @@ using Blish_HUD.Controls;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Manlaan.CommanderMarkers.Library.Controls;
 
@@ -44,13 +40,15 @@ public class MarkerSetEditor : FlowPanel
         {
             Parent = metaFlow,
             Text = "Export To Clipboard",
-            Width=200
+            Width=200,
+            BasicTooltipText="Export this marker set to your clipboard to share with others"
         };
         var import = new StandardButton()
         {
             Parent = metaFlow,
             Text = "Import From Clipboard",
-            Width=200
+            Width=200,
+            BasicTooltipText="Copy a marker set to your clipboard, then import it by clicking this button"
         };
 
         export.Click += (s, e) =>
@@ -60,11 +58,10 @@ public class MarkerSetEditor : FlowPanel
             Debug.WriteLine(json);
             Debug.WriteLine(output);
             System.Windows.Forms.Clipboard.SetText(json);
-            ScreenNotification.ShowNotification("Marker set copied to your clipboard!", ScreenNotification.NotificationType.Info, Service.Textures!._blishHeart, 4);
+            ScreenNotification.ShowNotification($"Marker set {_markerSet.name} copied to your clipboard!", ScreenNotification.NotificationType.Blue, Service.Textures!._blishHeart, 4);
         };
         import.Click += (s, e) =>
         {
-            ScreenNotification.ShowNotification("Attempting to import markers set", ScreenNotification.NotificationType.Green, Service.Textures!._blishHeart, 4);
             try
             {
                 string json = System.Windows.Forms.Clipboard.GetText();
@@ -73,13 +70,14 @@ public class MarkerSetEditor : FlowPanel
                 {
                     throw new Exception("Invalid JSON");
                 }
+                ScreenNotification.ShowNotification($"Imported marker set {markerSet.name}", ScreenNotification.NotificationType.Green, Service.Textures!._blishHeart, 4);
                 _markerSet.CloneFromMarkerSet(markerSet);
                 LoadMarkerSet(_markerSet,_updateListingIndex);
 
             }
             catch (Exception)
             {
-                ScreenNotification.ShowNotification("Unable to import clipboard content", ScreenNotification.NotificationType.Red, null, 5);
+                ScreenNotification.ShowNotification("Unable to import clipboard content\nDid you copy a marker set first?", ScreenNotification.NotificationType.Red, null, 5);
             }
 
         };
@@ -131,7 +129,8 @@ public class MarkerSetEditor : FlowPanel
         {
             Parent = metaFlow,
             Size = new Point(300, 30),
-            Text = $"Map: {Service.MapDataCache.Describe(_markerSet.MapId)},  API Id: {_markerSet.MapId}"
+            Text = $"Map: {Service.MapDataCache.Describe(_markerSet.MapId)},  API Id: {_markerSet.MapId}",
+            BasicTooltipText ="Set trigger location to update map"
         };
         var triggerFields = new PositionFields(markerSet.Trigger)
         {
@@ -149,7 +148,6 @@ public class MarkerSetEditor : FlowPanel
             Parent = this,
             Text = "Add Marker",
             Width = 410
-            //Size = new Point(200, 30)
         };
 
         markerSet.marks.ForEach( mark =>

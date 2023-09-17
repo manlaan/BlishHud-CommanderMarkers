@@ -2,20 +2,23 @@
 using Manlaan.CommanderMarkers.Library.Enums;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Manlaan.CommanderMarkers.Library.Controls;
 
 public class MarkerEditor : FlowPanel
 {
     Action<MarkerEditor> _onDeleteCallback;
-    private PositionFields _position;
+    private PositionFields? _position;
 
-    private Dropdown _iconPicker;
+    private MarkerCoord? _markerCoord;
 
-    private MarkerCoord _markerCoord;
+    private IconPicker? _iconPicker;
 
-    public MarkerCoord Marker { get => _markerCoord; }
+    public MarkerCoord Marker { get => _markerCoord ?? new MarkerCoord(); }
 
     public MarkerEditor(MarkerCoord marker, Action<MarkerEditor> onDeleteCallback) : base()
     {
@@ -29,28 +32,35 @@ public class MarkerEditor : FlowPanel
         Size = new(450, 70);
 
 
-
-        _iconPicker = new Dropdown()
+        _iconPicker = new IconPicker()
         {
             Parent = this,
-            //Location = new Point(0, 0)
-            Size = new(100, 30)
+            Size = new Point(300, 30)
         };
-
-        
-
-        foreach(var m  in Enum.GetValues(typeof(SquadMarker)))
+        List<(int, Texture2D)> list = new()
         {
-            _iconPicker.Items.Add(Enum.GetName(typeof(SquadMarker), m));
-        }
-        SetIconPicker(marker.icon);
-        _iconPicker.ValueChanged += IconPicker_ValueChanged;
+            (1, Service.Textures!._imgArrow),
+            (2, Service.Textures!._imgCircle),
+            (3, Service.Textures!._imgHeart),
+            (4, Service.Textures!._imgSquare),
+            (5, Service.Textures!._imgStar),
+            (6, Service.Textures!._imgSpiral),
+            (7, Service.Textures!._imgTriangle),
+            (8, Service.Textures!._imgX),
+        };
+        _iconPicker.LoadList(list);
+        _iconPicker.SelectItem(marker.icon);
+        _iconPicker.IconSelectionChanged += (s, e) =>
+        {
+            _markerCoord.icon = e;
+        };
 
         var description = new TextBox()
         {
             Parent = this,
             Text = marker.name,
-            Size = new Point(300,30)
+            Size = new Point(100,30),
+            BasicTooltipText = "Name the marker.\nHelpful for remembering which marker is where."
         };
 
         var deleteButton = new GlowButton()
@@ -72,19 +82,9 @@ public class MarkerEditor : FlowPanel
 
     }
 
-    private void SetIconPicker(int icon)
-    {
-        var text = Enum.GetName(typeof(SquadMarker), icon);
-
-        _iconPicker.SelectedItem = text;
-    }
-
-    private void IconPicker_ValueChanged(object sender, ValueChangedEventArgs e)
-    {
-        _markerCoord.icon = (int)SquadMarker.None.EnumValue(e.CurrentValue);
-    }
     protected override void DisposeControl()
     {
-        _iconPicker.ValueChanged -= IconPicker_ValueChanged;  
+        _iconPicker?.Dispose();
+        _position?.Dispose();
     }
 }

@@ -96,7 +96,7 @@ public class ScreenMap : Control
         var promptDrawn = !GameService.Gw2Mumble.UI.IsMapOpen;
         foreach (var entity in _entities)
         {
-            entity.DrawToMap(spriteBatch, _mapBounds,this);
+            entity.DrawToMap(spriteBatch, _mapBounds,this, playerPosition);
             if(!promptDrawn && entity.DistanceFrom(playerPosition) < 15f){
                 promptDrawn = true;
                 DrawPrompt(spriteBatch, entity);

@@ -27,7 +27,9 @@ public enum SquadMarker
     [Description("Triangle")]
     Triangle,
     [Description("Cross")]
-    Cross
+    Cross,
+    [Description("Clear")]
+    Clear
 }
 
 public static class SquadMarkerExtensions
@@ -54,6 +56,8 @@ public static class SquadMarkerExtensions
                 return "Triangle";
             case SquadMarker.Cross:
                 return "Cross";
+            case SquadMarker.Clear:
+                return "Clear";
 
         }
         return "None";
@@ -80,6 +84,8 @@ public static class SquadMarkerExtensions
                 return SquadMarker.Triangle;
             case "Cross":
                 return SquadMarker.Cross;
+            case "Clear":
+                return SquadMarker.Clear;
 
         }
         return SquadMarker.None;

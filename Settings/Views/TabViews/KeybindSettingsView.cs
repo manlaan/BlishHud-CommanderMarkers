@@ -11,7 +11,7 @@ namespace Manlaan.CommanderMarkers.Settings.Views.SubViews;
 
 public class KeybindSettingsView : View
 {
-    protected SettingService _settings;
+    protected SettingService? _settings;
     protected override void Build(Container buildPanel)
     {
         _settings = Service.Settings;

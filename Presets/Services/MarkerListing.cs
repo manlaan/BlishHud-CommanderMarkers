@@ -140,11 +140,11 @@ public class MarkerListing
                 name = "Keep Construct",
                 description = "Green Circles",
                 mapId = 1156,
-                trigger = new WorldCoord(),
+                trigger = new WorldCoord() { x = -81.049f, y = 228.662f, z = 148.556f },
                 marks = new List<MarkerCoord> {
-                new MarkerCoord(){ x=-97.019f, y=255.827f, z=148.556f, icon =1, name="DPS"},
-                new MarkerCoord(){ x=-81.049f, y=228.662f, z=148.556f, icon =2, name="SupportDps"},
-                new MarkerCoord(){ x=-114.034f, y=229.050f, z=148.556f, icon =3, name="Healers"},
+                new MarkerCoord(){ x=-81.049f, y=228.662f, z=148.556f, icon =1, name="DPS"},
+                new MarkerCoord(){ x=-114.034f, y=229.050f, z=148.556f, icon =2, name="SupportDPS"},
+                new MarkerCoord(){ x=-97.019f, y=255.827f, z=148.556f, icon =3, name="Healers"},
             }
             };
             loadedFromFile.presets.Add(kc);
@@ -263,15 +263,16 @@ public class MarkerListing
 
         ms = new MarkerSet
         {
-           name = "Keep Construct",
-           description = "Green Circles",
-           mapId = 1156,
-           trigger = new WorldCoord(),
-           marks = new List<MarkerCoord> {
-                new MarkerCoord(){ x=-97.019f, y=255.827f, z=148.556f, icon =1, name="DPS"},
-                new MarkerCoord(){ x=-81.049f, y=228.662f, z=148.556f, icon =2, name="SupportDps"},
-                new MarkerCoord(){ x=-114.034f, y=229.050f, z=148.556f, icon =3, name="Healers"},
-           }
+            name = "Keep Construct",
+            description = "Green Circles",
+            mapId = 1156,
+            trigger = new WorldCoord() { x = -81.049f, y = 228.662f, z = 148.556f },
+            marks = new List<MarkerCoord> {
+                new MarkerCoord(){ x=-81.049f, y=228.662f, z=148.556f, icon =1, name="DPS"},
+                new MarkerCoord(){ x=-114.034f, y=229.050f, z=148.556f, icon =2, name="SupportDPS"},
+                new MarkerCoord(){ x=-97.019f, y=255.827f, z=148.556f, icon =3, name="Healers"},
+            }
+
         };
         SaveMarker(ms);
 

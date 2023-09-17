@@ -30,7 +30,7 @@ public class MarkersPanel : FlowPanel, IDisposable
     private Point _dragStart = Point.Zero;
 
 
-    private KeyBinding _tmpBinding;
+    private KeyBinding _tmpBinding = new KeyBinding();
     private Image _tmpButton;
     protected SettingService _settings;
     protected TextureService _textures;

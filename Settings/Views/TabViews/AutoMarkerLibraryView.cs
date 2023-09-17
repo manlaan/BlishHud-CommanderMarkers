@@ -93,12 +93,14 @@ public class AutoMarkerLibraryView : View
         };
         saveButton.Click += (s, e) =>
         {
-            if (_editingMarkerSetIndex > 0)
+            if (_editingMarkerSetIndex >= 0)
             {
+                Debug.WriteLine($"existing{_editingMarkerSet.marks[0].icon}");
                 Service.MarkersListing.EditMarker(_editingMarkerSetIndex, _editingMarkerSet!);
             }
             else
             {
+                Debug.WriteLine($"new set{_editingMarkerSet.marks[0].icon}");
                 Service.MarkersListing.SaveMarker(_editingMarkerSet!);
             }
             SwapView(true);
@@ -207,12 +209,11 @@ public class AutoMarkerLibraryView : View
 
             var btn = new DetailsButton()
             {
-                Text = (marker.enabled?"":"(Disabled) ")+$"{ marker.name}\n{mapName}",
+                Text = (marker.enabled?"":"(Disabled) ")+$"{ marker.name}\n{marker.description}",
                 Icon = marker.enabled? Service.Textures._imgHeart : Service.Textures._imgClear,
                 //MaxFill = 8,
                 //CurrentFill = marker.marks?.Count ?? 0,
                 //ShowFillFraction = true,
-                //ShowToggleButton = true,
                 //FillColor = Color.LightBlue,
                 Width = DetailButtonWidth,
                 IconSize = DetailsIconSize.Small,
@@ -229,6 +230,14 @@ public class AutoMarkerLibraryView : View
             };
             edit.Click += (s, e) => {
                 SwapView(marker, markerIdx);
+            };
+            new Label()
+            {
+                Parent = btn,
+                Text = mapName,
+                Width = 250,
+                BasicTooltipText = mapName,
+                Height=30
             };
 
             var img = new EnabledIconButton(marker.enabled)

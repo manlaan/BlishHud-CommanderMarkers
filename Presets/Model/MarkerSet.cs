@@ -29,10 +29,10 @@ public class MarkerSet
     public bool enabled = true;
 
     [JsonIgnore()]
-    public WorldCoord Trigger { get => (trigger == null) ? new WorldCoord() : trigger; }
+    public WorldCoord Trigger { get => trigger ?? new WorldCoord(); }
 
     [JsonIgnore()]
-    public int MapId { get => (mapId == null) ? 0 : (int)mapId; }
+    public int MapId { get => (int)(mapId ?? 0); }
 
 
     public void CloneFromMarkerSet(MarkerSet otherSet)
