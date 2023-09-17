@@ -1,6 +1,6 @@
 ﻿using Blish_HUD.Modules.Managers;
 using Manlaan.CommanderMarkers.Presets;
-using Manlaan.CommanderMarkers.Presets.Service;
+using Manlaan.CommanderMarkers.Presets.Services;
 using Manlaan.CommanderMarkers.Settings.Controls;
 using Manlaan.CommanderMarkers.Settings.Services;
 

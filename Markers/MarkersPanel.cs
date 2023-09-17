@@ -110,16 +110,15 @@ public class MarkersPanel : FlowPanel, IDisposable
 
         }
     }
-    public void Dispose()
+    protected override void DisposeControl()
     {
         if(_mouseEventsEnabled)
             GameService.Input.Mouse.LeftMouseButtonPressed -= OnMouseClick;
-        base.Dispose();
     }
 
-    public void Update(GameTime gt)
+    public new void Update(GameTime gt)
     {
-
+        base.Update(gt);
         var shouldBeVisible =
           _panelEnabled &&
           GameService.GameIntegration.Gw2Instance.Gw2IsRunning &&

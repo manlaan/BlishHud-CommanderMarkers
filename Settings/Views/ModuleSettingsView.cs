@@ -7,6 +7,9 @@ using Manlaan.CommanderMarkers.Settings.Enums;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
 using Manlaan.CommanderMarkers.Utils;
+using System.Diagnostics;
+using Blish_HUD;
+using Blish_HUD.Content;
 
 namespace Manlaan.CommanderMarkers.Settings.Views;
 
@@ -25,7 +28,9 @@ class ModuleSettingsView : View
             Size = buildPanel.Size.Scale(0.20f),
             Location = buildPanel.Size.Half() - buildPanel.Size.Scale(0.20f).Half(),
 
-        }).Click += (_, _) => Service.SettingsWindow.Show();
+        }, out var btn);
+        btn.Click += (_, _) => Service.SettingsWindow?.Show();
+
     }
 
 

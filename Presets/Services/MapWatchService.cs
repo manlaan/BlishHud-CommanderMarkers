@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Manlaan.CommanderMarkers.Presets.Service;
+namespace Manlaan.CommanderMarkers.Presets.Services;
 
 public class MapWatchService : IDisposable
 {
@@ -33,6 +33,7 @@ public class MapWatchService : IDisposable
         _map = map;
         _setting = settings;
         GameService.Gw2Mumble.CurrentMap.MapChanged += CurrentMap_MapChanged;
+        Service.MarkersListing.MarkersChanged += MarkersListing_MarkersChanged;
 
         _setting._settingInteractKeyBinding.Value.Enabled= true;
         _setting._settingInteractKeyBinding.Value.BlockSequenceFromGw2 = false;
@@ -40,6 +41,11 @@ public class MapWatchService : IDisposable
 
         CurrentMap_MapChanged(this, new ValueEventArgs<int>(GameService.Gw2Mumble.CurrentMap.Id));
 
+    }
+
+    private void MarkersListing_MarkersChanged(object sender, EventArgs e)
+    {
+        CurrentMap_MapChanged(this, new ValueEventArgs<int>(GameService.Gw2Mumble.CurrentMap.Id));
     }
 
     private void _interactKeybind_Activated(object sender, EventArgs e)
@@ -115,7 +121,7 @@ public class MapWatchService : IDisposable
     private void CurrentMap_MapChanged(object sender, ValueEventArgs<int> e)
     {
         _currentmap= e.Value;
-        _markers = CommanderMarkers.Service.MarkersListing.GetMarkersForMap(e.Value);
+        _markers = Service.MarkersListing.GetMarkersForMap(e.Value).Where(m => m.enabled).ToList();
         Debug.WriteLine($"Found {_markers.Count()} marker sets for this map {e.Value}");
         _screenMap.ClearEntities();
         foreach(var marker in _markers)
@@ -129,6 +135,7 @@ public class MapWatchService : IDisposable
     {
         _screenMap.Dispose();
 
+        Service.MarkersListing.MarkersChanged -= MarkersListing_MarkersChanged;
         GameService.Gw2Mumble.CurrentMap.MapChanged -= CurrentMap_MapChanged;
         _setting._settingInteractKeyBinding.Value.Enabled= false;
         _setting._settingInteractKeyBinding.Value.Activated -= _interactKeybind_Activated;

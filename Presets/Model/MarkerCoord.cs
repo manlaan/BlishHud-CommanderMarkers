@@ -1,22 +1,10 @@
 ﻿
+using Manlaan.CommanderMarkers.Library.Enums;
 using Newtonsoft.Json;
 using System;
 
 namespace Manlaan.CommanderMarkers.Presets.Model;
 
-
-public enum SquadMarker
-{
-    None,
-    ARROW,
-    CIRCLE,
-    HEART,
-    SQUARE,
-    STAR,
-    SPIRAL,
-    TRIANGLE,
-    CROSS
-}
 
 [Serializable]
 public class MarkerCoord : WorldCoord
@@ -33,5 +21,4 @@ public class MarkerCoord : WorldCoord
 
         return (SquadMarker)icon;
     }
-
 }

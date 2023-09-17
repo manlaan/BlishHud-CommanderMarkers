@@ -23,7 +23,13 @@ public class MarkerSet
     public WorldCoord? trigger { get; set; }
 
     [JsonProperty("markers")]
-    public List<MarkerCoord>? marks { get; set; } = new();
+    public List<MarkerCoord> marks { get; set; } = new();
 
+    [JsonProperty("enabled")]
+    public bool enabled = true;
+
+    public WorldCoord Trigger { get => (trigger == null) ? new WorldCoord() : trigger; }
+
+    public int MapId { get => (mapId == null) ? 0 : (int)mapId; }
 
 }

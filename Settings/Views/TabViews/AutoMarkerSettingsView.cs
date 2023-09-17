@@ -32,6 +32,14 @@ public class AutoMarkerSettingsView : View
             }, out var delayLabel)
             .AddSpace();
 
+        new Image()
+        {
+            Parent = buildPanel,
+            Texture = Service.Textures!._blishHeart,
+            Size = new Point(96, 96),
+            Location = new Point(buildPanel.Width - 96, buildPanel.Height - 96),
+        };
+
         _settings.AutoMarker_PlacementDelay.SettingChanged += (s, e) =>
         {
             (delayLabel as Label).Text = $"  Delay Time: {_settings.AutoMarker_PlacementDelay.Value} ms";

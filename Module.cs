@@ -24,7 +24,7 @@ using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
 using System.Collections.Generic;
 using SharpDX.Direct3D9;
 using SharpDX.XAudio2;
-using Manlaan.CommanderMarkers.Presets.Service;
+using Manlaan.CommanderMarkers.Presets.Services;
 using Manlaan.CommanderMarkers.Presets.Model;
 
 namespace Manlaan.CommanderMarkers
@@ -71,8 +71,8 @@ namespace Manlaan.CommanderMarkers
 
         protected override void Update(GameTime gameTime)
         {
-            IconsPanel.Update(gameTime);
-            Service.MapWatch.Update(gameTime);
+            IconsPanel?.Update(gameTime);
+            Service.MapWatch?.Update(gameTime);
 
         }
 
@@ -80,15 +80,17 @@ namespace Manlaan.CommanderMarkers
         protected override void Unload()
         {
 
+            Service.SettingsWindow?.Dispose();
+
             Service.MapWatch?.Dispose();
+            Service.MapDataCache?.Dispose();
 
             IconsPanel?.Dispose();
             Service.Settings?.Dispose();
             Service.Textures?.Dispose();
 
-            Service.MapDataCache?.Dispose();
+            
 
-            Service.SettingsWindow?.Dispose();
         }
 
         private FileInfo GetCacheFile()
