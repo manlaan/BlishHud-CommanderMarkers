@@ -49,6 +49,8 @@ public class MarkerListing
     }
     public List<MarkerSet> GetMarkersForMap(int mapId)
     {
+        if (Service.Settings.AutoMarker_FeatureEnabled.Value == false) return new List<MarkerSet>();
+
         return presets.Where(m => m.mapId == mapId).ToList();
     }
 

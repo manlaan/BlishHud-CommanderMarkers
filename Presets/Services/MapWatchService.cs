@@ -40,7 +40,12 @@ public class MapWatchService : IDisposable
         _setting._settingInteractKeyBinding.Value.Activated += _interactKeybind_Activated;
 
         CurrentMap_MapChanged(this, new ValueEventArgs<int>(GameService.Gw2Mumble.CurrentMap.Id));
+        _setting.AutoMarker_FeatureEnabled.SettingChanged += AutoMarker_FeatureEnabled_SettingChanged;
+    }
 
+    private void AutoMarker_FeatureEnabled_SettingChanged(object sender, ValueChangedEventArgs<bool> e)
+    {
+        CurrentMap_MapChanged(this, new ValueEventArgs<int>(GameService.Gw2Mumble.CurrentMap.Id));
     }
 
     private void MarkersListing_MarkersChanged(object sender, EventArgs e)
@@ -135,6 +140,7 @@ public class MapWatchService : IDisposable
     {
         _screenMap.Dispose();
 
+        _setting.AutoMarker_FeatureEnabled.SettingChanged -= AutoMarker_FeatureEnabled_SettingChanged;
         Service.MarkersListing.MarkersChanged -= MarkersListing_MarkersChanged;
         GameService.Gw2Mumble.CurrentMap.MapChanged -= CurrentMap_MapChanged;
         _setting._settingInteractKeyBinding.Value.Enabled= false;

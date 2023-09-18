@@ -21,6 +21,7 @@ public class AutoMarkerSettingsView : View
 
         var panel = new FlowPanel()
             .BeginFlow(buildPanel)
+            .AddSetting(_settings.AutoMarker_FeatureEnabled)
             .AddSetting(_settings.AutoMarker_OnlyWhenCommander)
             .AddSpace()
             .AddSetting(_settings.AutoMarker_PlacementDelay)
