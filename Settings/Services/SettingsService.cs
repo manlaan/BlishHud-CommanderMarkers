@@ -44,6 +44,7 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     public SettingEntry<int> AutoMarker_PlacementDelay { get; private set; }
     public SettingEntry<bool>AutoMarker_OnlyWhenCommander { get; private set; }
     public SettingEntry<bool> AutoMarker_FeatureEnabled { get; private set; }
+    public SettingEntry<bool> AutoMarker_LibraryFilterToCurrent { get; private set; }
 
 
     public SettingService(SettingCollection settings)
@@ -111,7 +112,12 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
             () => "Enable the AutoMarker feature",
             () => ""
         );
-
+        AutoMarker_LibraryFilterToCurrent = settings.DefineSetting(
+            "CmdMrkAMLibraryFilter",
+            false,
+            () => "Filter to current map",
+            () => "Filter the library list to only show marker sets for your current map"
+        );
     }
 
     public void Dispose()

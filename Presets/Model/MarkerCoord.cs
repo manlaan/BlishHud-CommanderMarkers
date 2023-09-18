@@ -21,4 +21,10 @@ public class MarkerCoord : WorldCoord
 
         return (SquadMarker)icon;
     }
+
+    public override string? ToString()
+    {
+        return $"{((SquadMarker)icon).EnumValue()} - {name}";
+    }
+
 }

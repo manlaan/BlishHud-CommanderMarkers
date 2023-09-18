@@ -34,6 +34,14 @@ public class MarkerSet
     [JsonIgnore()]
     public int MapId { get => (int)(mapId ?? 0); }
 
+    [JsonIgnore()]
+    public string MapName { get => Service.MapDataCache.Describe((int)MapId!); }
+
+    public string DescribeMarkers()
+    {
+        return string.Join("\n", marks);   
+    }
+
 
     public void CloneFromMarkerSet(MarkerSet otherSet)
     {
