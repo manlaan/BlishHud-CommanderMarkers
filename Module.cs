@@ -26,6 +26,9 @@ using SharpDX.Direct3D9;
 using SharpDX.XAudio2;
 using Manlaan.CommanderMarkers.Presets.Services;
 using Manlaan.CommanderMarkers.Presets.Model;
+using Manlaan.CommanderMarkers.CornerIcon;
+using Manlaan.CommanderMarkers.Settings.Enums;
+using Manlaan.CommanderMarkers.Library.Controls;
 
 namespace Manlaan.CommanderMarkers
 {
@@ -67,6 +70,78 @@ namespace Manlaan.CommanderMarkers
             Service.SettingsWindow = new();
 
 
+            //var refreshApiContextMenu = new ContextMenuStripItem(Strings.Settings_RefreshNow);
+            //refreshApiContextMenu.Click += (s, e) => Service.ApiPollingService?.Invoke();
+
+            var LtMode = new ContextMenuStripItem("Lieutenant's Mode")
+            {
+                BasicTooltipText = "Temporarily override the 'Only While Commander' settings",
+                CanCheck = true,
+                Checked = false
+            };
+            LtMode.CheckedChanged += (s, e) => Service.LtMode.Value = e.Checked;
+            var OpenLibrary = new ContextMenuStripItem("Open Library")
+            {
+                BasicTooltipText = "Open the AutoMarker Library",
+                Visible = Service.Settings.AutoMarker_FeatureEnabled.Value,
+                Submenu = new ContextMenuStrip()
+                {
+
+                }
+               
+            };
+            OpenLibrary.Click += (s, e) => Service.SettingsWindow.ShowLibrary();
+            OpenLibrary.Submenu.Shown += (s,e) => Service.SettingsWindow.ShowLibrary();
+
+            Service.CornerIcon = new CornerIconService(
+                Service.Settings.CornerIconEnabled,
+                "Commander Markers",
+                Service.Textures!.IconCorner,
+                Service.Textures!._imgHeart,
+                new List<ContextMenuStripItem>()
+                {
+                    new CornerIconToggleMenuItem(Service.SettingsWindow, "Open Settings"),
+                    OpenLibrary,
+                    new LibrayCornerIconMenuItem(Service.Settings.AutoMarker_FeatureEnabled, "Open Library"),
+                    new ContextMenuStripItemSeparator(),
+                    LtMode,
+
+                    //new CornerIconToggleMenuItem(Service.Settings.RaidSettings.Generic.Visible, Strings.SettingsPanel_Tab_Raids),
+                    //new CornerIconToggleMenuItem(Service.Settings.StrikeSettings.Generic.Visible, Strings.SettingsPanel_Tab_Strikes),
+                    //new CornerIconToggleMenuItem(Service.Settings.FractalSettings.Generic.Visible, "Fractals"),
+                    //new CornerIconToggleMenuItem(Service.Settings.DungeonSettings.Generic.Visible, Strings.SettingsPanel_Tab_Dunegons),
+                    //new ContextMenuStripItemSeparator(),
+                    //refreshApiContextMenu
+
+                }
+            );
+
+            Service.CornerIcon.IconLeftClicked += CornerIcon_IconLeftClicked;
+
+
+        }
+        private void CornerIcon_IconLeftClicked(object sender, bool e)
+        {
+            switch (Service.Settings.CornerIconLeftClickAction.Value)
+            {
+                case CornerIconActions.SHOW_ICON_MENU:
+                    Service.CornerIcon.OpenContextMenu();
+                    break;
+                case CornerIconActions.SHOW_SETTINGS:
+                    Service.SettingsWindow.Show();
+                    break;
+                case CornerIconActions.LIEUTENANT:
+                    LieutentantMode();
+                    break;
+
+                case CornerIconActions.LIBRARY:
+                    Service.SettingsWindow.ShowLibrary();
+                    break;
+            }
+        }
+        private void LieutentantMode()
+        {
+            Service.LtMode.Value = !Service.LtMode.Value;
         }
 
         protected override void Update(GameTime gameTime)

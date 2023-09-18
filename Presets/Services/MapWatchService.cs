@@ -41,6 +41,7 @@ public class MapWatchService : IDisposable
 
         CurrentMap_MapChanged(this, new ValueEventArgs<int>(GameService.Gw2Mumble.CurrentMap.Id));
         _setting.AutoMarker_FeatureEnabled.SettingChanged += AutoMarker_FeatureEnabled_SettingChanged;
+        Service.LtMode.SettingChanged += AutoMarker_FeatureEnabled_SettingChanged;
     }
 
     private void AutoMarker_FeatureEnabled_SettingChanged(object sender, ValueChangedEventArgs<bool> e)

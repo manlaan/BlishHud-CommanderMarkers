@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
@@ -25,6 +26,7 @@ public class ModuleSettingsTab : ISettingsMenuRegistrar
             new MenuItem("AutoMarker Settings"),
             _ => new AutoMarkerSettingsView()
         ));
+        //Update index in ActivateLibraryTab
         _registeredMenuItems.Add(new MenuViewItem(
             new MenuItem("AutoMarker Library"),
             _ => new AutoMarkerLibraryView()
@@ -34,6 +36,16 @@ public class ModuleSettingsTab : ISettingsMenuRegistrar
             new MenuItem("Keybinds"),
             _ => new KeybindSettingsView()
         ));
+
+        _registeredMenuItems.Add(new MenuViewItem(
+            new MenuItem("General"),
+            _ => new CornerIconSettingsView()
+        ));
+    }
+
+    public void ActivateLibraryTab()
+    {
+        _registeredMenuItems[2].MenuItem.Select();
     }
     
     public IEnumerable<MenuItem> GetSettingMenus() => 
@@ -50,4 +62,5 @@ public class ModuleSettingsTab : ISettingsMenuRegistrar
 
         return null;
     }
+
 }

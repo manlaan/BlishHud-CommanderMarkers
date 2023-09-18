@@ -21,6 +21,9 @@ public class AutoMarkerSettingsView : View
 
         var panel = new FlowPanel()
             .BeginFlow(buildPanel)
+            .AddString("AutoMarker Feature")
+            .AddString("allows for rapidly placing saved marker sets")
+            .AddSpace()
             .AddSetting(_settings.AutoMarker_FeatureEnabled)
             .AddSetting(_settings.AutoMarker_OnlyWhenCommander)
             .AddSpace()

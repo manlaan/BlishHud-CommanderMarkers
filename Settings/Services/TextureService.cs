@@ -33,6 +33,8 @@ public class TextureService : IDisposable
         IconImport = contentsManager.GetTexture(@"iconImport.png");
         IconSave = contentsManager.GetTexture(@"iconSave.png");
 
+        IconCorner = contentsManager.GetTexture(@"cornerIcon.png");
+
     }
 
     public void Dispose()
@@ -58,6 +60,8 @@ public class TextureService : IDisposable
         IconGoBack?.Dispose();
         IconImport?.Dispose();
         IconSave?.Dispose();
+
+        IconCorner?.Dispose();
 }
 
     public Texture2D SettingWindowBackground;
@@ -82,8 +86,7 @@ public class TextureService : IDisposable
     public Texture2D IconImport;
     public Texture2D IconSave;
 
-
-
+    public Texture2D IconCorner;
 
 
 }

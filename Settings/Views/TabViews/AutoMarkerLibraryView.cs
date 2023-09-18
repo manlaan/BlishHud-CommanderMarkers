@@ -197,6 +197,7 @@ public class AutoMarkerLibraryView : View
 
         ReloadMarkerList(_currentMapFilter.Checked);
         Service.MarkersListing.MarkersChanged += (s, e) => ReloadMarkerList(_currentMapFilter.Checked);
+        GameService.Gw2Mumble.CurrentMap.MapChanged += (s,e) => ReloadMarkerList(_currentMapFilter.Checked);
 
         _currentMapFilter.CheckedChanged += (s, e) => {
             Service.Settings.AutoMarker_LibraryFilterToCurrent.Value = _currentMapFilter.Checked;

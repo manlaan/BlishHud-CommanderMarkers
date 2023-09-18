@@ -45,6 +45,8 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     public SettingEntry<bool>AutoMarker_OnlyWhenCommander { get; private set; }
     public SettingEntry<bool> AutoMarker_FeatureEnabled { get; private set; }
     public SettingEntry<bool> AutoMarker_LibraryFilterToCurrent { get; private set; }
+    public SettingEntry<bool> CornerIconEnabled { get; private set; }
+    public SettingEntry<CornerIconActions> CornerIconLeftClickAction { get; private set; }
 
 
     public SettingService(SettingCollection settings)
@@ -117,6 +119,20 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
             false,
             () => "Filter to current map",
             () => "Filter the library list to only show marker sets for your current map"
+        );
+
+        CornerIconEnabled = settings.DefineSetting(
+            "CmdMrkCornerIconEnabled",
+            true,
+            () => "Show an icon in the top-left manu bar",
+            () => "Adds a shortcut icon in the top-left menu bar"
+        );
+
+        CornerIconLeftClickAction = settings.DefineSetting(
+            "CmdMrkAMCornerIconAction",
+            CornerIconActions.SHOW_ICON_MENU,
+            () => "Icon left-click action",
+            () => "Select an action for menu bar icon left-click\nRight click will always open a small menu"
         );
     }
 
