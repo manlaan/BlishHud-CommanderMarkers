@@ -4,40 +4,50 @@ Community shared marker presets
 
 PR changes to the `Community/Markers.json` file.
 
+How to generate the markerset. 
+1) Use the module editor. 
+2) Export your marker set
+3) Base64Decode the string
+4) Add the "author" element
+5) Add it or create an approprtiate category
+
 File Schema
 ```
 {
   "lastEdit":"string timestamp",
-  "categories":{
-        "categoryName":"string",
-        "markers":[
-             {
-                "author":"string",
-                "name": "string",
-                "description": "string", 
-                "mapId": int,
-                "trigger": {
-                  "x": float,
-                  "y": float,
-                  "z": float
-                },
-                "markers": [
-                  {
-                    "i": int,
-                    "d": "string",
-                    "x": float",
-                    "y": float,
-                    "z": float
-                  },
-                ]
-            }
-        ]
+  "categories":[
+    {
+      "categoryName":"string",
+      "markers":[
+        {
+          "author":"string",
+          "name": "string",
+          "description": "string", 
+          "mapId": int,
+          "trigger": {
+            "x": float,
+            "y": float,
+            "z": float
+          },
+          "markers": [
+            {
+              "i": int,
+              "d": "string",
+              "x": float",
+              "y": float,
+              "z": float
+            },
+          ]
+        }
+      ]
     }
-]
+  ]
+}
 ```
+
 `category_name`: The grouping text for user filtering
 
-Marker
+MarkerSet
 
 `author`: Your display name
 
