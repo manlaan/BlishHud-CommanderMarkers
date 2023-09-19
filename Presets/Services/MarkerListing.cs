@@ -440,7 +440,7 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "EoD - Aetherblade CM Markers",
-            description = "Kill X, Stack at color groups",
+            description = "Destroy X, Stack at color groups",
             mapId = 1432,
             trigger = new WorldCoord { x = 58.76889f, y = 56.79849f, z = 45.76037f },
             marks = new List<MarkerCoord>
