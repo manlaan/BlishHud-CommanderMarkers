@@ -23,7 +23,7 @@ public class MarkerSet
     public WorldCoord? trigger { get; set; }
 
     [JsonProperty("markers")]
-    public List<MarkerCoord> marks { get; set; } = new();
+    public List<MarkerCoord> marks { get; set; } = new() {};
 
     [JsonProperty("enabled")]
     public bool enabled = true;
@@ -49,8 +49,13 @@ public class MarkerSet
         description = otherSet.description;
         mapId = otherSet.mapId;
         trigger = otherSet.trigger;
-        marks = otherSet.marks;
+        marks = new List<MarkerCoord>();
         enabled = otherSet.enabled;
+
+        for(var i = 0; i < otherSet.marks.Count && i<8; i++)
+        {
+            marks.Add(otherSet.marks[i]);
+        }
     }
 
 }

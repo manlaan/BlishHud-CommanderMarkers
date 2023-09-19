@@ -36,8 +36,13 @@ public class LibrayCornerIconMenuItem : ContextMenuStripItem
         var menuListItems = new List<ContextMenuStripItem>();
         libraryMarkers.ForEach( marker =>
         {
-            menuListItems.Add(new ContextMenuStripItem(marker.name));
+            if(marker.enabled)
+                menuListItems.Add(new MarkerPlaceMenuItem(marker));
         });
+        if(menuListItems.Count <= 0)
+        {
+            menuListItems.Add(new ContextMenuStripItem("No marker sets for this map"));
+        }
 
         return menuListItems;
     }

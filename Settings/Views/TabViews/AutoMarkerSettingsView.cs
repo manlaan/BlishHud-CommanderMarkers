@@ -1,6 +1,7 @@
 ﻿using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Settings.UI.Views;
+using Manlaan.CommanderMarkers.Settings.Controls;
 using Manlaan.CommanderMarkers.Settings.Enums;
 using Manlaan.CommanderMarkers.Settings.Services;
 using Manlaan.CommanderMarkers.Utils;
@@ -22,7 +23,7 @@ public class AutoMarkerSettingsView : View
         var panel = new FlowPanel()
             .BeginFlow(buildPanel)
             .AddString("AutoMarker Feature")
-            .AddString("allows for rapidly placing saved marker sets")
+            .AddString("Allows for rapidly placing saved marker sets")
             .AddSpace()
             .AddSetting(_settings.AutoMarker_FeatureEnabled)
             .AddSetting(_settings.AutoMarker_OnlyWhenCommander)
@@ -33,15 +34,23 @@ public class AutoMarkerSettingsView : View
                 Text = $"  Delay Time: {_settings.AutoMarker_PlacementDelay.Value} ms",
 
                 AutoSizeWidth = true,
-            }, out var delayLabel)
-            .AddSpace(100)
-            .AddFlowControl(new StandardButton()
-            {
-                Text = $"Reset Library To Default",
-                BasicTooltipText = "Warning: This will delete ALL marker sets in your Library\nand restore the default markers.",
-                Width = 200,
-            }, out var ResetButton)
-             .AddSpace();
+            }, out var delayLabel);
+
+        new Label()
+        {
+            Parent = buildPanel,
+            Text = "Press and hold Ctrl and Shift to activate the button",
+            AutoSizeWidth = true,
+            Location = new Point(0, buildPanel.Height - 65)
+        };
+        var ResetButton = new NuclearOptionButton()
+        {
+            Parent = buildPanel,
+            Text = $"Reset Library To Default",
+            BasicTooltipText = "Warning: This will delete ALL marker sets in your Library\nand restore the default markers.\n\nPress and hold Ctrl and Shift to activate the button",
+            Width = 200,
+            Location = new Point(0, buildPanel.Height - 35)
+        };
         ResetButton.Click += (s, e) =>
         {
             Service.MarkersListing.ResetToDefault();

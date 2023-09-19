@@ -25,6 +25,21 @@ public class CornerIconSettingsView : View
             .AddSetting(_settings.CornerIconEnabled)
             .AddSpace()
             .AddSettingEnum(_settings.CornerIconLeftClickAction)
+            .AddSpace(100)
+            .AddFlowControl(new StandardButton
+            {
+                Text = "Update Notes",
+                BasicTooltipText = "Open the module update notes in your default web browser",
+            }, out var patchNotesButton)
             ;
+
+        patchNotesButton.Click += (s, e) =>
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://pkgs.blishhud.com/Manlaan.CommanderMarkers.html",
+                UseShellExecute = true
+            });
+        };
     }
 }

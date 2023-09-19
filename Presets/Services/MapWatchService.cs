@@ -62,16 +62,11 @@ public class MapWatchService : IDisposable
         
         var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
         foreach(MarkerSet marker in _markers) {
-            var d = (playerPosition - marker.trigger.ToVector3()).Length();
+            var d = (playerPosition - marker.trigger?.ToVector3())?.Length() ?? 1000f;
             if(d < 15f)
             {
-                Debug.WriteLine($"Found a marker to activate (d={d})");
                 PlaceMarkers(marker, _map);
                 return;
-            }
-            else
-            {
-                Debug.WriteLine($"Distance to {marker.name} is {d.ToString()}");
             }
         }
     }
@@ -81,6 +76,10 @@ public class MapWatchService : IDisposable
         _screenMap.Update(gameTime);
     }
 
+    public Task PlaceMarkers(MarkerSet marders)
+    {
+        return PlaceMarkers(marders, _map);
+    }
     private Task PlaceMarkers(MarkerSet markers, MapData mapData)
     {
         if (markers.marks == null) return Task.CompletedTask;
@@ -102,6 +101,8 @@ public class MapWatchService : IDisposable
         var delay = _setting.AutoMarker_PlacementDelay.Value;
 
         var originalMousePos = Mouse.GetState().Position;
+
+        var screenBounds = ScreenMap.Data.ScreenBounds;
         InputHelper.DoHotKey(keys[0]);
         Thread.Sleep((int) delay/2);
 
@@ -112,10 +113,19 @@ public class MapWatchService : IDisposable
             if (marker.icon > 9 || marker.icon < 0) continue;
 
             var d = mapData.WorldToScreenMap(marker.ToVector3()) * scale;
-            Mouse.SetPosition((int)d.X, (int)d.Y);
-            Thread.Sleep((int) delay/2);
-            InputHelper.DoHotKey(keys[marker.icon]);
-            Thread.Sleep(delay);
+            if (screenBounds.Contains(d))
+            {
+                Mouse.SetPosition((int)d.X, (int)d.Y);
+                Thread.Sleep((int) delay/2);
+                InputHelper.DoHotKey(keys[marker.icon]);
+                Thread.Sleep(delay);
+
+            }
+            else
+            {
+                Debug.WriteLine($"{marker.icon} {d} is not in mapbounds {screenBounds}");
+            }
+
         }
 
         Mouse.SetPosition(originalMousePos.X, originalMousePos.Y);

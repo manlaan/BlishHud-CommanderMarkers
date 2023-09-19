@@ -259,10 +259,14 @@ public class MarkersPanel : FlowPanel, IDisposable
     protected void AddGround(Image btn, KeyBinding key)
     {
         if (_draggable) return;
-        if (_tmpBinding != null)
+        if(_tmpBinding == key)
         {
             ResetGroundIcon();
             return;
+        }
+        if (_tmpBinding != null)
+        {
+            ResetGroundIcon();
         }
         _tmpBinding = key;
         _tmpButton = btn;

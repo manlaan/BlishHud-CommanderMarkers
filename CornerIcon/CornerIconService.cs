@@ -44,19 +44,20 @@ public class CornerIconService : IDisposable
     private readonly string _tooltip;
     private Blish_HUD.Controls.CornerIcon? _cornerIcon;
 
-public CornerIconService(SettingEntry<bool> cornerIconIsVisibleSetting,
-                                string tooltip,
-                                Texture2D defaultTexture,
-                                Texture2D hoverTexture,
-                                IEnumerable<ContextMenuStripItem> contextMenuItems
-    )
+    public CornerIconService(
+        SettingEntry<bool> cornerIconIsVisibleSetting,
+        string tooltip,
+        Texture2D defaultTexture,
+        Texture2D hoverTexture,
+        IEnumerable<ContextMenuStripItem> contextMenuItems
+    ) 
     {
         _tooltip = tooltip;
         _cornerIconIsVisibleSetting = cornerIconIsVisibleSetting;
         _cornerIconTexture = defaultTexture;
         _cornerIconHoverTexture = hoverTexture;
         _contextMenuItems = contextMenuItems;
-        cornerIconIsVisibleSetting.SettingChanged += OnCornerIconIsVisibleSettingChanged;
+        _cornerIconIsVisibleSetting.SettingChanged += OnCornerIconIsVisibleSettingChanged;
 
         if (cornerIconIsVisibleSetting.Value)
             CreateCornerIcon();
@@ -64,10 +65,7 @@ public CornerIconService(SettingEntry<bool> cornerIconIsVisibleSetting,
 
     public void OpenContextMenu()
     {
-        if(_cornerIcon != null)
-        {
-            _cornerIcon.Menu.Show(GameService.Input.Mouse.Position);
-        }
+        _cornerIcon?.Menu?.Show(GameService.Input.Mouse.Position);
     }
 
     public void Dispose()
@@ -99,7 +97,8 @@ public CornerIconService(SettingEntry<bool> cornerIconIsVisibleSetting,
         if (_cornerIcon is not null)
         {
             _cornerIcon.Click -= OnCornerIconClicked;
-            _cornerIcon.Dispose();
+            _cornerIcon?.Menu?.Dispose();
+            _cornerIcon?.Dispose();
         }
     }
 

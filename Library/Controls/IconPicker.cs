@@ -12,7 +12,7 @@ public class IconPicker : FlowPanel
 {
     public event EventHandler<int>? IconSelectionChanged;
 
-    protected List<(int, Texture2D, GlowButton)> state = new();
+    protected List<(int, Texture2D, IconButton)> state = new();
 
     protected int _selectedItem = -1;
     public IconPicker()
@@ -48,7 +48,7 @@ public class IconPicker : FlowPanel
         Children.Clear();
         foreach(var texture in textureList)
         {
-            var btn = new IconGlowButton()
+            var btn = new IconButton()
             {
                 Parent = this,
                 Icon = texture.Item2,

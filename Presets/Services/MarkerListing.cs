@@ -133,44 +133,7 @@ public class MarkerListing
 
     protected static MarkerListing MigrateToVersion2(MarkerListing loadedFromFile)
     {
-        var old_Kc = loadedFromFile.presets.Find(m => m.name == "keepconstruct");
-        if(old_Kc != null)
-        {
-            loadedFromFile.presets.Remove(old_Kc);
-            var kc = new MarkerSet
-            {
-                name = "Keep Construct",
-                description = "Green Circles",
-                mapId = 1156,
-                trigger = new WorldCoord() { x = -81.049f, y = 228.662f, z = 148.556f },
-                marks = new List<MarkerCoord> {
-                new MarkerCoord(){ x=-81.049f, y=228.662f, z=148.556f, icon =1, name="DPS"},
-                new MarkerCoord(){ x=-114.034f, y=229.050f, z=148.556f, icon =2, name="SupportDPS"},
-                new MarkerCoord(){ x=-97.019f, y=255.827f, z=148.556f, icon =3, name="Healers"},
-            }
-            };
-            loadedFromFile.presets.Add(kc);
-        }
-        var old_xera = loadedFromFile.presets.Find(m => m.name == "Xera");
-        if (old_xera != null)
-        {
-            loadedFromFile.presets.Remove(old_xera);
-            var xera = new MarkerSet
-            {
-                name = "Xera",
-                description = "Tanking Locations",
-                mapId = 1156,
-                trigger = new WorldCoord { x = -55.524f, y = -92.326f, z = 512.354f },
-                marks = new List<MarkerCoord>
-                {
-                    new MarkerCoord(){ x=-55.524f, y = -92.326f, z = 512.354f, icon =1, name="Xera P2-1"},
-                    new MarkerCoord(){ x=-64.367f, y = -58.505f, z = 512.354f, icon =2, name="Xera P2-2"},
-                    new MarkerCoord(){ x=-101.757f, y = -80.51f, z = 512.356f, icon =3, name="Xera P2-3"},
-                    new MarkerCoord(){ x=-98.724f, y = -68.167f, z = 512.354f, icon =4, name="Xera P2-4"},
-                }
-            };
-            loadedFromFile.presets.Add(xera);
-        }
+        loadedFromFile.ResetToDefault();
         loadedFromFile.Version = "2.0.0";
         loadedFromFile.Save();
 
@@ -186,7 +149,7 @@ public class MarkerListing
         var ms = new MarkerSet
         {
             name = "Sabetha Cannons",
-            description = "Cannon jumppads",
+            description = "Cannon jump pads",
             mapId = 1062,
             trigger = new WorldCoord { x = -78.40887f, y = 133.5607f, z = 70.977f },
             marks = new List<MarkerCoord>
@@ -222,16 +185,16 @@ public class MarkerListing
             mapId = 1149,
             trigger = new WorldCoord { x=211.8357f, y=36.68708f, z=8.145153f },
             marks = new List<MarkerCoord>
-    {
-    new MarkerCoord(){ x=208.928f, y = 25.562f, z = 4.933f, icon =1, name="1"},
-    new MarkerCoord(){ x=174.839f, y = -9.068f, z = 2.414f, icon =2, name="2"},
-    new MarkerCoord(){ x=192.947f, y = -35.956f, z = 0.846f, icon =3, name="3"},
-    new MarkerCoord(){ x=224.945f, y = -13.404f, z = -0.177f, icon =4, name="4"},
-    }
+            {
+            new MarkerCoord(){ x=208.928f, y = 25.562f, z = 4.933f, icon =1, name="1"},
+            new MarkerCoord(){ x=174.839f, y = -9.068f, z = 2.414f, icon =2, name="2"},
+            new MarkerCoord(){ x=192.947f, y = -35.956f, z = 0.846f, icon =3, name="3"},
+            new MarkerCoord(){ x=224.945f, y = -13.404f, z = -0.177f, icon =4, name="4"},
+            }
         };
         SaveMarker(ms);
 
-        ms = new MarkerSet
+        /*ms = new MarkerSet
         {
             name = "Bandit Trio",
             description = "Boss Spawns, Square-Mortar",
@@ -245,7 +208,7 @@ public class MarkerListing
             new MarkerCoord(){ x=64.95536f, y = -270.91f, z = 0.9945363f, icon =4, name="Placement location"},
             }
         };
-        SaveMarker(ms);
+        SaveMarker(ms);*/
 
         ms = new MarkerSet
         {
@@ -302,12 +265,12 @@ public class MarkerListing
             mapId = 1188,
             trigger = new WorldCoord { x = 438.4015f, y = 34.58722f, z = 49.29768f },
             marks = new List<MarkerCoord>
-    {
-    new MarkerCoord(){ x=368.6021f, y = 52.26963f, z = 33.72034f, icon =1, name=""},
-    new MarkerCoord(){ x=366.5356f, y = 44.91729f, z = 33.72039f, icon =2, name=""},
-    new MarkerCoord(){ x=358.4903f, y = 49.50121f, z = 33.72039f, icon =3, name=""},
-    new MarkerCoord(){ x=363.007f, y = 57.25174f, z = 33.72039f, icon =4, name=""},
-    }
+            {
+            new MarkerCoord(){ x=368.6021f, y = 52.26963f, z = 33.72034f, icon =1, name=""},
+            new MarkerCoord(){ x=366.5356f, y = 44.91729f, z = 33.72039f, icon =2, name=""},
+            new MarkerCoord(){ x=358.4903f, y = 49.50121f, z = 33.72039f, icon =3, name=""},
+            new MarkerCoord(){ x=363.007f, y = 57.25174f, z = 33.72039f, icon =4, name=""},
+            }
         };
         SaveMarker(ms);
 
@@ -320,31 +283,31 @@ public class MarkerListing
             mapId = 1264,
             trigger = new WorldCoord { x = 351.7534f, y = 20.52355f, z = 159.6575f },
             marks = new List<MarkerCoord>
-    {
-        new MarkerCoord(){ x=429.065f, y = 30.76263f, z = 157.8669f, icon =1, name=""},
-        new MarkerCoord(){ x=427.8602f, y = 2.028903f, z = 157.867f, icon =2, name=""},
-        new MarkerCoord(){ x=404.944f, y = -14.71885f, z = 157.8641f, icon =3, name=""},
-        new MarkerCoord(){ x=377.8015f, y = -6.618744f, z = 157.8605f, icon =4, name=""},
-        new MarkerCoord(){ x=365.9529f, y = 19.33479f, z = 157.8795f, icon =5, name=""},
-        new MarkerCoord(){ x=378.9905f, y = 44.77333f, z = 157.8602f, icon =6, name=""},
-        new MarkerCoord(){ x=407.5791f, y = 49.89919f, z = 157.864f, icon =7, name=""},
-    }
+            {
+                new MarkerCoord(){ x=429.065f, y = 30.76263f, z = 157.8669f, icon =1, name=""},
+                new MarkerCoord(){ x=427.8602f, y = 2.028903f, z = 157.867f, icon =2, name=""},
+                new MarkerCoord(){ x=404.944f, y = -14.71885f, z = 157.8641f, icon =3, name=""},
+                new MarkerCoord(){ x=377.8015f, y = -6.618744f, z = 157.8605f, icon =4, name=""},
+                new MarkerCoord(){ x=365.9529f, y = 19.33479f, z = 157.8795f, icon =5, name=""},
+                new MarkerCoord(){ x=378.9905f, y = 44.77333f, z = 157.8602f, icon =6, name=""},
+                new MarkerCoord(){ x=407.5791f, y = 49.89919f, z = 157.864f, icon =7, name=""},
+            }
         };
         SaveMarker(ms);
 
         ms = new MarkerSet
         {
-            name = "qadim1",
+            name = "Qadim1",
             description = "Stab/Prot pyres, Heart-Lamp3, Square-portal/stack",
             mapId = 1303,
             trigger = new WorldCoord { x = -152.3928f, y = 285.804f, z = 120.1688f },
             marks = new List<MarkerCoord>
-    {
-    new MarkerCoord(){ x=-146.6841f, y = 330.8714f, z = 120.1684f, icon =1, name="//stability Pyre,"},
-    new MarkerCoord(){ x=-231.5254f, y = 331.0974f, z = 120.1693f, icon =2, name="Protection Pyre"},
-    new MarkerCoord(){ x=-166.9229f, y = 295.0649f, z = 120.1684f, icon =3, name="//lamp3"},
-    new MarkerCoord(){ x=-185.8315f, y = 294.9296f, z = 120.1688f, icon =4, name=" //portal/stack"},
-    }
+            {
+                new MarkerCoord(){ x=-146.6841f, y = 330.8714f, z = 120.1684f, icon =1, name="Stability Pyre,"},
+                new MarkerCoord(){ x=-231.5254f, y = 331.0974f, z = 120.1693f, icon =2, name="Protection Pyre"},
+                new MarkerCoord(){ x=-166.9229f, y = 295.0649f, z = 120.1684f, icon =3, name="Lamp3"},
+                new MarkerCoord(){ x=-185.8315f, y = 294.9296f, z = 120.1688f, icon =4, name="Portal/Stack"},
+            }
         };
         SaveMarker(ms);
 
@@ -378,7 +341,7 @@ public class MarkerListing
         };
         SaveMarker(ms);
 
-        ms = new MarkerSet
+        /*ms = new MarkerSet
         {
             name = "Qadim The Peerless - complex",
             description = "First fire clockwise, second counter-clockwise",
@@ -386,20 +349,20 @@ public class MarkerListing
             trigger = new WorldCoord { x = 65.85422f, y = 187.6384f, z = 16.6768f },
             marks = new List<MarkerCoord>
             {
-            new MarkerCoord(){ x=22.89519f, y = 289.5503f, z = 16.81249f, icon =1, name=" //"},
-            new MarkerCoord(){ x=59.32327f, y = 277.8169f, z = 16.81249f, icon =2, name=" //"},
-            new MarkerCoord(){ x=79.97083f, y = 256.7198f, z = 16.81204f, icon =3, name=" //"},
-            new MarkerCoord(){ x=51.55045f, y = 229.2897f, z = 16.81205f, icon =4, name=" //"},
-            new MarkerCoord(){ x=22.88567f, y = 222.5481f, z = 16.81205f, icon =5, name=" //"},
-            new MarkerCoord(){ x=13.20081f, y = 261.1675f, z = 16.81205f, icon =6, name=" // "},
+            new MarkerCoord(){ x=22.89519f, y = 289.5503f, z = 16.81249f, icon =1, name=""},
+            new MarkerCoord(){ x=59.32327f, y = 277.8169f, z = 16.81249f, icon =2, name=""},
+            new MarkerCoord(){ x=79.97083f, y = 256.7198f, z = 16.81204f, icon =3, name=""},
+            new MarkerCoord(){ x=51.55045f, y = 229.2897f, z = 16.81205f, icon =4, name=""},
+            new MarkerCoord(){ x=22.88567f, y = 222.5481f, z = 16.81205f, icon =5, name=""},
+            new MarkerCoord(){ x=13.20081f, y = 261.1675f, z = 16.81205f, icon =6, name=""},
             }
         };
-        SaveMarker(ms);
+        SaveMarker(ms);*/
 
         ms = new MarkerSet
         {
-            name = "Qadim The Peerless - simple",
-            description = "",
+            name = "Qadim The Peerless (PUG Fires)",
+            description = "First fires on marker, second on opposite side",
             mapId = 1323,
             trigger = new WorldCoord { x= 17.149731f, y = 187.959f, z = 16.6768f },
             marks = new List<MarkerCoord>
@@ -421,10 +384,10 @@ public class MarkerListing
             mapId = 1341,
             trigger = new WorldCoord { x = 55.65976f, y = -18.19911f, z = 179.7118f },
             marks = new List<MarkerCoord>
-    {
-    new MarkerCoord(){ x=16.215f, y = -2.602f, z = 178.325f, icon =1, name=""},
-    new MarkerCoord(){ x=11.345f, y = 1.620f, z = 178.325f, icon =2, name=""},
-    }
+            {
+                new MarkerCoord(){ x=16.215f, y = -2.602f, z = 178.325f, icon =1, name=""},
+                new MarkerCoord(){ x=11.345f, y = 1.620f, z = 178.325f, icon =2, name=""},
+            }
         };
         SaveMarker(ms);
 
@@ -436,9 +399,9 @@ public class MarkerListing
             trigger = new WorldCoord { x = 52.28861f, y = -21.5971f, z = 179.7112f },
             marks = new List<MarkerCoord>
             {
-            new MarkerCoord(){ x=8.01693599187199f, y = -10.2486639573279f, z = 178.338f, icon =1, name="VoiceBackStep"},
-            new MarkerCoord(){ x=-8.690f, y = -5.287f, z = 178.538f, icon =2, name=""},
-            new MarkerCoord(){ x=16.201f, y = 22.438f, z = 178.112f, icon =3, name=""},
+                new MarkerCoord(){ x=8.01693599187199f, y = -10.2486639573279f, z = 178.338f, icon =1, name="VoiceBackStep"},
+                new MarkerCoord(){ x=-8.690f, y = -5.287f, z = 178.538f, icon =2, name=""},
+                new MarkerCoord(){ x=16.201f, y = 22.438f, z = 178.112f, icon =3, name=""},
             }
         };
         SaveMarker(ms);
@@ -452,8 +415,8 @@ public class MarkerListing
             trigger = new WorldCoord { x = 104.9626f, y = -151.5361f, z = 18.22491f },
             marks = new List<MarkerCoord>
             {
-            new MarkerCoord(){ x=34.900f, y = -89.992f, z = 17.272f, icon =1, name="Varina"},
-            //new MarkerCoord(){ x=29.084f, y = -51.671f, z = 18.002f, icon =1, name="//Champ spawn - toofar from door"},
+                new MarkerCoord(){ x=34.900f, y = -89.992f, z = 17.272f, icon =1, name="Varina"},
+                //new MarkerCoord(){ x=29.084f, y = -51.671f, z = 18.002f, icon =1, name="//Champ spawn - toofar from door"},
 	        }
         };
         SaveMarker(ms);
@@ -467,9 +430,9 @@ public class MarkerListing
             trigger = new WorldCoord { x = 33.61228f, y = 33.58646f, z = 46.45338f },
             marks = new List<MarkerCoord>
             {
-            new MarkerCoord(){ x=46.50667f, y = 48.16092f, z = 46.28915f, icon =1, name="//cm setup Arrow"},
-            new MarkerCoord(){ x=49.2936f, y = 39.81492f, z = 45.88486f, icon =2, name=" //CM setup Circle"},
-            new MarkerCoord(){ x=51.49508f, y = 30.82986f, z = 46.10174f, icon=3 , name=" //CM seteup heart"},
+                new MarkerCoord(){ x=46.50667f, y = 48.16092f, z = 46.28915f, icon =1, name="CM setup Arrow"},
+                new MarkerCoord(){ x=49.2936f, y = 39.81492f, z = 45.88486f, icon =2, name="CM setup Circle"},
+                new MarkerCoord(){ x=51.49508f, y = 30.82986f, z = 46.10174f, icon=3 , name="CM seteup heart"},
             }
         };
         SaveMarker(ms);
@@ -477,18 +440,18 @@ public class MarkerListing
         ms = new MarkerSet
         {
             name = "EoD - Aetherblade CM Markers",
-            description = "Kill X, Stack at for color groups",
+            description = "Kill X, Stack at color groups",
             mapId = 1432,
             trigger = new WorldCoord { x = 58.76889f, y = 56.79849f, z = 45.76037f },
             marks = new List<MarkerCoord>
             {
-            new MarkerCoord(){ x=81.10351f, y = 55.76778f, z = 45.73673f, icon =1, name="//CM Arrow"},
-            new MarkerCoord(){ x=79.9226f, y = 48.54653f, z = 45.7366f, icon =2, name=" //CM Circle"},
-            new MarkerCoord(){ x=86.92951f, y = 47.29297f, z = 45.73663f, icon =3, name=" //CM heart"},
+                new MarkerCoord(){ x=81.10351f, y = 55.76778f, z = 45.73673f, icon =1, name="CM Arrow"},
+                new MarkerCoord(){ x=79.9226f, y = 48.54653f, z = 45.7366f, icon =2, name="CM Circle"},
+                new MarkerCoord(){ x=86.92951f, y = 47.29297f, z = 45.73663f, icon =3, name="CM Heart"},
 
-            new MarkerCoord(){ x=65.36295f, y = 32.88283f, z = 45.73687f, icon =8, name="//X bomb"},
-            //new MarkerCoord(){ x=79.75883f, y = 41.17043f, z = 45.73667f, icon =1, name="//right bomb"},
-            //new MarkerCoord(){ x=65.31778f, y = 49.443f, z = 45.73673f, icon =1, name="//left bomb"},
+                new MarkerCoord(){ x=65.36295f, y = 32.88283f, z = 45.73687f, icon =8, name="X bomb"},
+                //new MarkerCoord(){ x=79.75883f, y = 41.17043f, z = 45.73667f, icon =1, name="//right bomb"},
+                //new MarkerCoord(){ x=65.31778f, y = 49.443f, z = 45.73673f, icon =1, name="//left bomb"},
 
 	        }
         };
@@ -501,21 +464,21 @@ public class MarkerListing
         //new MarkerCoord(){ x=-53.279f, y = 127.418f, z = 156.726f, icon =1, name=""},
         ms = new MarkerSet
         {
-            name = "eod_xunlaijade2",
+            name = "EoD Xunlai Jade Phase2",
             description = "Phase2CC",
             mapId = 1450,
             trigger = new WorldCoord { x = 28.72438f, y = 5.002136f, z = 118.4035f },
             marks = new List<MarkerCoord>
             {
-            new MarkerCoord(){ x=18.985f, y = 40.703f, z = 117.643f, icon =1, name=""},
-            new MarkerCoord(){ x=88.307f, y = 37.673f, z = 118.695f, icon =2, name=""},
-            new MarkerCoord(){ x=66.610f, y = -4.534f, z = 119.851f, icon =3, name=""},
+                new MarkerCoord(){ x=18.985f, y = 40.703f, z = 117.643f, icon =1, name=""},
+                new MarkerCoord(){ x=88.307f, y = 37.673f, z = 118.695f, icon =2, name=""},
+                new MarkerCoord(){ x=66.610f, y = -4.534f, z = 119.851f, icon =3, name=""},
             }
         };
         SaveMarker(ms);
         ms = new MarkerSet
         {
-            name = "eod_xunlaijade3",
+            name = "EoD Xunlai Jade Phase 3",
             description = "Phase3CC",
             mapId = 1450,
             trigger = new WorldCoord { x = -24.7418f, y = 123.3096f, z = 157.8843f },
@@ -549,7 +512,7 @@ public class MarkerListing
             }
         };
         SaveMarker(ms);
-*/
+        */
 
         ms = new MarkerSet
         {
@@ -589,7 +552,7 @@ public class MarkerListing
             };
             SaveMarker(ms);
 
-        ms = new MarkerSet
+       /* ms = new MarkerSet
         {
             name = "Arborstone Test",
             description = "Test marker keybinds",
@@ -625,6 +588,6 @@ public class MarkerListing
             }
 
         };
-        SaveMarker(ms);
+        SaveMarker(ms);*/
     }
 }

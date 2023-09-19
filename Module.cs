@@ -80,19 +80,6 @@ namespace Manlaan.CommanderMarkers
                 Checked = false
             };
             LtMode.CheckedChanged += (s, e) => Service.LtMode.Value = e.Checked;
-            var OpenLibrary = new ContextMenuStripItem("Open Library")
-            {
-                BasicTooltipText = "Open the AutoMarker Library",
-                Visible = Service.Settings.AutoMarker_FeatureEnabled.Value,
-                Submenu = new ContextMenuStrip()
-                {
-
-                }
-               
-            };
-            OpenLibrary.Click += (s, e) => Service.SettingsWindow.ShowLibrary();
-            OpenLibrary.Submenu.Shown += (s,e) => Service.SettingsWindow.ShowLibrary();
-
             Service.CornerIcon = new CornerIconService(
                 Service.Settings.CornerIconEnabled,
                 "Commander Markers",
@@ -101,17 +88,9 @@ namespace Manlaan.CommanderMarkers
                 new List<ContextMenuStripItem>()
                 {
                     new CornerIconToggleMenuItem(Service.SettingsWindow, "Open Settings"),
-                    OpenLibrary,
                     new LibrayCornerIconMenuItem(Service.Settings.AutoMarker_FeatureEnabled, "Open Library"),
                     new ContextMenuStripItemSeparator(),
                     LtMode,
-
-                    //new CornerIconToggleMenuItem(Service.Settings.RaidSettings.Generic.Visible, Strings.SettingsPanel_Tab_Raids),
-                    //new CornerIconToggleMenuItem(Service.Settings.StrikeSettings.Generic.Visible, Strings.SettingsPanel_Tab_Strikes),
-                    //new CornerIconToggleMenuItem(Service.Settings.FractalSettings.Generic.Visible, "Fractals"),
-                    //new CornerIconToggleMenuItem(Service.Settings.DungeonSettings.Generic.Visible, Strings.SettingsPanel_Tab_Dunegons),
-                    //new ContextMenuStripItemSeparator(),
-                    //refreshApiContextMenu
 
                 }
             );
@@ -125,7 +104,7 @@ namespace Manlaan.CommanderMarkers
             switch (Service.Settings.CornerIconLeftClickAction.Value)
             {
                 case CornerIconActions.SHOW_ICON_MENU:
-                    Service.CornerIcon.OpenContextMenu();
+                    Service.CornerIcon?.OpenContextMenu();
                     break;
                 case CornerIconActions.SHOW_SETTINGS:
                     Service.SettingsWindow.Show();
@@ -154,7 +133,11 @@ namespace Manlaan.CommanderMarkers
         /// <inheritdoc />
         protected override void Unload()
         {
+            if(Service.CornerIcon != null)
+                Service.CornerIcon.IconLeftClicked += CornerIcon_IconLeftClicked;
 
+
+            Service.CornerIcon?.Dispose();
             Service.SettingsWindow?.Dispose();
 
             Service.MapWatch?.Dispose();

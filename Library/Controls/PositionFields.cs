@@ -19,18 +19,18 @@ public class PositionFields: Container
     private Label _yPos;
     private Label _zPos;
     private WorldCoord _worldCoord;
-    public PositionFields(WorldCoord marker): base()
+    public PositionFields(WorldCoord? marker): base()
     {
 
         Size = new(400, 30);
 
-        _worldCoord = marker;
+        _worldCoord = marker ?? new WorldCoord();
 
         _locBtn = new StandardButton()
         {
             Parent = this,
             Text = "Set Location",
-            BasicTooltipText = "Set the X,Y,Z location to where you are currently standing",
+            BasicTooltipText = "Set the X, Y, Z location to where you are currently standing",
             Size = new Point(100, 30),
             Location = new Point(0, 0)
         };

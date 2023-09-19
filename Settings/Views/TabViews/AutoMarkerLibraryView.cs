@@ -2,6 +2,7 @@
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Manlaan.CommanderMarkers.Library.Controls;
+using Manlaan.CommanderMarkers.Library.Enums;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Manlaan.CommanderMarkers.Settings.Controls;
 using Manlaan.CommanderMarkers.Utils;
@@ -11,12 +12,13 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 
 namespace Manlaan.CommanderMarkers.Settings.Views.SubViews;
 
 public class AutoMarkerLibraryView : View
 {
-    const int HEADER_HEIGHT = 40;
+    const int HEADER_HEIGHT = 45;
     private List<MarkerSet> _markers = new();
     private Panel? _listingHeader;
     private Panel? _detailsHeader;
@@ -68,7 +70,7 @@ public class AutoMarkerLibraryView : View
         newMarkerSet.Click += (s, e) =>
         {
             var newSet = new MarkerSet();
-            newSet.name = "new marker set name";
+            newSet.name = "new set name";
             newSet.description = "description";
             newSet.mapId = Gw2MumbleService.Gw2Mumble.CurrentMap.Id;
             newSet.trigger = new WorldCoord();
@@ -126,17 +128,26 @@ public class AutoMarkerLibraryView : View
         cancelButton.Click += (s, e) => SwapView(false);
         export.Click += (s, e) =>
         {
-            string json = JsonConvert.SerializeObject(_editingMarkerSet);
-            Debug.WriteLine(json);
-            System.Windows.Forms.Clipboard.SetText(json);
-            ScreenNotification.ShowNotification($"Marker set {_editingMarkerSet?.name} copied to your clipboard!", ScreenNotification.NotificationType.Blue, Service.Textures!._blishHeart, 4);
+            try
+            {
+                string json = JsonConvert.SerializeObject(_editingMarkerSet);
+                string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+                System.Windows.Forms.Clipboard.SetText(base64);
+                ScreenNotification.ShowNotification($"Marker set {_editingMarkerSet?.name} copied to your clipboard!", ScreenNotification.NotificationType.Blue, Service.Textures!._blishHeart, 4);
+            } catch (Exception)
+            { 
+            }
         };
         import.Click += (s, e) =>
         {
             try
             {
                 string json = System.Windows.Forms.Clipboard.GetText();
-                MarkerSet? markerSet = JsonConvert.DeserializeObject<MarkerSet>(json);
+
+                var bytes = Convert.FromBase64String(json);
+                var parsedString = Encoding.UTF8.GetString(bytes);
+         
+                MarkerSet? markerSet = JsonConvert.DeserializeObject<MarkerSet>(parsedString);
                 if (markerSet == null)
                 {
                     throw new Exception("Invalid JSON");
@@ -255,7 +266,6 @@ public class AutoMarkerLibraryView : View
         var i = 0;
 
         panel.Children.Clear();
-
         _markers.ForEach( marker =>
         {
             var markerIdx = i++;
@@ -265,7 +275,7 @@ public class AutoMarkerLibraryView : View
             var btn = new DetailsButton()
             {
                 Text = (marker.enabled?"":"(Disabled) ")+$"{ marker.name}\n{marker.description}",
-                Icon = marker.enabled? Service.Textures._imgHeart : Service.Textures._imgClear,
+                Icon = marker.enabled?  ((SquadMarker)((i%8))+1).GetIcon(): Service.Textures._imgClear,
                 Width = DetailButtonWidth,
                 IconSize = DetailsIconSize.Small,
                 ShowToggleButton = true,
@@ -289,7 +299,6 @@ public class AutoMarkerLibraryView : View
                 Parent = btn,
                 Text = mapName,
                 Width = 300,
-                BasicTooltipText = mapName,
                 Height=30
             };
 
@@ -297,14 +306,13 @@ public class AutoMarkerLibraryView : View
             {
                 Size = editSize,
                 Parent = btn,
+                Opacity = 0.5f
             };
             
             img.Click += (s, e) =>
             {
                 marker.enabled = img.WatchValue;
-                Debug.WriteLine($"marker img click- set={marker.name}, index ={markerIdx}");
                 Service.MarkersListing.EditMarker(markerIdx, marker);
-                //SwapView();
                 
             };
 

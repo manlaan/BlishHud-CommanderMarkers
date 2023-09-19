@@ -111,7 +111,7 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
         AutoMarker_FeatureEnabled = settings.DefineSetting(
             "CmdMrkAMEnabled",
             true,
-            () => "Enable the AutoMarker feature",
+            () => "Enable",
             () => ""
         );
         AutoMarker_LibraryFilterToCurrent = settings.DefineSetting(
