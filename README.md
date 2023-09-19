@@ -9,10 +9,10 @@ File Schema
 {
   "lastEdit":"string timestamp",
   "categories":{
-        "category_name":"string",
+        "categoryName":"string",
         "markers":[
              {
-                "author":"strinv",
+                "author":"string",
                 "name": "string",
                 "description": "string", 
                 "mapId": int,
