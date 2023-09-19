@@ -1,19 +1,84 @@
-Place Commander Markers
+Commander Markers Static Hosting
 
-Adds icons to the screen to help place commander markers, both for objects and ground.
-For ground markers, click the icon, which highlights it, then click on the mini map or in the environment to place marker.  You can also Rt-click on the icon to remove the marker.  
+Community shared marker presets
+
+PR changes to the `Community/Markers.json` file.
+
+File Schema
+```
+[
+    //Category Objects
+    {
+        "category_name":"string",
+        "markers":[
+             {
+                "author":"strinv",
+                "name": "string",
+                "description": "string", 
+                "mapId": int,
+                "trigger": {
+                  "x": float,
+                  "y": float,
+                  "z": float
+                },
+                "markers": [
+                  {
+                    "i": int,
+                    "d": "string",
+                    "x": float",
+                    "y": float,
+                    "z": float
+                  },
+                ]
+            }
+        ]
+    }
+]
+```
+`category_name`: The grouping text for user filtering
+
+Marker
+`author`: Your display name
+`name`: The marker set name
+`desciption`: Tooltip/second line help information
+`mapId`: Gw2Api id for the map on which the marker set exists
+`trigger`: x,y,z information from Mumblelink where user needs to stand to activate the marker set from the map.
+  * Map activation is limited to a 15 unit sphere around the trigger location. 
+  * Map markers are also hidden when the user is more then 60 units away in the z direction. Used for "floor level" filters
+`markers`: Array of up to 8 marker objects'
+
+Marker Objects
+`i`: Index of the commander marker to place
+  - 0: Clear Markers,
+  - 1: Arrow,
+  - 2: Circle,
+  - 3: Heart,
+  - 4: Square,
+  - 5: Star,
+  - 6: Spiral,
+  - 7: Triangle,
+  - 8: Cross/X,
+  - 9: Clear Markers
+`d`: Marker Identifier
+  * Used for remembering what the marker is for. Only shown in the library editor screen
+`x` `y` `z`: Position information from Mumblelink
+
+
+
+Notes:
+Markers are placed by placing the mouse on the screen x/y coordinates that align with the Marker's position, and then virtually pressing the marker hotkey. Placement works on both the compass(minimap) and the full screen map.
+Due to in-game level geometry, the game's hitscan for where to vertically place the markers can be wrong. Good examples are the Keineng Overlook stike mission. the first collible floor is well under the boss arena.
+
+
+
+
+
+
+
 
 
 ## Changelog
-### 3.0.0-beta-1: 2023-04-25
-* Added automarker feature.
-### 2.0.0: 2023-04-20:
-* Updated repo to use SDK style
-* Made controls reusable instead of deleted on every change
-* Added "only when commander" option
-* panel hides when map opens
-### "1.1.1": 2021-10-09:
-* Added check to hide if on loading screen, map open, or not commander
 
-### "1.1.0": 2021-09-30:
-* Upgraded to use Blish 0.11.0, Custom Settings Panel, Drag Panel instead of coords
+
+
+* 2023-09-19 Intial Community Markers Setup
