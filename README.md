@@ -38,16 +38,23 @@ File Schema
 `category_name`: The grouping text for user filtering
 
 Marker
+
 `author`: Your display name
+
 `name`: The marker set name
+
 `desciption`: Tooltip/second line help information
+
 `mapId`: Gw2Api id for the map on which the marker set exists
+
 `trigger`: x,y,z information from Mumblelink where user needs to stand to activate the marker set from the map.
   * Map activation is limited to a 15 unit sphere around the trigger location. 
   * Map markers are also hidden when the user is more then 60 units away in the z direction. Used for "floor level" filters
+
 `markers`: Array of up to 8 marker objects'
 
 Marker Objects
+
 `i`: Index of the commander marker to place
   - 0: Clear Markers,
   - 1: Arrow,
@@ -59,8 +66,10 @@ Marker Objects
   - 7: Triangle,
   - 8: Cross/X,
   - 9: Clear Markers
+
 `d`: Marker Identifier
-  * Used for remembering what the marker is for. Only shown in the library editor screen
+  - Used for remembering what the marker is for. Only shown in the library editor screen
+
 `x` `y` `z`: Position information from Mumblelink
 
 
