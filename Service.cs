@@ -1,4 +1,6 @@
 ﻿using Blish_HUD.Modules.Managers;
+using Blish_HUD.Settings;
+using Manlaan.CommanderMarkers.CornerIcon;
 using Manlaan.CommanderMarkers.Presets;
 using Manlaan.CommanderMarkers.Presets.Services;
 using Manlaan.CommanderMarkers.Settings.Controls;
@@ -21,6 +23,12 @@ public static class Service
 
     public static SettingsPanel SettingsWindow { get; set; } = null!;
 
+    public static CornerIconService? CornerIcon { get; set; } = null;
+
+    public static SettingEntry<bool> LtMode { get; set; } = new SettingEntry<bool>()
+    {
+        Value = false
+    };
 
 
 }

@@ -1,6 +1,8 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Common.Gw2;
+using Blish_HUD.Controls;
 using Blish_HUD.Input;
+using Manlaan.CommanderMarkers.Library.Enums;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Manlaan.CommanderMarkers.Settings.Services;
 using Manlaan.CommanderMarkers.Utils;
@@ -40,7 +42,13 @@ public class MapWatchService : IDisposable
         _setting._settingInteractKeyBinding.Value.Activated += _interactKeybind_Activated;
 
         CurrentMap_MapChanged(this, new ValueEventArgs<int>(GameService.Gw2Mumble.CurrentMap.Id));
+        _setting.AutoMarker_FeatureEnabled.SettingChanged += AutoMarker_FeatureEnabled_SettingChanged;
+        Service.LtMode.SettingChanged += AutoMarker_FeatureEnabled_SettingChanged;
+    }
 
+    private void AutoMarker_FeatureEnabled_SettingChanged(object sender, ValueChangedEventArgs<bool> e)
+    {
+        CurrentMap_MapChanged(this, new ValueEventArgs<int>(GameService.Gw2Mumble.CurrentMap.Id));
     }
 
     private void MarkersListing_MarkersChanged(object sender, EventArgs e)
@@ -56,16 +64,11 @@ public class MapWatchService : IDisposable
         
         var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
         foreach(MarkerSet marker in _markers) {
-            var d = (playerPosition - marker.trigger.ToVector3()).Length();
+            var d = (playerPosition - marker.trigger?.ToVector3())?.Length() ?? 1000f;
             if(d < 15f)
             {
-                Debug.WriteLine($"Found a marker to activate (d={d})");
                 PlaceMarkers(marker, _map);
                 return;
-            }
-            else
-            {
-                Debug.WriteLine($"Distance to {marker.name} is {d.ToString()}");
             }
         }
     }
@@ -75,6 +78,10 @@ public class MapWatchService : IDisposable
         _screenMap.Update(gameTime);
     }
 
+    public Task PlaceMarkers(MarkerSet marders)
+    {
+        return PlaceMarkers(marders, _map);
+    }
     private Task PlaceMarkers(MarkerSet markers, MapData mapData)
     {
         if (markers.marks == null) return Task.CompletedTask;
@@ -96,9 +103,11 @@ public class MapWatchService : IDisposable
         var delay = _setting.AutoMarker_PlacementDelay.Value;
 
         var originalMousePos = Mouse.GetState().Position;
+
+        var screenBounds = ScreenMap.Data.ScreenBounds;
         InputHelper.DoHotKey(keys[0]);
         Thread.Sleep((int) delay/2);
-
+        var errors = new List<string>();
         for (var i = 0; i < markers.marks.Count; i++)
         {
             var marker = markers.marks[i];
@@ -106,10 +115,28 @@ public class MapWatchService : IDisposable
             if (marker.icon > 9 || marker.icon < 0) continue;
 
             var d = mapData.WorldToScreenMap(marker.ToVector3()) * scale;
-            Mouse.SetPosition((int)d.X, (int)d.Y);
-            Thread.Sleep((int) delay/2);
-            InputHelper.DoHotKey(keys[marker.icon]);
-            Thread.Sleep(delay);
+            if (screenBounds.Contains(d))
+            {
+                Mouse.SetPosition((int)d.X, (int)d.Y);
+                Thread.Sleep((int) delay/2);
+                InputHelper.DoHotKey(keys[marker.icon]);
+                Thread.Sleep(delay);
+
+            }
+            else
+            {
+                Debug.WriteLine($"{marker.icon} {d} is not in mapbounds {screenBounds}");
+                errors.Add($"{((SquadMarker)marker.icon).EnumValue()} {marker.name}");
+            }
+
+        }
+        if(errors.Count > 0)
+        {
+
+            ScreenNotification.ShowNotification(
+                $"Unable to place {errors.Count} marker(s)\nTry moving your map to the marker trigger",
+                ScreenNotification.NotificationType.Warning, null, 6
+            );
         }
 
         Mouse.SetPosition(originalMousePos.X, originalMousePos.Y);
@@ -135,6 +162,7 @@ public class MapWatchService : IDisposable
     {
         _screenMap.Dispose();
 
+        _setting.AutoMarker_FeatureEnabled.SettingChanged -= AutoMarker_FeatureEnabled_SettingChanged;
         Service.MarkersListing.MarkersChanged -= MarkersListing_MarkersChanged;
         GameService.Gw2Mumble.CurrentMap.MapChanged -= CurrentMap_MapChanged;
         _setting._settingInteractKeyBinding.Value.Enabled= false;

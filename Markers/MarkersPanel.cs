@@ -25,13 +25,15 @@ public class MarkersPanel : FlowPanel, IDisposable
 
     private bool _mouseEventsEnabled;
 
+    private bool _mouseIsInsidePanel = false;
+
     private bool _panelEnabled = true;
 
     private Point _dragStart = Point.Zero;
 
 
-    private KeyBinding _tmpBinding = new KeyBinding();
-    private Image _tmpButton;
+    private KeyBinding? _tmpBinding;
+    private Image? _tmpButton;
     protected SettingService _settings;
     protected TextureService _textures;
 
@@ -58,7 +60,10 @@ public class MarkersPanel : FlowPanel, IDisposable
         var opacity = settings._settingOpacity.Value;
 
         var groundIcons = CreateGroupingFlowPanel();
-        var objectIcons = CreateGroupingFlowPanel(); 
+        groundIcons.VisiblityChanged(_settings._settingGroundMarkersEnabled);
+        var objectIcons = CreateGroupingFlowPanel();
+        objectIcons.VisiblityChanged(_settings._settingTargetMarkersEnabled);
+
         //arrow
         CreateIconButton(groundIcons, _textures._imgArrow, size, opacity, "Arrow Ground", _settings._settingArrowGndBinding, true);
         CreateIconButton(objectIcons, _textures._imgArrow, size, opacity, "Arrow Object", _settings._settingArrowObjBinding, false);
@@ -97,9 +102,21 @@ public class MarkersPanel : FlowPanel, IDisposable
         _settings._settingShowMarkersPanel.SettingChanged += (s, e) => { _panelEnabled = e.NewValue; };
 
 
-        if(_mouseEventsEnabled)
+        if (_mouseEventsEnabled)
+        {
             GameService.Input.Mouse.LeftMouseButtonPressed += OnMouseClick;
+        }
     }
+#if DEBUG
+    public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds)
+    {
+        base.PaintBeforeChildren(spriteBatch, bounds);
+        if (_mouseIsInsidePanel)
+        {
+            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(0, 0, this.Width, this.Height), new Color(200, 96, 96, 192));
+        }
+    }
+#endif
 
     public override void PaintAfterChildren(SpriteBatch spriteBatch, Rectangle bounds)
     {
@@ -132,10 +149,11 @@ public class MarkersPanel : FlowPanel, IDisposable
             shouldBeVisible = false;
         }
         
-        if (_settings._settingOnlyWhenCommander.Value)
+        if (_settings._settingOnlyWhenCommander.Value || Service.LtMode.Value)
         {
-            shouldBeVisible = shouldBeVisible && GameService.Gw2Mumble.PlayerCharacter.IsCommander;
+            shouldBeVisible = shouldBeVisible && (GameService.Gw2Mumble.PlayerCharacter.IsCommander || Service.LtMode.Value);
         }
+        
 
         if (!Visible && shouldBeVisible)
             Show();
@@ -211,23 +229,44 @@ public class MarkersPanel : FlowPanel, IDisposable
     {
         if (_draggable) return;
         if (_tmpBinding == null) return;
+        if (_mouseIsInsidePanel) return;
         DoHotKey(_tmpBinding);
         ResetGroundIcon();
     }
+
+    protected override void OnMouseEntered(MouseEventArgs e)
+    {
+        base.OnMouseEntered(e);
+        _mouseIsInsidePanel = true;
+    }
+    protected override void OnMouseLeft(MouseEventArgs e)
+    {
+        base.OnMouseLeft(e);
+        _mouseIsInsidePanel = false;
+    }
+
+
     protected void ResetGroundIcon()
     {
-        _tmpButton.BackgroundColor = Color.Transparent;
+        if (_tmpButton != null)
+        {
+            _tmpButton.BackgroundColor = Color.Transparent;
+            _tmpButton = null;
+        }
         _tmpBinding = null;
-        _tmpButton = null;
     }
 
     protected void AddGround(Image btn, KeyBinding key)
     {
         if (_draggable) return;
-        if (_tmpBinding == key)
+        if(_tmpBinding == key)
         {
             ResetGroundIcon();
             return;
+        }
+        if (_tmpBinding != null)
+        {
+            ResetGroundIcon();
         }
         _tmpBinding = key;
         _tmpButton = btn;

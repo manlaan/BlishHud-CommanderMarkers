@@ -12,6 +12,7 @@ public class SettingsPanel : TabbedWindow2
 {
     private static Texture2D? Background => Service.Textures?.SettingWindowBackground;
 
+    public ModuleSettingsTab modSettingsTab = new ModuleSettingsTab();
     //Where on the background texture should the panel render
     private static Rectangle SettingPanelRegion => new()
     {
@@ -30,7 +31,7 @@ public class SettingsPanel : TabbedWindow2
 
     public SettingsPanel() : base(Background, SettingPanelRegion, SettingPanelContentRegion, SettingPanelWindowSize)
     {
-        Id = $"{nameof(Module)}_96b38a83-4163-4d97-b894-282406b29a49";
+        Id = $"{nameof(Module)}_96aaaa83-4163-4d97-b894-282406b29a49";
         Emblem = Service.Textures?._blishHeart;
         Parent = GameService.Graphics.SpriteScreen;
         Title = "Commander Markers";
@@ -49,12 +50,17 @@ public class SettingsPanel : TabbedWindow2
     
     private void BuildTabs()
     {
-        Tabs.Add(
-            new Tab(
-                Service.Textures?._imgHeart,
-                () => new CustomSettingMenuView(new ModuleSettingsTab()),
-                "Settings"
-            ));
+        Tabs.Add(new Tab(
+            Service.Textures?._imgHeart,
+            () => new CustomSettingMenuView(modSettingsTab),
+            "Settings"
+        ));
        
+    }
+
+    public void ShowLibrary()
+    {
+        Show();
+        modSettingsTab.ActivateLibraryTab();
     }
 }

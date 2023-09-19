@@ -85,8 +85,8 @@ public class ScreenMap : Control
             return;
         if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat) return;
         if (
-            Service.Settings.AutoMarker_OnlyWhenCommander.Value
-            && !GameService.Gw2Mumble.PlayerCharacter.IsCommander
+            (Service.Settings.AutoMarker_OnlyWhenCommander.Value && !GameService.Gw2Mumble.PlayerCharacter.IsCommander) 
+            &&  !Service.LtMode.Value
             ) return;
     
         var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;

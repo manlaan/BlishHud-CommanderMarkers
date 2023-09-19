@@ -24,23 +24,45 @@ public class TextureService : IDisposable
         _imgCheck =contentsManager.GetTexture(@"check.png");
         _blishHeart = contentsManager.GetTexture(@"mapmarker.png");
 
+        IconCopy = contentsManager.GetTexture(@"iconCopy.png");
+        IconDelete = contentsManager.GetTexture(@"iconDelete.png");
+        IconDeleteLarge = contentsManager.GetTexture(@"iconDelete48.png");
+        IconEdit = contentsManager.GetTexture(@"iconEdit.png");
+        IconExport = contentsManager.GetTexture(@"iconExport.png");
+        IconGoBack = contentsManager.GetTexture(@"iconGoBack.png");
+        IconImport = contentsManager.GetTexture(@"iconImport.png");
+        IconSave = contentsManager.GetTexture(@"iconSave.png");
+
+        IconCorner = contentsManager.GetTexture(@"cornerIcon.png");
+
     }
 
     public void Dispose()
     {
-        SettingWindowBackground.Dispose(); 
-        _imgArrow.Dispose();
-        _imgCircle.Dispose();
-        _imgHeart.Dispose();    
-        _imgSpiral.Dispose();
-        _imgSquare.Dispose();
-        _imgStar.Dispose();
-        _imgTriangle.Dispose();
-        _imgX.Dispose();
-        _imgClear.Dispose();
-        _imgCheck.Dispose();
-        _blishHeart.Dispose();
-    }
+        SettingWindowBackground?.Dispose(); 
+        _imgArrow?.Dispose();
+        _imgCircle?.Dispose();
+        _imgHeart?.Dispose();    
+        _imgSpiral?.Dispose();
+        _imgSquare?.Dispose();
+        _imgStar?.Dispose();
+        _imgTriangle?.Dispose();
+        _imgX?.Dispose();
+        _imgClear?.Dispose();
+        _imgCheck?.Dispose();
+        _blishHeart?.Dispose();
+
+        IconCopy?.Dispose();
+        IconDelete?.Dispose();
+        IconDeleteLarge?.Dispose();
+        IconEdit?.Dispose();
+        IconExport?.Dispose();
+        IconGoBack?.Dispose();
+        IconImport?.Dispose();
+        IconSave?.Dispose();
+
+        IconCorner?.Dispose();
+}
 
     public Texture2D SettingWindowBackground;
     public Texture2D _imgArrow;
@@ -55,8 +77,16 @@ public class TextureService : IDisposable
     public Texture2D _imgCheck;
     public Texture2D _blishHeart;
 
+    public Texture2D IconCopy;
+    public Texture2D IconDelete;
+    public Texture2D IconDeleteLarge;
+    public Texture2D IconEdit;
+    public Texture2D IconExport;
+    public Texture2D IconGoBack;
+    public Texture2D IconImport;
+    public Texture2D IconSave;
 
-   
+    public Texture2D IconCorner;
 
 
 }

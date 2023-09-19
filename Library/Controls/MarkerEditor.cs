@@ -63,12 +63,12 @@ public class MarkerEditor : FlowPanel
             BasicTooltipText = "Name the marker.\nHelpful for remembering which marker is where."
         };
 
-        var deleteButton = new GlowButton()
+        var deleteButton = new Image()
         {
             Parent = this,
             BasicTooltipText = "Delete marker",
-            Icon = Service.Textures!._imgClear,
-            Size = new Point(28, 28),
+            Texture = Service.Textures!.IconDelete,
+            Size = new Point(28, 28),   
             
         };
         deleteButton.Click += (s, e) => _onDeleteCallback(this);

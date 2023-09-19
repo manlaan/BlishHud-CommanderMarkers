@@ -1,5 +1,6 @@
 ﻿using Blish_HUD.Controls;
 using Blish_HUD.Input;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +9,23 @@ using System.Threading.Tasks;
 
 namespace Manlaan.CommanderMarkers.Library.Controls;
 
-public  class IconGlowButton: GlowButton
+public  class IconButton: Image
 {
+
+    private bool _checked;
+    public bool Checked
+    {
+        get
+        {
+            return _checked;
+        }
+        set
+        {
+            SetProperty(ref _checked, value, invalidateLayout: false, "Checked");
+        }
+    }
+
+    public Texture2D Icon { get => Texture; set => Texture = value; }
 
     protected float _desiredOpacity = 1.0f;
 

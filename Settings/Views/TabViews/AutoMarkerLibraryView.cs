@@ -2,19 +2,23 @@
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Manlaan.CommanderMarkers.Library.Controls;
+using Manlaan.CommanderMarkers.Library.Enums;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Manlaan.CommanderMarkers.Settings.Controls;
 using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 
 namespace Manlaan.CommanderMarkers.Settings.Views.SubViews;
 
 public class AutoMarkerLibraryView : View
 {
-    const int HEADER_HEIGHT = 40;
+    const int HEADER_HEIGHT = 45;
     private List<MarkerSet> _markers = new();
     private Panel? _listingHeader;
     private Panel? _detailsHeader;
@@ -60,12 +64,13 @@ public class AutoMarkerLibraryView : View
         {
             Text = "Filter to current map",
             Parent = _listingHeader,
-            Location = new Point(230, 10)
+            Location = new Point(230, 10),
+            Checked = Service.Settings.AutoMarker_LibraryFilterToCurrent.Value
         };
         newMarkerSet.Click += (s, e) =>
         {
             var newSet = new MarkerSet();
-            newSet.name = "new marker set name";
+            newSet.name = "new set name";
             newSet.description = "description";
             newSet.mapId = Gw2MumbleService.Gw2Mumble.CurrentMap.Id;
             newSet.trigger = new WorldCoord();
@@ -79,18 +84,85 @@ public class AutoMarkerLibraryView : View
         var cancelButton = new StandardButton()
         {
             Parent = _detailsHeader,
-            Text = "Cancel & Return to List",
-            Width= 200,
-            Location = new Point(20, 0)
+            Text = "Cancel",
+            Width= 100,
+            Location = new Point(10, 0),
+            Icon = Service.Textures!.IconGoBack
         };
-        cancelButton.Click += (s, e) => SwapView(false);
         var saveButton = new StandardButton()
         {
             Parent = _detailsHeader,
             Text = "Save",
-            Width = 200,
-            Location = new Point(230, 0)
+            Width = 100,
+            Location = new Point(115, 0),
+            Icon = Service.Textures!.IconSave
         };
+        var export = new StandardButton()
+        {
+            Parent = _detailsHeader,
+            Text = "Export",
+            Width = 95,
+            Icon = Service.Textures!.IconExport,
+            Location = new Point(220, 0),
+            BasicTooltipText = "Export this marker set to your clipboard to share with others"
+        };
+        var import = new StandardButton()
+        {
+            Parent = _detailsHeader,
+            Text = "Import",
+            Width = 95,
+            Location = new Point(320, 0),
+            Icon =Service.Textures!.IconImport,
+            BasicTooltipText = "Copy a marker set to your clipboard, then import it by clicking this button"
+        };
+        var deleteButton = new StandardButton()
+        {
+            Parent = _detailsHeader,
+            Icon = Service.Textures!.IconDelete,
+            Width = 80,
+            Text = "Delete",
+            BasicTooltipText = $"Delete Marker Set",
+            Location = new Point(420, 0)
+        };
+
+        cancelButton.Click += (s, e) => SwapView(false);
+        export.Click += (s, e) =>
+        {
+            try
+            {
+                string json = JsonConvert.SerializeObject(_editingMarkerSet);
+                string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+                System.Windows.Forms.Clipboard.SetText(base64);
+                ScreenNotification.ShowNotification($"Marker set {_editingMarkerSet?.name} copied to your clipboard!", ScreenNotification.NotificationType.Blue, Service.Textures!._blishHeart, 4);
+            } catch (Exception)
+            { 
+            }
+        };
+        import.Click += (s, e) =>
+        {
+            try
+            {
+                string json = System.Windows.Forms.Clipboard.GetText();
+
+                var bytes = Convert.FromBase64String(json);
+                var parsedString = Encoding.UTF8.GetString(bytes);
+         
+                MarkerSet? markerSet = JsonConvert.DeserializeObject<MarkerSet>(parsedString);
+                if (markerSet == null)
+                {
+                    throw new Exception("Invalid JSON");
+                }
+                ScreenNotification.ShowNotification($"Imported marker set {markerSet.name}", ScreenNotification.NotificationType.Green, Service.Textures!._blishHeart, 4);
+                _editingMarkerSet?.CloneFromMarkerSet(markerSet);
+                _detailsPanel!.LoadMarkerSet(_editingMarkerSet, _editingMarkerSetIndex);
+
+            }
+            catch (Exception)
+            {
+                ScreenNotification.ShowNotification("Unable to import clipboard content\nDid you copy a marker set first?", ScreenNotification.NotificationType.Red, null, 5);
+            }
+
+        };   
         saveButton.Click += (s, e) =>
         {
             if (_editingMarkerSetIndex >= 0)
@@ -104,14 +176,6 @@ public class AutoMarkerLibraryView : View
                 Service.MarkersListing.SaveMarker(_editingMarkerSet!);
             }
             SwapView(true);
-        };
-        var deleteButton = new GlowButton()
-        {
-            Parent = _detailsHeader,
-            Icon = Service.Textures!._imgClear,
-            Size = new Point(30, 30),
-            BasicTooltipText = $"Delete Marker Set",
-            Location = new Point(440, 0)
         };
         deleteButton.Click += (s, e) =>
         {
@@ -144,8 +208,12 @@ public class AutoMarkerLibraryView : View
 
         ReloadMarkerList(_currentMapFilter.Checked);
         Service.MarkersListing.MarkersChanged += (s, e) => ReloadMarkerList(_currentMapFilter.Checked);
+        GameService.Gw2Mumble.CurrentMap.MapChanged += (s,e) => ReloadMarkerList(_currentMapFilter.Checked);
 
-        _currentMapFilter.CheckedChanged += (s, e) => ReloadMarkerList(_currentMapFilter.Checked) ;
+        _currentMapFilter.CheckedChanged += (s, e) => {
+            Service.Settings.AutoMarker_LibraryFilterToCurrent.Value = _currentMapFilter.Checked;
+            ReloadMarkerList(_currentMapFilter.Checked);
+        };
     
     }
 
@@ -185,9 +253,7 @@ public class AutoMarkerLibraryView : View
     protected void ReloadMarkerList(bool filterToCurrent)
     {
         var currentMapId = Gw2MumbleService.Gw2Mumble.CurrentMap.Id;
-        _markers = //filterToCurrent ?
-           // Service.MarkersListing.GetMarkersForMap(currentMapId) :
-            Service.MarkersListing.GetAllMarkerSets();
+        _markers = Service.MarkersListing.GetAllMarkerSets();
         RenderLibraryList(_listingPanel,filterToCurrent, currentMapId);
     }
 
@@ -200,25 +266,20 @@ public class AutoMarkerLibraryView : View
         var i = 0;
 
         panel.Children.Clear();
-
         _markers.ForEach( marker =>
         {
-            var markerIdx = i++;      
-            var mapName = marker.mapId != null ? Service.MapDataCache.Describe((int)marker.mapId!) : "unknown map";
+            var markerIdx = i++;
+            var mapName = marker.MapName;
 
-
+            
             var btn = new DetailsButton()
             {
                 Text = (marker.enabled?"":"(Disabled) ")+$"{ marker.name}\n{marker.description}",
-                Icon = marker.enabled? Service.Textures._imgHeart : Service.Textures._imgClear,
-                //MaxFill = 8,
-                //CurrentFill = marker.marks?.Count ?? 0,
-                //ShowFillFraction = true,
-                //FillColor = Color.LightBlue,
+                Icon = marker.enabled?  ((SquadMarker)((i%8))+1).GetIcon(): Service.Textures._imgClear,
                 Width = DetailButtonWidth,
                 IconSize = DetailsIconSize.Small,
                 ShowToggleButton = true,
-                BasicTooltipText = $"{marker.name} - {marker.description}",
+                BasicTooltipText = $"{marker.name}\n{marker.description}\nMap: {mapName}\n\nMarkers in use:\n{marker.DescribeMarkers()}",
                 BackgroundColor = marker.enabled? Color.Transparent : new Color(.4f,.1f,.1f,0.1f),
                 Visible = shouldFilter ? marker.MapId == currentMapId : true,
             };
@@ -226,7 +287,9 @@ public class AutoMarkerLibraryView : View
             {
                 Parent = btn,
                 Text = "Edit",
-                BasicTooltipText = $"Click to edit {marker.name}"
+                Width=60,
+                BasicTooltipText = $"Click to edit {marker.name}",
+                Icon = Service.Textures!.IconEdit
             };
             edit.Click += (s, e) => {
                 SwapView(marker, markerIdx);
@@ -235,8 +298,7 @@ public class AutoMarkerLibraryView : View
             {
                 Parent = btn,
                 Text = mapName,
-                Width = 250,
-                BasicTooltipText = mapName,
+                Width = 300,
                 Height=30
             };
 
@@ -244,14 +306,13 @@ public class AutoMarkerLibraryView : View
             {
                 Size = editSize,
                 Parent = btn,
+                Opacity = 0.5f
             };
             
             img.Click += (s, e) =>
             {
                 marker.enabled = img.WatchValue;
-                Debug.WriteLine($"marker img click- set={marker.name}, index ={markerIdx}");
                 Service.MarkersListing.EditMarker(markerIdx, marker);
-                //SwapView();
                 
             };
 
