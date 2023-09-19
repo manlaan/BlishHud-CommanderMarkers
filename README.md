@@ -6,9 +6,9 @@ PR changes to the `Community/Markers.json` file.
 
 File Schema
 ```
-[
-    //Category Objects
-    {
+{
+  "lastEdit":"string timestamp",
+  "categories":{
         "category_name":"string",
         "markers":[
              {
