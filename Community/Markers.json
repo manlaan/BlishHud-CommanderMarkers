@@ -6,6 +6,7 @@
       "markers":[
         {
           "author":"Soeed",
+          "enabled":true,
           "name": "Sabetha",
           "description": "Cannon platforms",
           "mapId": 1062,
