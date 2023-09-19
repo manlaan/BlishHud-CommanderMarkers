@@ -4,7 +4,16 @@ Adds icons to the screen to help place commander markers, both for objects and g
 For ground markers, click the icon, which highlights it, then click on the mini map or in the environment to place marker.  You can also Rt-click on the icon to remove the marker.  
 
 
+# For Community Marker pull requests, make PR to [Static Hosting Branch](https://github.com/manlaan/BlishHud-CommanderMarkers/tree/bhud-static/Manlaan.CommanderMarkers)
+
 ## Changelog
+
+### 3.1.2: 2023-09-19
+* Added AutoMarker Library
+* Added Community Library on bhud static hosting
+* Added new settings
+* QoL improvements
+* Additional customizations
 ### 3.0.0-beta-1: 2023-04-25
 * Added automarker feature.
 ### 2.0.0: 2023-04-20:

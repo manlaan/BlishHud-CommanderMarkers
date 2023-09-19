@@ -148,8 +148,8 @@ public class MarkerListing
 
         var ms = new MarkerSet
         {
-            name = "Sabetha Cannons",
-            description = "Cannon jump pads",
+            name = "Sabetha",
+            description = "Cannon bomb launch platforms",
             mapId = 1062,
             trigger = new WorldCoord { x = -78.40887f, y = 133.5607f, z = 70.977f },
             marks = new List<MarkerCoord>
@@ -297,8 +297,8 @@ public class MarkerListing
 
         ms = new MarkerSet
         {
-            name = "Qadim1",
-            description = "Stab/Prot pyres, Heart-Lamp3, Square-portal/stack",
+            name = "Qadim",
+            description = "Stab/Prot pyres, Heart:Lamp3, Square:portal/stack",
             mapId = 1303,
             trigger = new WorldCoord { x = -152.3928f, y = 285.804f, z = 120.1688f },
             marks = new List<MarkerCoord>
@@ -407,7 +407,7 @@ public class MarkerListing
         SaveMarker(ms);
 
 
-        ms = new MarkerSet
+/*        ms = new MarkerSet
         {
             name = "IBS - Cold War",
             description = "Boss spawn location",
@@ -419,7 +419,7 @@ public class MarkerListing
                 //new MarkerCoord(){ x=29.084f, y = -51.671f, z = 18.002f, icon =1, name="//Champ spawn - toofar from door"},
 	        }
         };
-        SaveMarker(ms);
+        SaveMarker(ms);*/
 
 
         ms = new MarkerSet

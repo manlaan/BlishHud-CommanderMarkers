@@ -36,6 +36,7 @@ public class AutoMarkerSettingsView : View
                 AutoSizeWidth = true,
             }, out var delayLabel);
 
+
         new Label()
         {
             Parent = buildPanel,

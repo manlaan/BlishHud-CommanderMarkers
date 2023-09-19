@@ -17,7 +17,8 @@ public class ModuleSettingsTab : ISettingsMenuRegistrar
     
     public ModuleSettingsTab()
     {
-        
+
+
         _registeredMenuItems.Add(new MenuViewItem(
             new MenuItem("Clickable Markers"),
             _ => new MarkerPanelSettingsView()
@@ -31,7 +32,10 @@ public class ModuleSettingsTab : ISettingsMenuRegistrar
             new MenuItem("AutoMarker Library"),
             _ => new AutoMarkerLibraryView()
         ));
-
+        _registeredMenuItems.Add(new MenuViewItem(
+        new MenuItem("Community Library"),
+            _ => new AutoMarkerCommunityLibraryView()
+        ));
         _registeredMenuItems.Add(new MenuViewItem(
             new MenuItem("Keybinds"),
             _ => new KeybindSettingsView()

@@ -1,6 +1,8 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Common.Gw2;
+using Blish_HUD.Controls;
 using Blish_HUD.Input;
+using Manlaan.CommanderMarkers.Library.Enums;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Manlaan.CommanderMarkers.Settings.Services;
 using Manlaan.CommanderMarkers.Utils;
@@ -105,7 +107,7 @@ public class MapWatchService : IDisposable
         var screenBounds = ScreenMap.Data.ScreenBounds;
         InputHelper.DoHotKey(keys[0]);
         Thread.Sleep((int) delay/2);
-
+        var errors = new List<string>();
         for (var i = 0; i < markers.marks.Count; i++)
         {
             var marker = markers.marks[i];
@@ -124,8 +126,17 @@ public class MapWatchService : IDisposable
             else
             {
                 Debug.WriteLine($"{marker.icon} {d} is not in mapbounds {screenBounds}");
+                errors.Add($"{((SquadMarker)marker.icon).EnumValue()} {marker.name}");
             }
 
+        }
+        if(errors.Count > 0)
+        {
+
+            ScreenNotification.ShowNotification(
+                $"Unable to place {errors.Count} marker(s)\nTry moving your map to the marker trigger",
+                ScreenNotification.NotificationType.Warning, null, 6
+            );
         }
 
         Mouse.SetPosition(originalMousePos.X, originalMousePos.Y);
