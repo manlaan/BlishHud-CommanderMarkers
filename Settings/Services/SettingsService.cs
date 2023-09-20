@@ -124,7 +124,7 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
             "CmdMrkAMShowPreview",
             true,
             () => "Show preview of markers",
-            () => "Draw a preview of the markers when placing from the menu bar icon"
+            () => "Allows for drawing a preview of the markers on the map"
         );
 
         CornerIconEnabled = settings.DefineSetting(
