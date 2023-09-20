@@ -54,25 +54,4 @@ public class EnabledIconButton : IconButton, IDisposable
         Click -= EnabledIconButton_Click;
     }
 
-/*    protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds)
-    {
-        base.Paint(spriteBatch, bounds);
-        if (_watchValue)
-        {
-
-            spriteBatch.DrawStringOnCtrl(this, "Enabled", _font, 
-                new Rectangle(0, 0, 100, 30), 
-                Color.Green, horizontalAlignment: HorizontalAlignment.Right, verticalAlignment: VerticalAlignment.Middle);
-        }
-        else
-        {
-            spriteBatch.DrawStringOnCtrl(this, "Disabled", _font, 
-                new Rectangle(-30, 0, 100, 30), 
-                Color.Red, horizontalAlignment: HorizontalAlignment.Right, verticalAlignment: VerticalAlignment.Middle);
-
-        }
-
-
-    }*/
-
 }

@@ -13,15 +13,6 @@ public class MarkerPlaceMenuItem : ContextMenuStripItem
         _markerSet = markerSet;
         BasicTooltipText = markerSet.description;
 
-        //Click += MarkerPlaceMenuItem_Click;
-
-    }
-
-    private void MarkerPlaceMenuItem_Click(object sender, Blish_HUD.Input.MouseEventArgs e)
-    {
-        Service.MapWatch.PlaceMarkers(_markerSet);
-        Service.MapWatch.RemovePreviewMarkerSet();
-
     }
 
     protected override void OnClick(MouseEventArgs e)
@@ -41,12 +32,6 @@ public class MarkerPlaceMenuItem : ContextMenuStripItem
     {
         base.OnMouseLeft(e);
         Service.MapWatch.RemovePreviewMarkerSet();
-    }
-
-
-    protected override void DisposeControl()
-    {
-        //Click -= MarkerPlaceMenuItem_Click;
     }
 
 }

@@ -40,7 +40,7 @@ public class PositionFields: Container
         _xPos = new Label()
         {
             Parent = this,
-            Text = marker.x.ToString(),
+            Text = _worldCoord.x.ToString(),
             Size = new Point(85, 30),
             Location = new Point(125, 0)
         };
@@ -54,7 +54,7 @@ public class PositionFields: Container
         _yPos = new Label()
         {
             Parent = this,
-            Text = marker.y.ToString(),
+            Text = _worldCoord.y.ToString(),
             Size = new Point(85, 30),
             Location = new Point(225, 0)
         };
@@ -68,7 +68,7 @@ public class PositionFields: Container
         _zPos = new Label()
         {
             Parent = this,
-            Text = marker.z.ToString(),
+            Text = _worldCoord.z.ToString(),
             Size = new Point(85, 30),
             Location = new Point(325, 0)
         };
