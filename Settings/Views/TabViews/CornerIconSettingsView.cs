@@ -1,8 +1,5 @@
 ﻿using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
-using Blish_HUD.Settings.UI.Views;
-using Manlaan.CommanderMarkers.Markers;
-using Manlaan.CommanderMarkers.Settings.Enums;
 using Manlaan.CommanderMarkers.Settings.Services;
 using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;

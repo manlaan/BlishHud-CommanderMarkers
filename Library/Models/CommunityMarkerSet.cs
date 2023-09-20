@@ -2,7 +2,6 @@
 using Manlaan.CommanderMarkers.Presets.Model;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 
 namespace Manlaan.CommanderMarkers.Library.Models;
 

@@ -4,8 +4,6 @@ using Blish_HUD.Controls;
 using Blish_HUD.Controls.Extern;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
-using Manlaan.CommanderMarkers.Localization;
-using Manlaan.CommanderMarkers.Settings.Models;
 using Manlaan.CommanderMarkers.Settings.Services;
 using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
@@ -13,7 +11,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
 using System;
-using System.Runtime;
 
 namespace Manlaan.CommanderMarkers.Markers;
 
@@ -107,7 +104,7 @@ public class MarkersPanel : FlowPanel, IDisposable
             GameService.Input.Mouse.LeftMouseButtonPressed += OnMouseClick;
         }
     }
-#if DEBUG
+/*#if DEBUG
     public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds)
     {
         base.PaintBeforeChildren(spriteBatch, bounds);
@@ -116,7 +113,7 @@ public class MarkersPanel : FlowPanel, IDisposable
             spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(0, 0, this.Width, this.Height), new Color(200, 96, 96, 192));
         }
     }
-#endif
+#endif*/
 
     public override void PaintAfterChildren(SpriteBatch spriteBatch, Rectangle bounds)
     {

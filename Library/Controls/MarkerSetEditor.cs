@@ -2,10 +2,7 @@
 using Blish_HUD.Controls;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Microsoft.Xna.Framework;
-using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
-using System.Text;
 
 namespace Manlaan.CommanderMarkers.Library.Controls;
 

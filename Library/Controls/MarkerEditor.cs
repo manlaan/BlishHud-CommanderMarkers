@@ -1,11 +1,9 @@
 ﻿using Blish_HUD.Controls;
-using Manlaan.CommanderMarkers.Library.Enums;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Manlaan.CommanderMarkers.Library.Controls;
 

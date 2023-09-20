@@ -3,7 +3,6 @@ using Blish_HUD.Controls;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Manlaan.CommanderMarkers.Settings.Views.Tabs;
-using System.Threading.Tasks;
 using Manlaan.CommanderMarkers.Settings.Views.Generic;
 
 namespace Manlaan.CommanderMarkers.Settings.Controls;
@@ -17,8 +16,6 @@ public class SettingsPanel : TabbedWindow2
     private static Rectangle SettingPanelRegion => new()
     {
         Location = new Point(38, 25),
-        //Location = new Point(-7, +25),
-        //Size = new Point(Background!.Width, Background!.Height),
         Size = new Point(1100, 705),
     };
     
@@ -37,9 +34,6 @@ public class SettingsPanel : TabbedWindow2
         Title = "Commander Markers";
         Subtitle = "configuration";
         SavesPosition = true;
-        //_backgroundColor = new Color(10, 10, 10);
-
-        //Service.Settings.SettingsPanelKeyBind.Value.Activated += (_, _) => ToggleWindow();
 
         BuildTabs();
         

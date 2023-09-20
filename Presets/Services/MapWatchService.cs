@@ -1,5 +1,4 @@
 ﻿using Blish_HUD;
-using Blish_HUD.Common.Gw2;
 using Blish_HUD.Controls;
 using Blish_HUD.Input;
 using Manlaan.CommanderMarkers.Library.Enums;
@@ -10,9 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -136,10 +133,8 @@ public class MapWatchService : IDisposable
 
             var blishCoord = mapData.WorldToScreenMap(marker.ToVector3());
             var d = blishCoord * scale;
-            Debug.WriteLine($"scale={scale}, marker pos = {d}, {blishCoord}");
             if (screenBounds.Contains(blishCoord))
             {
-                Debug.WriteLine($"{marker.icon} {d} is in mapbounds {screenBounds}");
                 Mouse.SetPosition((int)d.X, (int)d.Y);
                 Thread.Sleep((int) delay/2);
                 InputHelper.DoHotKey(keys[marker.icon]);
@@ -148,7 +143,6 @@ public class MapWatchService : IDisposable
             }
             else
             {
-                Debug.WriteLine($"{marker.icon} {d} is not in mapbounds {screenBounds}");
                 errors.Add($"{((SquadMarker)marker.icon).EnumValue()} {marker.name}");
             }
 
@@ -172,7 +166,6 @@ public class MapWatchService : IDisposable
     {
         _currentmap= e.Value;
         _markers = Service.MarkersListing.GetMarkersForMap(e.Value).Where(m => m.enabled).ToList();
-        Debug.WriteLine($"Found {_markers.Count()} marker sets for this map {e.Value}");
         _screenMap.ClearEntities();
         foreach(var marker in _markers)
         {

@@ -3,10 +3,6 @@ using Blish_HUD.Controls;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Manlaan.CommanderMarkers.Library.Controls;
 

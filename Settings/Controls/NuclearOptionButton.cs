@@ -1,10 +1,7 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Input;
 namespace Manlaan.CommanderMarkers.Settings.Controls;
 

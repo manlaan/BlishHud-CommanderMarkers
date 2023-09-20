@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Blish_HUD.Modules.Managers;
 using Microsoft.Xna.Framework.Graphics;
 

@@ -4,14 +4,12 @@ using Blish_HUD.Graphics.UI;
 using Manlaan.CommanderMarkers.Library.Controls;
 using Manlaan.CommanderMarkers.Library.Enums;
 using Manlaan.CommanderMarkers.Presets.Model;
-using Manlaan.CommanderMarkers.Settings.Controls;
 using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 
 namespace Manlaan.CommanderMarkers.Settings.Views.SubViews;
@@ -167,12 +165,11 @@ public class AutoMarkerLibraryView : View
         {
             if (_editingMarkerSetIndex >= 0)
             {
-                Debug.WriteLine($"existing{_editingMarkerSet.marks[0].icon}");
                 Service.MarkersListing.EditMarker(_editingMarkerSetIndex, _editingMarkerSet!);
             }
             else
             {
-                Debug.WriteLine($"new set{_editingMarkerSet.marks[0].icon}");
+                Service.MarkersListing.SaveMarker(_editingMarkerSet!);
                 Service.MarkersListing.SaveMarker(_editingMarkerSet!);
             }
             SwapView(true);

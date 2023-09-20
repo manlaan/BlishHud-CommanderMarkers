@@ -5,16 +5,10 @@ using Manlaan.CommanderMarkers.Library.Controls;
 using Manlaan.CommanderMarkers.Library.Enums;
 using Manlaan.CommanderMarkers.Library.Models;
 using Manlaan.CommanderMarkers.Library.Services;
-using Manlaan.CommanderMarkers.Presets.Model;
 using Manlaan.CommanderMarkers.Settings.Controls;
 using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 
 namespace Manlaan.CommanderMarkers.Settings.Views.SubViews;
 
@@ -114,7 +108,6 @@ public class AutoMarkerCommunityLibraryView : View
         _categorySelection?.Items.Clear();
         _sets?.Categories.ForEach(category =>
         {
-        Debug.WriteLine($"LoadCategory {category?.CategoryName} {category?.MarkerSets.Count}");
 
         _categorySelection?.Items.Add(category?.CategoryName);
         });

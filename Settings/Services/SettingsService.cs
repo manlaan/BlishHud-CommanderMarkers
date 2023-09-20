@@ -1,5 +1,4 @@
-﻿using Blish_HUD;
-using Blish_HUD.Input;
+﻿using Blish_HUD.Input;
 using Blish_HUD.Settings;
 using Manlaan.CommanderMarkers.Settings.Enums;
 using Microsoft.Xna.Framework;

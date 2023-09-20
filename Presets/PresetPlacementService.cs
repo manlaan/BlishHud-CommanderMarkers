@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Blish_HUD;
-using Manlaan.CommanderMarkers.Utils;
-using Microsoft.Xna.Framework.Graphics;
-using SharpDX.Direct2D1;
 
 namespace Manlaan.CommanderMarkers.Presets;
 

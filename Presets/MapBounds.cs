@@ -1,5 +1,4 @@
-﻿using Manlaan.CommanderMarkers;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace Manlaan.CommanderMarkers.Presets;
 

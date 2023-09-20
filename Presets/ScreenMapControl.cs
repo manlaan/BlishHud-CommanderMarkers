@@ -1,6 +1,5 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
-using Manlaan.CommanderMarkers.Presets.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
@@ -82,7 +81,7 @@ public class ScreenMap : Control
 
     protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds)
     {
-#if DEBUG
+/*#if DEBUG
         ClipsBounds = false;
         spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, bounds, new Color(96, 96, 96, 192));
         var screen = ScreenMap.Data.ScreenBounds;
@@ -93,7 +92,7 @@ public class ScreenMap : Control
             spriteBatch.DrawOnCtrl(Graphics.SpriteScreen,ContentService.Textures.Pixel, new Rectangle(i*50, 0, 2, Graphics.SpriteScreen.Height), i%2==0?Color.Red:Color.Pink);
 
         }
-#endif
+#endif*/
         if (!GameIntegration.Gw2Instance.IsInGame || _mapData.Current == null)
             return;
         if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat) return;

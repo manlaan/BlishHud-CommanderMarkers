@@ -1,13 +1,6 @@
-﻿using Blish_HUD;
-using Blish_HUD.Controls;
+﻿using Blish_HUD.Controls;
 using Blish_HUD.Input;
-using Blish_HUD.Settings;
 using Manlaan.CommanderMarkers.Presets.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Manlaan.CommanderMarkers.Library.Controls;
 

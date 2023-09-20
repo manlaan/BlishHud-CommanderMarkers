@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Blish_HUD.Controls;
-using Blish_HUD.Graphics.UI;
 using Blish_HUD.Settings;
 using Blish_HUD.Settings.UI.Views;
 
