@@ -45,6 +45,7 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     public SettingEntry<bool>AutoMarker_OnlyWhenCommander { get; private set; }
     public SettingEntry<bool> AutoMarker_FeatureEnabled { get; private set; }
     public SettingEntry<bool> AutoMarker_LibraryFilterToCurrent { get; private set; }
+    public SettingEntry<bool> AutoMarker_ShowPreview { get; private set; }
     public SettingEntry<bool> CornerIconEnabled { get; private set; }
     public SettingEntry<CornerIconActions> CornerIconLeftClickAction { get; private set; }
 
@@ -119,6 +120,12 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
             false,
             () => "Filter to current map",
             () => "Filter the library list to only show marker sets for your current map"
+        );
+        AutoMarker_ShowPreview = settings.DefineSetting(
+            "CmdMrkAMShowPreview",
+            true,
+            () => "Show preview of markers",
+            () => "Draw a preview of the markers when placing from the menu bar icon"
         );
 
         CornerIconEnabled = settings.DefineSetting(

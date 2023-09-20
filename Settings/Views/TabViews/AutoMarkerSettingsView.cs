@@ -27,6 +27,7 @@ public class AutoMarkerSettingsView : View
             .AddSpace()
             .AddSetting(_settings.AutoMarker_FeatureEnabled)
             .AddSetting(_settings.AutoMarker_OnlyWhenCommander)
+            .AddSetting(_settings.AutoMarker_ShowPreview)
             .AddSpace()
             .AddSetting(_settings.AutoMarker_PlacementDelay)
             .AddFlowControl(new Label()
@@ -34,7 +35,8 @@ public class AutoMarkerSettingsView : View
                 Text = $"  Delay Time: {_settings.AutoMarker_PlacementDelay.Value} ms",
 
                 AutoSizeWidth = true,
-            }, out var delayLabel);
+            }, out var delayLabel)
+            ;
 
 
         new Label()

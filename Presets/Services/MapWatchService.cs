@@ -27,6 +27,9 @@ public class MapWatchService : IDisposable
 
     private ScreenMap _screenMap;
     private List<BasicMarker> _triggerMarker = new();
+
+    private MarkerPreview? _previewMarkerSet;
+
     public MapWatchService(MapData map, SettingService settings) {
 
         _screenMap = new ScreenMap(map) {
@@ -114,9 +117,12 @@ public class MapWatchService : IDisposable
 
             if (marker.icon > 9 || marker.icon < 0) continue;
 
-            var d = mapData.WorldToScreenMap(marker.ToVector3()) * scale;
-            if (screenBounds.Contains(d))
+            var blishCoord = mapData.WorldToScreenMap(marker.ToVector3());
+            var d = blishCoord * scale;
+            Debug.WriteLine($"scale={scale}, marker pos = {d}, {blishCoord}");
+            if (screenBounds.Contains(blishCoord))
             {
+                Debug.WriteLine($"{marker.icon} {d} is in mapbounds {screenBounds}");
                 Mouse.SetPosition((int)d.X, (int)d.Y);
                 Thread.Sleep((int) delay/2);
                 InputHelper.DoHotKey(keys[marker.icon]);
@@ -154,7 +160,28 @@ public class MapWatchService : IDisposable
         foreach(var marker in _markers)
         {
             _screenMap.AddEntity(new BasicMarker(_map, marker.trigger!.ToVector3(), marker.name, marker.description));
+            //PreviewMarkerSet(marker);
 
+        }
+    }
+
+
+    public void PreviewMarkerSet(MarkerSet preview)
+    {
+        RemovePreviewMarkerSet();
+        if (Service.Settings.AutoMarker_ShowPreview.Value)
+        {
+            _previewMarkerSet = new MarkerPreview(_map, preview);
+            _screenMap.AddEntity(_previewMarkerSet);
+        }
+
+    }
+    public void RemovePreviewMarkerSet()
+    {
+        if (_previewMarkerSet != null)
+        {
+            _screenMap.RemoveEntity(_previewMarkerSet);
+            _previewMarkerSet = null;
         }
     }
 

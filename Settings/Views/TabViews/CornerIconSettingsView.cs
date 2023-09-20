@@ -41,5 +41,12 @@ public class CornerIconSettingsView : View
                 UseShellExecute = true
             });
         };
+        new Label()
+        {
+            Parent = buildPanel,
+            Location = new Point(20, buildPanel.Height - 30),
+            Text = "Special Thank You to the testers: QuitarHero, Kami, and Naru",
+            AutoSizeWidth = true,
+        };
     }
 }
