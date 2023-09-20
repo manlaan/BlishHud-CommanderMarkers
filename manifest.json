@@ -1,6 +1,6 @@
 {
   "name": "Commander Markers",
-  "version": "3.1.3",
+  "version": "3.1.4",
   "namespace": "Manlaan.CommanderMarkers",
   "package": "CommanderMarkers.dll",
   "manifest_version": 1,

@@ -176,6 +176,19 @@ public class MapWatchService : IDisposable
         }
 
     }
+    public void PreviewClosestMarkerSet()
+    {
+        var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
+        foreach (MarkerSet marker in _markers)
+        {
+            var d = (playerPosition - marker.trigger?.ToVector3())?.Length() ?? 1000f;
+            if (d < 15f)
+            {
+                PreviewMarkerSet(marker);
+                return;
+            }
+        }
+    }
     public void RemovePreviewMarkerSet()
     {
         if (_previewMarkerSet != null)

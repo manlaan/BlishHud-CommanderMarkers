@@ -23,6 +23,9 @@ public class TextureService : IDisposable
         _imgClear = contentsManager.GetTexture(@"clear.png");
         _imgCheck =contentsManager.GetTexture(@"check.png");
         _blishHeart = contentsManager.GetTexture(@"mapmarker.png");
+        _blishHeartSmall = contentsManager.GetTexture(@"mapmarker20.png");
+
+        IconEye = contentsManager.GetTexture(@"eye.png");
 
         IconCopy = contentsManager.GetTexture(@"iconCopy.png");
         IconDelete = contentsManager.GetTexture(@"iconDelete.png");
@@ -51,6 +54,9 @@ public class TextureService : IDisposable
         _imgClear?.Dispose();
         _imgCheck?.Dispose();
         _blishHeart?.Dispose();
+        _blishHeartSmall?.Dispose();
+
+        IconEye?.Dispose();
 
         IconCopy?.Dispose();
         IconDelete?.Dispose();
@@ -76,7 +82,9 @@ public class TextureService : IDisposable
     public Texture2D _imgClear;
     public Texture2D _imgCheck;
     public Texture2D _blishHeart;
+    public Texture2D _blishHeartSmall;
 
+    public Texture2D IconEye;
     public Texture2D IconCopy;
     public Texture2D IconDelete;
     public Texture2D IconDeleteLarge;

@@ -156,9 +156,32 @@ public class AutoMarkerCommunityLibraryView : View
             {
                 Parent = btn,
                 Text = $"Author: {marker.Author}",
-                Width = 300,
+                Width = marker.MapId==currentMapId ? 180: 300,
                 Height=30
             };
+
+            if (marker.MapId == currentMapId)
+            {
+                var Preview = new IconButton()
+                {
+                    Parent = btn,
+                    Icon = Service.Textures!.IconEye,
+                    BasicTooltipText = "Preview",
+                    Size = new Point(30, 30)
+                };
+                Preview.MouseEntered += (s, e) => Service.MapWatch.PreviewMarkerSet(marker);
+                Preview.MouseLeft += (s, e) => Service.MapWatch.RemovePreviewMarkerSet();
+                var placeBtn = new StandardButton()
+                {
+                    Parent = btn,
+                    Icon = Service.Textures!._blishHeartSmall,
+                    Text = "Place",
+                    Width = 100
+                };
+                placeBtn.Click += (s, e) => Service.MapWatch.PlaceMarkers(marker);
+
+            }
+
 
             var importButton = new StandardButton()
             {

@@ -274,7 +274,7 @@ public class AutoMarkerLibraryView : View
             
             var btn = new DetailsButton()
             {
-                Text = (marker.enabled?"":"(Disabled) ")+$"{ marker.name}\n{marker.description}",
+                Text = (marker.enabled?"":"(Disabled) ")+$"{ marker.name}\n{marker.description}\n{mapName}",
                 Icon = marker.enabled?  ((SquadMarker)((i%8))+1).GetIcon(): Service.Textures._imgClear,
                 Width = DetailButtonWidth,
                 IconSize = DetailsIconSize.Small,
@@ -294,13 +294,34 @@ public class AutoMarkerLibraryView : View
             edit.Click += (s, e) => {
                 SwapView(marker, markerIdx);
             };
+
             new Label()
             {
                 Parent = btn,
-                Text = mapName,
-                Width = 300,
-                Height=30
+                Width = marker.MapId == currentMapId ? 210: 340,
             };
+            
+            if (marker.MapId == currentMapId)
+            {
+                var Preview = new IconButton()
+                {
+                    Parent = btn,
+                    Icon = Service.Textures!.IconEye,
+                    BasicTooltipText = "Preview",
+                    Size = new Point(30, 30)
+                };
+                Preview.MouseEntered += (s, e) => Service.MapWatch.PreviewMarkerSet(marker);
+                Preview.MouseLeft += (s, e) => Service.MapWatch.RemovePreviewMarkerSet();
+                var placeBtn = new StandardButton()
+                {
+                    Parent = btn,
+                    Icon = Service.Textures!._blishHeartSmall,
+                    Text = "Place",
+                    Width=100
+                };
+                placeBtn.Click += (s, e) => Service.MapWatch.PlaceMarkers(marker);
+                
+            }
 
             var img = new EnabledIconButton(marker.enabled)
             {

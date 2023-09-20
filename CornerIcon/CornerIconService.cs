@@ -89,7 +89,7 @@ public class CornerIconService : IDisposable
         };
 
         _cornerIcon.Click += OnCornerIconClicked;
-        _cornerIcon.Menu = new ContextMenuStrip(() => _contextMenuItems);
+        _cornerIcon.Menu = new CornerIconContextMenu(() => _contextMenuItems);
     }
 
     private void RemoveCornerIcon()
