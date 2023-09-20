@@ -64,7 +64,8 @@ public class MapWatchService : IDisposable
         if(_markers.Count <=0) return;
         if(GameService.Gw2Mumble.UI.IsMapOpen ==false) return;
 
-        
+        if (!ShouldAttemptPlacement()) return;
+
         var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
         foreach(MarkerSet marker in _markers) {
             var d = (playerPosition - marker.trigger?.ToVector3())?.Length() ?? 1000f;
@@ -84,6 +85,22 @@ public class MapWatchService : IDisposable
     public Task PlaceMarkers(MarkerSet marders)
     {
         return PlaceMarkers(marders, _map);
+    }
+
+    private bool ShouldAttemptPlacement()
+    {
+        var shouldDoIt =
+          Service.Settings.AutoMarker_FeatureEnabled.Value &&
+          GameService.GameIntegration.Gw2Instance.Gw2IsRunning &&
+          GameService.GameIntegration.Gw2Instance.IsInGame &&
+          GameService.Gw2Mumble.IsAvailable;
+
+        if (Service.Settings._settingOnlyWhenCommander.Value || Service.LtMode.Value)
+        {
+            shouldDoIt &= (GameService.Gw2Mumble.PlayerCharacter.IsCommander || Service.LtMode.Value);
+        }
+        return shouldDoIt;
+            
     }
     private Task PlaceMarkers(MarkerSet markers, MapData mapData)
     {
