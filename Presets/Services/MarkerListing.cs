@@ -530,23 +530,23 @@ public class MarkerListing
 
         ms = new MarkerSet
             { 
-                name = "Aerodrome Wing Test",
+                name = "Aerodrome Wing",
                 description = "Demo of automarker feature",
                 mapId = 1155,
                 trigger = new WorldCoord
                 {
-                    x = 116.4f, y = -356.3632f, z = 34.18457f
+                     x = 116.939705f, y= -366.006042f, z= 34.18379f
                 },
                 marks = new List<MarkerCoord>
                 {
-                    new MarkerCoord(){x = 57.05506f, y= -345.271f, z = 39.51918f, icon=1, name="Spirit Vale"},//W1
-                    new MarkerCoord(){x = 65.95273f, y= -370.6219f, z = 39.56038f, icon=2, name="Salvation Pass"},//W2
-                    new MarkerCoord(){x = 84.03487f, y= -386.6116f, z = 39.55384f, icon=3, name="Stronghold of the Faithful"},//W3
-                    new MarkerCoord(){x = 92.82407f, y= -414.263f, z = 39.59739f, icon=4, name="Bastion of the Penitent"},//W4
-                    new MarkerCoord(){x = 127.0165f, y= -410.97f, z = 39.55385f, icon=5, name="Hall of Chains"},//W5
-                    new MarkerCoord(){x = 165.5569f, y= -390.4695f, z = 39.63842f, icon=6, name="Mythwright Gambit"},//W6
-                    new MarkerCoord(){x = 156.8735f, y= -412.6107f, z = 39.71187f, icon=7, name="The Key of Ahdashim"},//W7
-                    new MarkerCoord(){x = 195.1904f, y= -323.7846f, z = 39.07505f, icon=8, name="Special Forces Training"},//RT
+                    new MarkerCoord(){x = 59.378746f, y= -342.325073f, z= 34.1844864f, icon=1, name="Spirit Vale"},//W1
+                    new MarkerCoord(){x = 67.14233f, y= -370.322571f, z= 39.56038f, icon=2, name="Salvation Pass"},//W2
+                    new MarkerCoord(){x = 86.7961655f, y= -385.274139f, z= 34.18382f, icon=3, name="Stronghold of the Faithful"},//W3
+                    new MarkerCoord(){x = 93.7534943f, y= -413.138275f, z= 39.59739f, icon=4, name="Bastion of the Penitent"},//W4
+                    new MarkerCoord(){x = 126.134933f, y= -407.566254f,z=34.18382f, icon=5, name="Hall of Chains"},//W5
+                    new MarkerCoord(){x = 161.817551f, y= -388.35556f, z= 34.2041321f, icon=6, name="Mythwright Gambit"},//W6
+                    new MarkerCoord(){x = 156.105789f, y= -411.953827f, z= 39.6989861f, icon=7, name="The Key of Ahdashim"},//W7
+                    new MarkerCoord(){x = 195.512543f, y= -324.111f, z= 39.075735f, icon=8, name="Special Forces Training"},//RT
                 }
 
             };
