@@ -254,6 +254,21 @@ public class AutoMarkerLibraryView : View
         RenderLibraryList(_listingPanel,filterToCurrent, currentMapId);
     }
 
+    private bool CanShowPreviewAndPlaceButtons()
+    {
+        var shouldDoIt =
+          Service.Settings.AutoMarker_FeatureEnabled.Value &&
+          GameService.GameIntegration.Gw2Instance.Gw2IsRunning &&
+          GameService.GameIntegration.Gw2Instance.IsInGame &&
+          GameService.Gw2Mumble.IsAvailable;
+
+        if (Service.Settings._settingOnlyWhenCommander.Value || Service.LtMode.Value)
+        {
+            shouldDoIt &= (GameService.Gw2Mumble.PlayerCharacter.IsCommander || Service.LtMode.Value);
+        }
+        return shouldDoIt;
+    }
+
     protected void RenderLibraryList(FlowPanel? panel, bool shouldFilter, int currentMapId)
     {
         if (panel == null) return;
@@ -261,6 +276,7 @@ public class AutoMarkerLibraryView : View
         Point editSize = new Point(editIcon.Width, editIcon.Height);
         int DetailButtonWidth = panel.Width - ((int)panel.OuterControlPadding.X * 2) - 10;
         var i = 0;
+        bool showPlaceBtn = CanShowPreviewAndPlaceButtons();
 
         panel.Children.Clear();
         _markers.ForEach( marker =>
@@ -295,10 +311,10 @@ public class AutoMarkerLibraryView : View
             new Label()
             {
                 Parent = btn,
-                Width = marker.MapId == currentMapId ? 210: 340,
+                Width = marker.MapId == currentMapId && showPlaceBtn ? 210: 340,
             };
             
-            if (marker.MapId == currentMapId)
+            if (marker.MapId == currentMapId && showPlaceBtn)
             {
                 var Preview = new IconButton()
                 {

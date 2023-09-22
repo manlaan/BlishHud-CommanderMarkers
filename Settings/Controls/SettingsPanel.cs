@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Manlaan.CommanderMarkers.Settings.Views.Tabs;
 using Manlaan.CommanderMarkers.Settings.Views.Generic;
+using System.Threading.Tasks;
 
 namespace Manlaan.CommanderMarkers.Settings.Controls;
 

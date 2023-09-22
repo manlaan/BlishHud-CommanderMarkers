@@ -9,6 +9,7 @@ using Manlaan.CommanderMarkers.Settings.Controls;
 using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace Manlaan.CommanderMarkers.Settings.Views.SubViews;
 
@@ -70,11 +71,28 @@ public class AutoMarkerCommunityLibraryView : View
         };
         
         _listingPanel = new FlowPanel()
-            .BeginFlow(buildPanel, new(-10,-HEADER_HEIGHT), new(0, HEADER_HEIGHT));
+            .BeginFlow(buildPanel, new(-10,-HEADER_HEIGHT-30), new(0, HEADER_HEIGHT));
         _listingPanel.ControlPadding = new Vector2(0, 10);
         _listingPanel.OuterControlPadding = new Vector2(20, 10);
         _listingPanel.CanScroll= true;
 
+        var contribute = new Label()
+        {
+            Parent = buildPanel,
+            Text = "Click here to learn how to contribute your own custom marker set",
+            AutoSizeWidth= true,
+            Location = new Point(10, buildPanel.Height - 28),
+            TextColor = new Color(8,105,190),
+            
+        };
+        contribute.Click += (s, e) =>
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://github.com/manlaan/BlishHud-CommanderMarkers/blob/bhud-static/Manlaan.CommanderMarkers/README.md",
+                UseShellExecute = true
+            });
+        };
        
 
         ReloadMarkerList(_currentMapFilter.Checked);
@@ -135,7 +153,7 @@ public class AutoMarkerCommunityLibraryView : View
             var btn = new DetailsButton()
             {
                 Parent = panel,
-                Text = $"{ marker.name}\n{marker.description}",
+                Text = $"{ marker.name}\n{marker.description}\n{mapName}",
                 Icon = ((SquadMarker)((i%8))+1).GetIcon(),
                 Width = DetailButtonWidth,
                 IconSize = DetailsIconSize.Small,
