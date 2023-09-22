@@ -246,7 +246,7 @@ public class MarkerListing
             name = "Xera",
             description = "Tanking Locations",
             mapId = 1156,
-            trigger = new WorldCoord { x = -55.524f, y = -92.326f, z = 512.354f },
+            trigger = new WorldCoord { x = -43.524f, y = -17.326f, z = 512.354f },
             marks = new List<MarkerCoord>
             {
                 new MarkerCoord(){ x=-55.524f, y = -92.326f, z = 512.354f, icon =1, name="Xera P2-1"},

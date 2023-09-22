@@ -60,6 +60,10 @@ public class MarkerEditor : FlowPanel
             Size = new Point(100,30),
             BasicTooltipText = "Name the marker.\nHelpful for remembering which marker is where."
         };
+        description.TextChanged += (s, e) =>
+        {
+            _markerCoord.name = description.Text;
+        };
 
         var deleteButton = new Image()
         {

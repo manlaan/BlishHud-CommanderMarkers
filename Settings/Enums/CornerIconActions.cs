@@ -4,13 +4,13 @@ namespace Manlaan.CommanderMarkers.Settings.Enums;
 
 public enum CornerIconActions
 {
-    [Description("Show menu")]
+    [Description("Show Quick Access Menu")]
     SHOW_ICON_MENU,
 
-    [Description("Show Settings Window")]
+    [Description("Show The Settings Window")]
     SHOW_SETTINGS,
 
-    [Description("Open the marker library")]
+    [Description("Open The Marker library")]
     LIBRARY,
 
     [Description("Lieutenant's Mode")]

@@ -1,11 +1,11 @@
 {
   "name": "Commander Markers",
-  "version": "3.1.5",
+  "version": "3.2.0",
   "namespace": "Manlaan.CommanderMarkers",
   "package": "CommanderMarkers.dll",
   "manifest_version": 1,
 
-  "description": "Make squad markers 'Click-to-place'!\nAutomatically place markers. Open your map when near a marker and press F to place common raid and strike markers.\n\nLeft click to select a marker then click to place it in the world. Right click to remove the marker.\nBy default the markers only appear when you are the commander.",
+  "description": "Place squad markers with the click a mouse.\nOr place a full set of markers from your saved library.",
   "dependencies": {
     "bh.blishhud": ">=1.0.0"
   },

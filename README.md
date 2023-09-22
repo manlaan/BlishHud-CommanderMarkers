@@ -8,6 +8,9 @@ For ground markers, click the icon, which highlights it, then click on the mini 
 
 ## Changelog
 
+### 3.2.0: 2023-09-22
+Libary bug fixes and polish
+Prerelease
 ### 3.1.2: 2023-09-19
 * Added AutoMarker Library
 * Added Community Library on bhud static hosting

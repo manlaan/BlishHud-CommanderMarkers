@@ -32,14 +32,14 @@ public class MarkerSetEditor : FlowPanel
             Parent = this,
             FlowDirection = ControlFlowDirection.LeftToRight,
             ControlPadding = new Vector2(10,5),
-            Size = new Point(420, 135),
+            Size = new Point(450, 135),
         };
         
         new Label()
         {
             Parent = metaFlow,
             Text = "Name",
-            Size = new Point(100, 30),
+            Size = new Point(99, 30),
             BasicTooltipText = "The name shown on the map when you are within range of using the marker set"
 
         };
@@ -47,12 +47,22 @@ public class MarkerSetEditor : FlowPanel
         {
             Parent = metaFlow,
             Location = new Point(0, 0),
-            Size = new Point(300, 30),
+            Size = new Point(299, 30),
             Text = _markerSet.name,
             BasicTooltipText = "The name shown on the map when you are within range of using the marker set"
 
         };
         title.TextChanged += (s, e) => _markerSet.name = title.Text;
+
+        var Preview = new IconButton()
+        {
+            Parent = metaFlow,
+            Icon = Service.Textures!.IconEye,
+            BasicTooltipText = "Preview",
+            Size = new Point(30, 30)
+        };
+        Preview.MouseEntered += (s, e) => Service.MapWatch.PreviewMarkerSet(_markerSet);
+        Preview.MouseLeft += (s, e) => Service.MapWatch.RemovePreviewMarkerSet();
 
         new Label()
         {
