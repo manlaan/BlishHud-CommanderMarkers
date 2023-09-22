@@ -5,7 +5,49 @@
       "categoryName": "Raids",
       "markerSets":[
         {
-          "author":"Soeed",
+          "enabled": true,
+          "Author":"Soeed.4160",
+          "name": "Vale Guardian",
+          "description": "Stack markers",
+          "mapId": 1062,
+          "trigger": {
+            "x": -99.65478,
+            "y": -562.8382,
+            "z": 60.82302
+          },
+          "markers": [
+            {
+              "i": 1,
+              "d": "First Stack",
+              "x": -92.6957245,
+              "y": -541.254639,
+              "z": 60.9373169
+            },
+            {
+              "i": 3,
+              "d": "red zone",
+              "x": -133.220047,
+              "y": -535.618958,
+              "z": 60.9468269
+            },
+            {
+              "i": 4,
+              "d": "blue zone",
+              "x": -104.917763,
+              "y": -528.7899,
+              "z": 60.9468269
+            },
+            {
+              "i": 5,
+              "d": "green zone",
+              "x": -125.492973,
+              "y": -508.3398,
+              "z": 60.9468269
+            }
+          ]
+        },
+        {
+          "author":"Soeed.4160",
           "name": "Sabetha",
           "description": "Cannon platforms",
           "mapId": 1062,
@@ -46,7 +88,7 @@
           ]
         },
         {
-          "Author":"Soeed",
+          "Author":"Soeed.4160",
           "enabled": true,
           "name": "Qadim The Peerless (Omega Fires)",
           "description": "Larger fire coverage for anomaly management",

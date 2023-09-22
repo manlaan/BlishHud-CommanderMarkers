@@ -99,5 +99,5 @@ Due to in-game level geometry, the game's hitscan for where to vertically place 
 ## Changelog
 
 
-
+* 2023-09-22 Added VG and Q2 omega fires
 * 2023-09-19 Intial Community Markers Setup
