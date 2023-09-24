@@ -8,6 +8,8 @@ For ground markers, click the icon, which highlights it, then click on the mini 
 
 ## Changelog
 
+### 3.2.1: 2023-09-24
+Added automarker display setting
 ### 3.2.0: 2023-09-22
 Libary bug fixes and polish
 Prerelease

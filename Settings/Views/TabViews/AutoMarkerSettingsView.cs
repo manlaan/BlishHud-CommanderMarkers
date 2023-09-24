@@ -24,6 +24,8 @@ public class AutoMarkerSettingsView : View
             .AddSpace()
             .AddSetting(_settings.AutoMarker_FeatureEnabled)
             .AddSetting(_settings.AutoMarker_OnlyWhenCommander)
+            .AddSpace()
+            .AddSetting(_settings.AutoMarker_ShowTrigger)
             .AddSetting(_settings.AutoMarker_ShowPreview)
             .AddSpace()
             .AddSetting(_settings.AutoMarker_PlacementDelay)

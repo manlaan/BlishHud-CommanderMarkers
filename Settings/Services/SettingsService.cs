@@ -45,6 +45,7 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     public SettingEntry<bool> AutoMarker_FeatureEnabled { get; private set; }
     public SettingEntry<bool> AutoMarker_LibraryFilterToCurrent { get; private set; }
     public SettingEntry<bool> AutoMarker_ShowPreview { get; private set; }
+    public SettingEntry<bool> AutoMarker_ShowTrigger { get; private set; }
     public SettingEntry<bool> CornerIconEnabled { get; private set; }
     public SettingEntry<CornerIconActions> CornerIconLeftClickAction { get; private set; }
 
@@ -125,6 +126,12 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
             true,
             () => "Show preview of markers",
             () => "Allows for drawing a preview of the markers on the map"
+        );
+        AutoMarker_ShowTrigger = settings.DefineSetting(
+            "CmdMrkAMShowTrigger",
+            true,
+            () => "Show map marker for AutoMarker set locations",
+            () => "Display the Blish holding markers map icon in locations where AutoMarker sets may be activated from the map"
         );
 
         CornerIconEnabled = settings.DefineSetting(
