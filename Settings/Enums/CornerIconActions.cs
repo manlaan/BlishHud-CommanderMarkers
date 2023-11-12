@@ -16,5 +16,8 @@ public enum CornerIconActions
     [Description("Lieutenant's Mode")]
     LIEUTENANT,
 
+    [Description("Toggle Markers Panel Visibility")]
+    CLICKMARKER_TOGGLE,
+
 
 }
