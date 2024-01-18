@@ -23,13 +23,19 @@ public class MapWatchService : IDisposable
     private List<MarkerSet> _markers= new List<MarkerSet>();
 
     private ScreenMap _screenMap;
+    private BillboardControl _billboards;
     private List<BasicMarker> _triggerMarker = new();
 
     private MarkerPreview? _previewMarkerSet;
-
+    private BillBoardPreview? _billboardPreview;
+    
     public MapWatchService(MapData map, SettingService settings) {
 
         _screenMap = new ScreenMap(map) {
+            Parent = GameService.Graphics.SpriteScreen
+        };
+        _billboards = new BillboardControl(map)
+        {
             Parent = GameService.Graphics.SpriteScreen
         };
         _map = map;
@@ -78,6 +84,7 @@ public class MapWatchService : IDisposable
     public void Update(GameTime gameTime)
     {
         _screenMap.Update(gameTime);
+        _billboards.Update(gameTime);
     }
 
     public Task PlaceMarkers(MarkerSet marders)
@@ -140,8 +147,7 @@ public class MapWatchService : IDisposable
                 Thread.Sleep((int) delay/2);
                 InputHelper.DoHotKey(keys[marker.icon]);
                 Thread.Sleep(delay);
-
-            }
+                }
             else
             {
                 errors.Add($"{((SquadMarker)marker.icon).EnumValue()} {marker.name}");
@@ -184,7 +190,9 @@ public class MapWatchService : IDisposable
         if (Service.Settings.AutoMarker_ShowPreview.Value)
         {
             _previewMarkerSet = new MarkerPreview(_map, preview);
+            _billboardPreview = new BillBoardPreview(_map, preview);
             _screenMap.AddEntity(_previewMarkerSet);
+            _billboards.AddEntity(_billboardPreview);
         }
 
     }
@@ -206,6 +214,7 @@ public class MapWatchService : IDisposable
         if (_previewMarkerSet != null)
         {
             _screenMap.RemoveEntity(_previewMarkerSet);
+            _billboards.RemoveEntity(_billboardPreview);
             _previewMarkerSet = null;
         }
     }
@@ -213,6 +222,7 @@ public class MapWatchService : IDisposable
     public void Dispose()
     {
         _screenMap.Dispose();
+        _billboards?.Dispose();
 
         _setting.AutoMarker_ShowTrigger.SettingChanged -= AutoMarkerBooleanSettingChanged;
         _setting.AutoMarker_FeatureEnabled.SettingChanged -= AutoMarkerBooleanSettingChanged;
