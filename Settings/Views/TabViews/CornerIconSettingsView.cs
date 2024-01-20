@@ -28,7 +28,8 @@ public class CornerIconSettingsView : View
                 Text = "Update Notes",
                 BasicTooltipText = "Open the module update notes in your default web browser",
             }, out var patchNotesButton)
-            ;
+            .AddSpace(100)
+            .AddSetting(_settings.DebugMode);
 
         patchNotesButton.Click += (s, e) =>
         {

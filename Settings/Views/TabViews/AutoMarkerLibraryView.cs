@@ -27,12 +27,15 @@ public class AutoMarkerLibraryView : View
 
     private Checkbox? _currentMapFilter;
 
+    
+
 
     private MarkerSet? _editingMarkerSet;
     private int _editingMarkerSetIndex=-1;
     protected override void Build(Container buildPanel)
     {
         base.Build(buildPanel);
+        
         
         _listingHeader = new Panel()
         {
@@ -199,6 +202,7 @@ public class AutoMarkerLibraryView : View
             ShowBorder = true,
             Location = new(0, 0),
         };
+        this.Unloaded += (s, e) => _detailsPanel.DisableDebug();
         _detailsPanel.Visible = _showingDetails;
         _detailsPanel.CanScroll = true;
 
@@ -215,7 +219,6 @@ public class AutoMarkerLibraryView : View
     }
 
 
-
     protected void SwapView(bool wasUpdated)
     {
         if (!wasUpdated)
@@ -227,6 +230,7 @@ public class AutoMarkerLibraryView : View
         _listingHeader!.Visible = !_showingDetails;
         _detailsHeader!.Visible = _showingDetails;
         _detailsPanel!.Visible = _showingDetails;
+        _detailsPanel.DisableDebug();
 
         var currentScroll = _listingPanel!.VerticalScrollOffset;
         ReloadMarkerList(_currentMapFilter!.Checked);
@@ -244,7 +248,8 @@ public class AutoMarkerLibraryView : View
         _detailsHeader!.Visible = _showingDetails;
         _detailsPanel!.Visible = _showingDetails;
         _detailsPanel!.LoadMarkerSet(marker, idx);
-        
+        _detailsPanel.DisableDebug();
+
     }
 
     protected void ReloadMarkerList(bool filterToCurrent)

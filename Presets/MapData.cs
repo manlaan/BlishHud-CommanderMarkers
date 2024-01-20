@@ -2,13 +2,17 @@
 using Gw2Sharp.WebApi.V2.Models;
 using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended;
 using Newtonsoft.Json;
+using SharpDX.Direct2D1.Effects;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Threading;
 using System.Threading.Tasks;
 using static Blish_HUD.GameService;
+using static Manlaan.CommanderMarkers.Presets.ScreenMap;
 using File = System.IO.File;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -84,6 +88,25 @@ public class MapData : IDisposable
 
     public static Vector2 MapToScreenMap(Vector2 mapCoords, Vector2 mapCenter, float scale, Matrix rotation, Vector2 boundsCenter)
         => Vector2.Transform((mapCoords - mapCenter) * scale, rotation) + boundsCenter;
+
+    public Vector2 ScreenMapToMap(Vector2 screenMapCoord)
+    {
+
+        Vector2 boundsCenter = ScreenMap.Data.BoundsCenter;
+        Matrix rotation = ScreenMap.Data.MapRotation;
+        float scale = ScreenMap.Data.Scale;
+        Vector2 mapCenter = ScreenMap.Data.MapCenter;
+
+        ;
+        return Vector2.Transform((screenMapCoord - boundsCenter) / scale , - rotation) + mapCenter;
+
+    }
+    public Vector2 MapToWorld(Vector2 mapCoords)
+    {
+        int mapId = Gw2Mumble.CurrentMap.Id;
+        return GetMap(mapId) is Map map ? map.MapToWorldMeters(mapCoords) : Vector2.Zero;
+
+    }
 
     private async Task LoadMapData(int cachedVersion, string cacheFilePath, CancellationToken ct)
     {

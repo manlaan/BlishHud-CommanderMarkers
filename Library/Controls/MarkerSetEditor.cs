@@ -1,8 +1,11 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
+using Blish_HUD.Settings;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Microsoft.Xna.Framework;
+using NAudio.CoreAudioApi;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Manlaan.CommanderMarkers.Library.Controls;
 
@@ -14,11 +17,14 @@ public class MarkerSetEditor : FlowPanel
     protected MarkerSet _markerSet = new();
     protected StandardButton? _AddMarkerButton;
 
+    private Checkbox? _debug;
+
     public MarkerSet MarkerSet { get => _markerSet; }
     public MarkerSetEditor(Action<bool> callback) : base()
     {
         ControlPadding = new Vector2(5, 5);
         _returnToList = callback;
+
     }
 
     public void LoadMarkerSet(MarkerSet? markerSet, int idx)
@@ -33,6 +39,7 @@ public class MarkerSetEditor : FlowPanel
             FlowDirection = ControlFlowDirection.LeftToRight,
             ControlPadding = new Vector2(10,5),
             Size = new Point(450, 135),
+            BackgroundColor=Color.Blue
         };
         
         new Label()
@@ -82,7 +89,7 @@ public class MarkerSetEditor : FlowPanel
 
         };
         description.TextChanged += (s,e) => _markerSet.description = description.Text;
-
+        BackgroundColor = Color.Pink;
         new Label()
         {
             Parent = metaFlow,
@@ -100,6 +107,7 @@ public class MarkerSetEditor : FlowPanel
         var triggerFields = new PositionFields(markerSet.Trigger)
         {
             Parent = metaFlow,
+            BackgroundColor = Color.Orange,
         };
         triggerFields.WorldCoordChanged += (s, e) =>
         {
@@ -107,14 +115,44 @@ public class MarkerSetEditor : FlowPanel
             _markerSet.mapId = Gw2MumbleService.Gw2Mumble.CurrentMap.Id;
             label.Text = $"Map: {Service.MapDataCache.Describe(_markerSet.MapId)}";
         };
-
-        _AddMarkerButton = new StandardButton()
+        var flowRow = new Panel()
         {
             Parent = this,
+            Width = metaFlow.Width,
+            HeightSizingMode=SizingMode.AutoSize
+            
+        };
+        var debugging = Service.Settings.DebugMode.Value;
+        _AddMarkerButton = new StandardButton()
+        {
+            Parent = flowRow,
             Text = "Add Marker",
+            Location=new Point(0,0),
             Width = 410,
             Enabled = _markerSet.marks.Count < 8
         };
+        
+        if (debugging)
+        {
+            if (_debug == null)
+            {
+                _debug = new Checkbox()
+                {
+                    Parent = flowRow,
+                    BasicTooltipText = "Debug mode - every Arrow keybind use will add a marker to the list\nat the mouse's world coords",
+                    Enabled = true,
+                    Checked = false,
+                    Location = new Point(_AddMarkerButton.Right + 2, _AddMarkerButton.Top+5),
+                    BackgroundColor = Color.White,
+                };
+                _debug.CheckedChanged += _debug_CheckedChanged;
+            }
+            else
+            {
+                _debug.Parent = flowRow;
+            }
+
+        }
 
         markerSet.marks.ForEach( mark =>
         {
@@ -137,6 +175,46 @@ public class MarkerSetEditor : FlowPanel
             _AddMarkerButton.Enabled = _markerSet.marks.Count < 8;
             
         };
+    }
+    public void DisableDebug()
+    {
+        if (_debug!=null && _debug.Checked)
+        {
+            _debug.Checked = false;
+        }
+    }
+
+    private void _debug_CheckedChanged(object sender, CheckChangedEvent e)
+    {
+        try
+        {
+            if (e.Checked)
+            {
+                Service.Settings._settingArrowGndBinding.Value.Enabled = true;
+                Service.Settings._settingArrowGndBinding.Value.Activated += ArrowKeybindActivated;
+            }
+            else
+            {
+                Service.Settings._settingArrowGndBinding.Value.Enabled = false;
+                Service.Settings._settingArrowGndBinding.Value.Activated -= ArrowKeybindActivated;
+            }
+        } catch { }
+        
+    }
+    
+    private void ArrowKeybindActivated(object sender, EventArgs e)
+    {
+        var coords = Service.MapWatch.GetWorldCoordsFromMouseScreenMap();
+
+        var marker = new MarkerCoord();
+        marker.FromVector3(coords);
+        _markerSet.marks.Add(marker);
+        new MarkerEditor(marker, RemoveMarker) { Parent = this };
+    }
+
+    private void Debug_CheckedChanged(object sender, CheckChangedEvent e)
+    {
+        throw new NotImplementedException();
     }
 
     protected void RemoveMarker(MarkerEditor editor)

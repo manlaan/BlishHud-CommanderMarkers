@@ -49,6 +49,8 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     public SettingEntry<bool> CornerIconEnabled { get; private set; }
     public SettingEntry<CornerIconActions> CornerIconLeftClickAction { get; private set; }
 
+    public SettingEntry<bool> DebugMode { get; private set; }
+
 
     public SettingService(SettingCollection settings)
     {
@@ -146,6 +148,13 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
             CornerIconActions.SHOW_ICON_MENU,
             () => "Icon left-click action",
             () => "Select an action for menu bar icon left-click\nRight click will always open a small menu"
+        );
+
+        DebugMode = settings.DefineSetting(
+            "CmdMrkDebugMode",
+            false,
+            () => "Debug Mode",
+            () => "Enables advanced debug mode actions"
         );
     }
 

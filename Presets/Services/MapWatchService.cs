@@ -7,9 +7,12 @@ using Manlaan.CommanderMarkers.Settings.Services;
 using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Newtonsoft.Json;
+using SharpDX.Direct2D1.Effects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +23,7 @@ public class MapWatchService : IDisposable
     private MapData _map;
     private SettingService _setting;
     private int _currentmap = 0;
-    private List<MarkerSet> _markers= new List<MarkerSet>();
+    private List<MarkerSet> _markers = new List<MarkerSet>();
 
     private ScreenMap _screenMap;
     private List<BasicMarker> _triggerMarker = new();
@@ -37,7 +40,7 @@ public class MapWatchService : IDisposable
         GameService.Gw2Mumble.CurrentMap.MapChanged += CurrentMap_MapChanged;
         Service.MarkersListing.MarkersChanged += MarkersListing_MarkersChanged;
 
-        _setting._settingInteractKeyBinding.Value.Enabled= true;
+        _setting._settingInteractKeyBinding.Value.Enabled = true;
         _setting._settingInteractKeyBinding.Value.BlockSequenceFromGw2 = false;
         _setting._settingInteractKeyBinding.Value.Activated += _interactKeybind_Activated;
 
@@ -45,6 +48,22 @@ public class MapWatchService : IDisposable
         _setting.AutoMarker_FeatureEnabled.SettingChanged += AutoMarkerBooleanSettingChanged;
         _setting.AutoMarker_ShowTrigger.SettingChanged += AutoMarkerBooleanSettingChanged;
         Service.LtMode.SettingChanged += AutoMarkerBooleanSettingChanged;
+
+    }
+
+    public Vector3 GetWorldCoordsFromMouseScreenMap()
+    {
+        try
+        {
+            var originalMousePos = Mouse.GetState().Position;
+            Vector2 mapCoords = _map.ScreenMapToMap(originalMousePos.ToVector2());
+            Vector2 worldCoords = _map.MapToWorld(mapCoords);
+
+            return new Vector3(worldCoords.X, worldCoords.Y, 0);
+        }catch(Exception)
+        {
+            return Vector3.Zero;
+        }
     }
 
     private void AutoMarkerBooleanSettingChanged(object sender, ValueChangedEventArgs<bool> e)
