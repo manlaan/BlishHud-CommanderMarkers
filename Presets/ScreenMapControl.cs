@@ -1,7 +1,10 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
+using Manlaan.CommanderMarkers.Library.Enums;
+using Manlaan.CommanderMarkers.Presets.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
 using System.Collections.Generic;
 using static Blish_HUD.GameService;
@@ -81,18 +84,21 @@ public class ScreenMap : Control
 
     protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds)
     {
-/*#if DEBUG
-        ClipsBounds = false;
+        
+#if DEBUG
+        //ClipsBounds = false;
         spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, bounds, new Color(96, 96, 96, 192));
         var screen = ScreenMap.Data.ScreenBounds;
         spriteBatch.DrawStringOnCtrl(this, $"{screen}\n({screen.X + screen.Width}),({screen.Y + screen.Height})", _bitmapFont, bounds, Color.Orange, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Left, verticalAlignment: VerticalAlignment.Bottom);
-        Point spriteScreenSizez = Graphics.SpriteScreen.Size;
-        for(int i = 0; i < (int)(spriteScreenSizez.X / 50); i++)
-        {
-            spriteBatch.DrawOnCtrl(Graphics.SpriteScreen,ContentService.Textures.Pixel, new Rectangle(i*50, 0, 2, Graphics.SpriteScreen.Height), i%2==0?Color.Red:Color.Pink);
+        /* Point spriteScreenSizez = Graphics.SpriteScreen.Size;
+         for(int i = 0; i < (int)(spriteScreenSizez.X / 50); i++)
+         {
+             spriteBatch.DrawOnCtrl(Graphics.SpriteScreen,ContentService.Textures.Pixel, new Rectangle(i*50, 0, 2, Graphics.SpriteScreen.Height), i%2==0?Color.Red:Color.Pink);
 
-        }
-#endif*/
+         }*/
+        spriteBatch.DrawOnCtrl(Graphics.SpriteScreen, ContentService.Textures.Pixel, new Rectangle(screen.X + screen.Width/2, screen.Y, 2, screen.Height),Color.Pink);
+        spriteBatch.DrawOnCtrl(Graphics.SpriteScreen, ContentService.Textures.Pixel, new Rectangle(screen.X, screen.Y + screen.Height/2, screen.Width, 2),Color.Pink);
+#endif
         if (!GameIntegration.Gw2Instance.IsInGame || _mapData.Current == null)
             return;
         if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat) return;
@@ -124,6 +130,20 @@ public class ScreenMap : Control
             Service.MapWatch.RemovePreviewMarkerSet();
             _previewActive = false;
         }
+#if DEBUG
+        var mousePos = Mouse.GetState().Position;
+        if (bounds.Contains(mousePos))
+        {
+            var coords = Service.MapWatch.GetWorldCoordsFromMouseScreenMap();
+            Texture2D markerIcon = SquadMarker.Triangle.GetIcon();
+            var mapCoordinates = _mapData.WorldToScreenMap(coords);
+            var newbounds = new Rectangle((int)mapCoordinates.X - 16, (int)mapCoordinates.Y - 16, 32, 32);
+            var reoffset = bounds;
+            reoffset.Location -= Location;
+            spriteBatch.DrawStringOnCtrl(this, $"{mousePos}\n{Service.MapWatch.GetWorldCoordsFromMouseScreenMap()}\n{mapCoordinates}", _bitmapFont, reoffset, Color.DeepSkyBlue, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Center, verticalAlignment: VerticalAlignment.Top);
+            spriteBatch.Draw(markerIcon, newbounds, Color.White);
+        }
+#endif
     }
 
     protected void DrawPrompt(SpriteBatch spriteBatch, IMapEntity marker)

@@ -101,10 +101,10 @@ public class MapData : IDisposable
         return Vector2.Transform((screenMapCoord - boundsCenter) / scale , - rotation) + mapCenter;
 
     }
-    public Vector2 MapToWorld(Vector2 mapCoords)
+    public Vector3 MapToWorld(Vector2 mapCoords)
     {
         int mapId = Gw2Mumble.CurrentMap.Id;
-        return GetMap(mapId) is Map map ? map.MapToWorldMeters(mapCoords) : Vector2.Zero;
+        return GetMap(mapId) is Map map ? map.MapToWorldMeters(mapCoords) : Vector3.Zero;
 
     }
 

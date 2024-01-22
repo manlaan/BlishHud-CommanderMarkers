@@ -39,7 +39,6 @@ public class MarkerSetEditor : FlowPanel
             FlowDirection = ControlFlowDirection.LeftToRight,
             ControlPadding = new Vector2(10,5),
             Size = new Point(450, 135),
-            BackgroundColor=Color.Blue
         };
         
         new Label()
@@ -89,7 +88,6 @@ public class MarkerSetEditor : FlowPanel
 
         };
         description.TextChanged += (s,e) => _markerSet.description = description.Text;
-        BackgroundColor = Color.Pink;
         new Label()
         {
             Parent = metaFlow,
@@ -107,7 +105,6 @@ public class MarkerSetEditor : FlowPanel
         var triggerFields = new PositionFields(markerSet.Trigger)
         {
             Parent = metaFlow,
-            BackgroundColor = Color.Orange,
         };
         triggerFields.WorldCoordChanged += (s, e) =>
         {
@@ -143,7 +140,6 @@ public class MarkerSetEditor : FlowPanel
                     Enabled = true,
                     Checked = false,
                     Location = new Point(_AddMarkerButton.Right + 2, _AddMarkerButton.Top+5),
-                    BackgroundColor = Color.White,
                 };
                 _debug.CheckedChanged += _debug_CheckedChanged;
             }
@@ -210,11 +206,6 @@ public class MarkerSetEditor : FlowPanel
         marker.FromVector3(coords);
         _markerSet.marks.Add(marker);
         new MarkerEditor(marker, RemoveMarker) { Parent = this };
-    }
-
-    private void Debug_CheckedChanged(object sender, CheckChangedEvent e)
-    {
-        throw new NotImplementedException();
     }
 
     protected void RemoveMarker(MarkerEditor editor)

@@ -56,10 +56,13 @@ public class MapWatchService : IDisposable
         try
         {
             var originalMousePos = Mouse.GetState().Position;
+            //The math needs to be mirrored over the origin to align with the mouse.
+            //I still do not understand why
+            originalMousePos = originalMousePos.MirrorOverOrigin(ScreenMap.Data.ScreenBounds.Center);
             Vector2 mapCoords = _map.ScreenMapToMap(originalMousePos.ToVector2());
-            Vector2 worldCoords = _map.MapToWorld(mapCoords);
+            Vector3 worldCoords = _map.MapToWorld(mapCoords);
 
-            return new Vector3(worldCoords.X, worldCoords.Y, 0);
+            return worldCoords;
         }catch(Exception)
         {
             return Vector3.Zero;

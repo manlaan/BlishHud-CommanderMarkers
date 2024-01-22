@@ -1,5 +1,6 @@
 ﻿using Blish_HUD.Entities;
 using Gw2Sharp.WebApi.V2.Models;
+using Manlaan.CommanderMarkers.Presets;
 using Microsoft.Xna.Framework;
 
 namespace Manlaan.CommanderMarkers.Utils;
@@ -14,29 +15,21 @@ public static class MapExtensions
     public static Vector2 WorldMetersToMap(this Map map, Vector3 world)
         => map.WorldInchesToMap(world * MathUtils.MetersToInches);
 
+    public static Vector3 MapToWorldInches(this Map map, Vector2 coords)
+        => new Vector3(
+            (float)(map.MapRect.TopLeft.X + (coords.X - map.ContinentRect.TopLeft.X) / map.ContinentRect.Width * map.MapRect.Width),
+            (float)(map.MapRect.TopLeft.Y - (coords.Y - map.ContinentRect.TopLeft.Y) / map.ContinentRect.Height * map.MapRect.Height),
+            0);
 
-    public static Vector2 MapToWorldInches(this Map map, Vector2 world)
+    public static Vector3 MapToWorldMeters(this Map map, Vector2 coords)
+        => map.MapToWorldInches(coords) * MathUtils.InchesToMeters;
+  
+
+    public static Point MirrorOverOrigin(this Point target, Point origin)
     {
-        var x = world.X - map.ContinentRect.TopLeft.X;
-        x /= map.ContinentRect.Width;
-        x *= map.MapRect.Width;
-        x += map.MapRect.TopLeft.X;
-
-        var y = map.ContinentRect.TopLeft.Y - world.Y;
-        y /= map.ContinentRect.Height;
-        y *= map.MapRect.Height;
-        y += map.MapRect.TopLeft.Y;
-
-        return new Vector2((float)x, (float)y);
-    
-     return new Vector2(
-            (float)((((world.X - map.ContinentRect.TopLeft.X) / map.ContinentRect.Width) * map.MapRect.Width) + map.MapRect.TopLeft.X),
-            (float)((((world.Y + map.ContinentRect.TopLeft.Y) / map.ContinentRect.Width) * map.MapRect.Width) - map.MapRect.TopLeft.Y)
-            );
+        target -= origin;
+        return new Point(-target.X, -target.Y) + origin;
     }
-    public static Vector2 MapToWorldMeters(this Map map, Vector2 screenMap)
-        => map.MapToWorldInches(screenMap)/MathUtils.MetersToInches;
-
 
 }
 
