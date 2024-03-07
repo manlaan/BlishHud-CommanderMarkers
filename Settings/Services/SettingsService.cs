@@ -1,5 +1,7 @@
 ﻿using Blish_HUD.Input;
 using Blish_HUD.Settings;
+using Manlaan.CommanderMarkers.Library.Enums;
+using Manlaan.CommanderMarkers.Localization;
 using Manlaan.CommanderMarkers.Settings.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -48,10 +50,24 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     public SettingEntry<bool> AutoMarker_ShowTrigger { get; private set; }
     public SettingEntry<bool> CornerIconEnabled { get; private set; }
     public SettingEntry<CornerIconActions> CornerIconLeftClickAction { get; private set; }
-
+    public SettingEntry<int> CornerIconPriority { get; }
+    public SettingEntry<SquadMarker> CornerIconTexture { get; }
 
     public SettingService(SettingCollection settings)
     {
+
+        CornerIconPriority = settings.DefineSetting("CmdMrkCornerPriority",
+            478, //.522 of Int32MaxValue to match the original corner icon priority
+            () => "Top-left icon sort order",
+            () => "Left <----> Right");
+        CornerIconPriority.SetRange(0, 1000);
+
+        CornerIconTexture = settings.DefineSetting("CmdMrkCornerTexture",
+            SquadMarker.Heart,
+            () => "Top-left icon image",
+            () => "Choose a marker to appear in the top-left icon bar");
+        CornerIconTexture.SetExcluded(new SquadMarker[]{SquadMarker.None, SquadMarker.Clear});
+
         _settingGroundMarkersEnabled = settings.DefineSetting("CmdMrkGnnEnabled", true, () => "Show icons for placing Ground Markers", () => "");
         _settingTargetMarkersEnabled = settings.DefineSetting("CmdMrkTgtEnabled", true, () => "Show icons for placing Target/Object Markers", () => "");
         _settingArrowGndBinding = settings.DefineSetting("CmdMrkArrowGndBinding", new KeyBinding(ModifierKeys.Alt, Keys.D1), () => "Arrow Ground Binding", () => "");

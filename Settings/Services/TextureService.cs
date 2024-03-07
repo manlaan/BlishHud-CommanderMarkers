@@ -19,6 +19,16 @@ public class TextureService : IDisposable
         _imgStar = contentsManager.GetTexture(@"star.png");
         _imgTriangle = contentsManager.GetTexture(@"triangle.png");
         _imgX = contentsManager.GetTexture(@"x.png");
+
+        _imgArrowFade = contentsManager.GetTexture(@"arrow_fade.png");
+        _imgCircleFade = contentsManager.GetTexture(@"circle_fade.png");
+        _imgHeartFade = contentsManager.GetTexture(@"heart_fade.png");
+        _imgSpiralFade = contentsManager.GetTexture(@"spiral_fade.png");
+        _imgSquareFade = contentsManager.GetTexture(@"square_fade.png");
+        _imgStarFade = contentsManager.GetTexture(@"star_fade.png");
+        _imgTriangleFade = contentsManager.GetTexture(@"triangle_fade.png");
+        _imgXFade = contentsManager.GetTexture(@"x_fade.png");
+
         _imgClear = contentsManager.GetTexture(@"clear.png");
         _imgCheck =contentsManager.GetTexture(@"check.png");
         _blishHeart = contentsManager.GetTexture(@"mapmarker.png");
@@ -50,6 +60,14 @@ public class TextureService : IDisposable
         _imgStar?.Dispose();
         _imgTriangle?.Dispose();
         _imgX?.Dispose();
+        _imgArrowFade?.Dispose();
+        _imgCircleFade?.Dispose();
+        _imgHeartFade?.Dispose();
+        _imgSpiralFade?.Dispose();
+        _imgSquareFade?.Dispose();
+        _imgStarFade?.Dispose();
+        _imgTriangleFade?.Dispose();
+        _imgXFade?.Dispose();
         _imgClear?.Dispose();
         _imgCheck?.Dispose();
         _blishHeart?.Dispose();
@@ -78,6 +96,14 @@ public class TextureService : IDisposable
     public Texture2D _imgStar;
     public Texture2D _imgTriangle;
     public Texture2D _imgX;
+    public Texture2D _imgArrowFade;
+    public Texture2D _imgCircleFade;
+    public Texture2D _imgHeartFade;
+    public Texture2D _imgSpiralFade;
+    public Texture2D _imgSquareFade;
+    public Texture2D _imgStarFade;
+    public Texture2D _imgTriangleFade;
+    public Texture2D _imgXFade;
     public Texture2D _imgClear;
     public Texture2D _imgCheck;
     public Texture2D _blishHeart;

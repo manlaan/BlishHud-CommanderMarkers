@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Manlaan.CommanderMarkers.Settings.Views.Tabs;
 using Manlaan.CommanderMarkers.Settings.Views.Generic;
 using System.Threading.Tasks;
+using Manlaan.CommanderMarkers.Library.Enums;
 
 namespace Manlaan.CommanderMarkers.Settings.Controls;
 
@@ -46,7 +47,7 @@ public class SettingsPanel : TabbedWindow2
     private void BuildTabs()
     {
         Tabs.Add(new Tab(
-            Service.Textures?._imgHeart,
+            Service.Settings.CornerIconTexture.Value.GetIcon(),
             () => new CustomSettingMenuView(modSettingsTab),
             "Settings"
         ));

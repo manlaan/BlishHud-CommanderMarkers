@@ -73,8 +73,6 @@ namespace Manlaan.CommanderMarkers
             Service.CornerIcon = new CornerIconService(
                 Service.Settings.CornerIconEnabled,
                 "Commander Markers",
-                Service.Textures!.IconCorner,
-                Service.Textures!._imgHeart,
                 new List<ContextMenuStripItem>()
                 {
                     new CornerIconToggleMenuItem(Service.SettingsWindow, "Open Settings"),

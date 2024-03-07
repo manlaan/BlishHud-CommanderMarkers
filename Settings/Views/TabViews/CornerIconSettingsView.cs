@@ -22,7 +22,11 @@ public class CornerIconSettingsView : View
             .AddSetting(_settings.CornerIconEnabled)
             .AddSpace()
             .AddSettingEnum(_settings.CornerIconLeftClickAction)
-            .AddSpace(100)
+            .AddSpace()
+            .AddSettingEnum(_settings.CornerIconTexture)
+            .AddSpace()
+            .AddSetting(_settings.CornerIconPriority)
+            .AddSpace(40)
             .AddFlowControl(new StandardButton
             {
                 Text = "Update Notes",

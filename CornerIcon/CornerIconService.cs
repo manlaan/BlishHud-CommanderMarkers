@@ -2,6 +2,7 @@
 using Blish_HUD.Controls;
 using Blish_HUD.Input;
 using Blish_HUD.Settings;
+using Manlaan.CommanderMarkers.Library.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -35,8 +36,6 @@ public class CornerIconService : IDisposable
     public event EventHandler<bool>? IconLeftClicked;
 
     private readonly IEnumerable<ContextMenuStripItem> _contextMenuItems;
-    private readonly Texture2D _cornerIconTexture;
-    private readonly Texture2D _cornerIconHoverTexture;
     private readonly SettingEntry<bool> _cornerIconIsVisibleSetting;
     private readonly string _tooltip;
     private Blish_HUD.Controls.CornerIcon? _cornerIcon;
@@ -44,17 +43,15 @@ public class CornerIconService : IDisposable
     public CornerIconService(
         SettingEntry<bool> cornerIconIsVisibleSetting,
         string tooltip,
-        Texture2D defaultTexture,
-        Texture2D hoverTexture,
         IEnumerable<ContextMenuStripItem> contextMenuItems
     ) 
     {
         _tooltip = tooltip;
         _cornerIconIsVisibleSetting = cornerIconIsVisibleSetting;
-        _cornerIconTexture = defaultTexture;
-        _cornerIconHoverTexture = hoverTexture;
         _contextMenuItems = contextMenuItems;
         _cornerIconIsVisibleSetting.SettingChanged += OnCornerIconIsVisibleSettingChanged;
+        Service.Settings.CornerIconPriority.SettingChanged += CornerIconPriority_SettingChanged;
+        Service.Settings.CornerIconTexture.SettingChanged += CornerIconTexture_SettingChanged;
 
         if (cornerIconIsVisibleSetting.Value)
             CreateCornerIcon();
@@ -68,7 +65,8 @@ public class CornerIconService : IDisposable
     public void Dispose()
     {
         _cornerIconIsVisibleSetting.SettingChanged -= OnCornerIconIsVisibleSettingChanged;
-
+        Service.Settings.CornerIconPriority.SettingChanged -= CornerIconPriority_SettingChanged;
+        Service.Settings.CornerIconTexture.SettingChanged -= CornerIconTexture_SettingChanged;
         RemoveCornerIcon();
     }
 
@@ -78,12 +76,12 @@ public class CornerIconService : IDisposable
 
         _cornerIcon = new Blish_HUD.Controls.CornerIcon()
         {
-            Icon = _cornerIconTexture,
-            HoverIcon = _cornerIconHoverTexture,
+            Icon = Service.Settings.CornerIconTexture.Value.GetFadedIcon(),
+            HoverIcon = Service.Settings.CornerIconTexture.Value.GetIcon(),
             BasicTooltipText = _tooltip,
             Parent = GameService.Graphics.SpriteScreen,
-            Priority = 1122334455
-        };
+            Priority = (int)(Int32.MaxValue * ((1000.0f - Service.Settings.CornerIconPriority.Value) / 1000.0f)) - 1
+        }; 
 
         _cornerIcon.Click += OnCornerIconClicked;
         _cornerIcon.Menu = new CornerIconContextMenu(() => _contextMenuItems);
@@ -97,6 +95,25 @@ public class CornerIconService : IDisposable
             _cornerIcon?.Menu?.Dispose();
             _cornerIcon?.Dispose();
         }
+    }
+
+    private void CornerIconTexture_SettingChanged(object sender, ValueChangedEventArgs<SquadMarker> e)
+    {
+        if (Service.Settings.CornerIconEnabled.Value && _cornerIcon != null)
+        {
+            _cornerIcon.Icon = e.NewValue.GetFadedIcon();
+            _cornerIcon.HoverIcon = e.NewValue.GetIcon();
+        }
+
+    }
+
+    private void CornerIconPriority_SettingChanged(object sender, ValueChangedEventArgs<int> e)
+    {
+        if (Service.Settings.CornerIconEnabled.Value && _cornerIcon !=null)
+        {
+            _cornerIcon.Priority = (int)(Int32.MaxValue * ((1000.0f - e.NewValue) / 1000.0f)) - 1;
+        }
+
     }
 
     private void OnCornerIconIsVisibleSettingChanged(object sender, ValueChangedEventArgs<bool> e)

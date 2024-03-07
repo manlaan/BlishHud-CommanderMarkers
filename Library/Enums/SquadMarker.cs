@@ -43,6 +43,21 @@ public static class SquadMarkerExtension
             _ => Service.Textures!._blishHeart
         };
     }
+    public static Texture2D GetFadedIcon(this SquadMarker marker)
+    {
+        return marker switch
+        {
+            SquadMarker.Arrow => Service.Textures!._imgArrowFade,
+            SquadMarker.Circle => Service.Textures!._imgCircleFade,
+            SquadMarker.Heart => Service.Textures!._imgHeartFade,
+            SquadMarker.Square => Service.Textures!._imgSquareFade,
+            SquadMarker.Star => Service.Textures!._imgStarFade,
+            SquadMarker.Spiral => Service.Textures!._imgSpiralFade,
+            SquadMarker.Triangle => Service.Textures!._imgTriangleFade,
+            SquadMarker.Cross => Service.Textures!._imgXFade,
+            _ => Service.Textures!._blishHeart
+        };
+    }
 }
 
 public static class SquadMarkerExtensions
