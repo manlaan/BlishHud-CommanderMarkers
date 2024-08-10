@@ -27,6 +27,8 @@ public class MapWatchService : IDisposable
 
     private MarkerPreview? _previewMarkerSet;
 
+    private DateTime _lastTrigger = DateTime.Now;
+
     public MapWatchService(MapData map, SettingService settings) {
 
         _screenMap = new ScreenMap(map) {
@@ -59,15 +61,20 @@ public class MapWatchService : IDisposable
 
     private void _interactKeybind_Activated(object sender, EventArgs e)
     {
-        if(_markers.Count <=0) return;
-        if(GameService.Gw2Mumble.UI.IsMapOpen ==false) return;
+        DateTime now = DateTime.Now;
+        TimeSpan cooldown = TimeSpan.FromSeconds(3);
 
+        if ((now - _lastTrigger) < cooldown) return; 
+        if (_markers.Count <= 0) return;
+        if (GameService.Gw2Mumble.UI.IsMapOpen == false) return;
         if (!ShouldAttemptPlacement()) return;
 
+        _lastTrigger = now;
         var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
-        foreach(MarkerSet marker in _markers) {
+        foreach (MarkerSet marker in _markers)
+        {
             var d = (playerPosition - marker.trigger?.ToVector3())?.Length() ?? 1000f;
-            if(d < 15f)
+            if (d < 15f)
             {
                 PlaceMarkers(marker, _map);
                 return;
@@ -118,46 +125,46 @@ public class MapWatchService : IDisposable
             _setting._settingXGndBinding.Value,
             _setting._settingClearGndBinding.Value,
         };
-        var delay = _setting.AutoMarker_PlacementDelay.Value;
+            var delay = _setting.AutoMarker_PlacementDelay.Value;
 
-        var originalMousePos = Mouse.GetState().Position;
+            var originalMousePos = Mouse.GetState().Position;
 
-        var screenBounds = ScreenMap.Data.ScreenBounds;
-        InputHelper.DoHotKey(keys[0]);
-        Thread.Sleep((int) delay/2);
-        var errors = new List<string>();
-        for (var i = 0; i < markers.marks.Count; i++)
-        {
-            var marker = markers.marks[i];
-
-            if (marker.icon > 9 || marker.icon < 0) continue;
-
-            var blishCoord = mapData.WorldToScreenMap(marker.ToVector3());
-            var d = blishCoord * scale;
-            if (screenBounds.Contains(blishCoord))
+            var screenBounds = ScreenMap.Data.ScreenBounds;
+            InputHelper.DoHotKey(keys[0]);
+            Thread.Sleep((int) delay/2);
+            var errors = new List<string>();
+            for (var i = 0; i < markers.marks.Count; i++)
             {
-                Mouse.SetPosition((int)d.X, (int)d.Y);
+                var marker = markers.marks[i];
+
+                if (marker.icon > 9 || marker.icon < 0) continue;
+
+                var blishCoord = mapData.WorldToScreenMap(marker.ToVector3());
+                var d = blishCoord * scale;
+                if (screenBounds.Contains(blishCoord))
+                {
+                    Mouse.SetPosition((int)d.X, (int)d.Y);
                 Thread.Sleep((int) delay/2);
-                InputHelper.DoHotKey(keys[marker.icon]);
-                Thread.Sleep(delay);
+                    InputHelper.DoHotKey(keys[marker.icon]);
+                    Thread.Sleep(delay);
+
+                }
+                else
+                {
+                    errors.Add($"{((SquadMarker)marker.icon).EnumValue()} {marker.name}");
+                }
 
             }
-            else
-            {
-                errors.Add($"{((SquadMarker)marker.icon).EnumValue()} {marker.name}");
-            }
-
-        }
         if(errors.Count > 0)
-        {
+            {
 
-            ScreenNotification.ShowNotification(
-                $"Unable to place {errors.Count} marker(s)\nTry moving your map to the marker trigger",
-                ScreenNotification.NotificationType.Warning, null, 6
-            );
-        }
+                ScreenNotification.ShowNotification(
+                    $"Unable to place {errors.Count} marker(s)\nTry moving your map to the marker trigger",
+                    ScreenNotification.NotificationType.Warning, null, 6
+                );
+            }
 
-        Mouse.SetPosition(originalMousePos.X, originalMousePos.Y);
+            Mouse.SetPosition(originalMousePos.X, originalMousePos.Y);
 
         return Task.CompletedTask;
     
