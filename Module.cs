@@ -125,7 +125,7 @@ namespace Manlaan.CommanderMarkers
         protected override void Unload()
         {
             if(Service.CornerIcon != null)
-                Service.CornerIcon.IconLeftClicked += CornerIcon_IconLeftClicked;
+                Service.CornerIcon.IconLeftClicked -= CornerIcon_IconLeftClicked;
 
 
             Service.CornerIcon?.Dispose();
@@ -169,14 +169,14 @@ namespace Manlaan.CommanderMarkers
             var key = Keys.D1;
             if (GameService.Gw2Mumble.CurrentMap.Id != _mapId) return;
             InputHelper.DoHotKey(new KeyBinding(ModifierKeys.Alt, Keys.D9));
-            Thread.Sleep(20);
+            Thread.Sleep(Constants.Delays.MOUSE_POSITION_DELAY_MS);
             for (var i=0; i< _markers.Count ; i++)
             {
                 var d = mapData.WorldToScreenMap(_markers[i]) * scale;
                 Mouse.SetPosition((int)d.X , (int)d.Y);
-                Thread.Sleep(10);
+                Thread.Sleep(Constants.Delays.INPUT_DELAY_MS);
                 InputHelper.DoHotKey(new KeyBinding(ModifierKeys.Alt, key+i));
-                Thread.Sleep(60);
+                Thread.Sleep(Constants.Delays.MARKER_PLACEMENT_DELAY_MS);
             }
 
         }

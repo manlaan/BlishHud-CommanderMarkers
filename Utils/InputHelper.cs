@@ -20,7 +20,7 @@ public static class InputHelper
                 Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.SHIFT, true);
         }
         Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(key.PrimaryKey), true);
-        System.Threading.Thread.Sleep(50);
+        System.Threading.Thread.Sleep(Constants.Delays.HOTKEY_DELAY_MS);
         Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(key.PrimaryKey), true);
         if (key.ModifierKeys != ModifierKeys.None)
         {

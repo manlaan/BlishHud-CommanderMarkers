@@ -3,6 +3,7 @@ using Blish_HUD.Settings;
 using Manlaan.CommanderMarkers.Library.Enums;
 using Manlaan.CommanderMarkers.Localization;
 using Manlaan.CommanderMarkers.Settings.Enums;
+using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -57,10 +58,10 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     {
 
         CornerIconPriority = settings.DefineSetting("CmdMrkCornerPriority",
-            478, //.522 of Int32MaxValue to match the original corner icon priority
+            Constants.CornerIcon.DEFAULT_PRIORITY,
             () => "Top-left icon sort order",
             () => "Left <----> Right");
-        CornerIconPriority.SetRange(0, 1000);
+        CornerIconPriority.SetRange(Constants.CornerIcon.MIN_PRIORITY, Constants.CornerIcon.MAX_PRIORITY);
 
         CornerIconTexture = settings.DefineSetting("CmdMrkCornerTexture",
             SquadMarker.Heart,
@@ -97,8 +98,8 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
         _settingLoc = settings.DefineSetting("CmdMrkLoc", new Point(100, 100), () => "Location", () => "");
 
         _settingOrientation = settings.DefineSetting("CmdMrkOrientation2", Layout.Horizontal, () => "Orientation", () => "");
-        _settingImgWidth = settings.DefineSetting("CmdMrkImgWidth", 30, () => "Icon Size", () => "Set the size of the on screen marker icons");
-        _settingOpacity = settings.DefineSetting("CmdMrkOpacity", 1.0f, () => "Opacity", () => "Set the panel's transparency\nHidden<---->Visible");
+        _settingImgWidth = settings.DefineSetting("CmdMrkImgWidth", Constants.UI.DEFAULT_ICON_SIZE, () => "Icon Size", () => "Set the size of the on screen marker icons");
+        _settingOpacity = settings.DefineSetting("CmdMrkOpacity", Constants.UI.DEFAULT_OPACITY, () => "Opacity", () => "Set the panel's transparency\nHidden<---->Visible");
         _settingDrag = settings.DefineSetting("CmdMrkDrag", false, () => "Enable Dragging", () => "Allow the clickable markers to be repositioned");
         _settingShowMarkersPanel = settings.DefineSetting("CmdMrkShowMarkerPanelr", true, () => "Show clickable markers on screen", () => "Hide/show the clickable markers panel");
         _settingOnlyWhenCommander = settings.DefineSetting(
@@ -108,15 +109,15 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
             () => "Hides the clickable markers when you are not the Commander");
         AutoMarker_PlacementDelay = settings.DefineSetting(
             "CmdMrkPlacementDelay",
-            100,
+            Constants.AutoMarker.DEFAULT_PLACEMENT_DELAY_MS,
             () => "Placement Delay",
             () => "Delay in milliseconds to wait between marker placement\nFaster <-----> Slower"
             );
         //_settingMapVisible = settings.DefineSetting("CmdMrkShow", VisibleOnMap.HideOnMap, ()=>"Show on map", () => "");
 
-        AutoMarker_PlacementDelay.SetRange(50, 300);
-        _settingImgWidth.SetRange(16, 200);
-        _settingOpacity.SetRange(0.1f, 1f);
+        AutoMarker_PlacementDelay.SetRange(Constants.AutoMarker.MIN_PLACEMENT_DELAY_MS, Constants.AutoMarker.MAX_PLACEMENT_DELAY_MS);
+        _settingImgWidth.SetRange(Constants.UI.MIN_ICON_SIZE, Constants.UI.MAX_ICON_SIZE);
+        _settingOpacity.SetRange(Constants.UI.MIN_OPACITY, Constants.UI.MAX_OPACITY);
 
 
         AutoMarker_OnlyWhenCommander = settings.DefineSetting(
