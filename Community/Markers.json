@@ -1,5 +1,5 @@
 {
-    "lastEdit": "2025-03-21T21:00:00.000Z",
+    "lastEdit": "2025-08-13T17:52:00.000Z",
     "categories": [
         {
             "categoryName": "Raids",
@@ -422,6 +422,76 @@
                             "x": -282.4562,
                             "y": 273.4609,
                             "z": 138.5165
+                        }
+                    ]
+                },
+                {
+                    "author": "Minas.4572",
+                    "enabled": true,
+                    "name": "Ura CM/LM",
+                    "description": "These markers show the most important Toxic Geysers and are also useful for general direction.",
+                    "mapId": 1564,
+                    "trigger": {
+                        "x": 157.2467,
+                        "y": 239.9182,
+                        "z": 269.9289
+                    },
+                    "markers": [
+                        {
+                            "i": 1,
+                            "d": "Toxic Geyser 1/2",
+                            "x": 188.9257,
+                            "y": 261.6017,
+                            "z": 269.9292
+                        },
+                        {
+                            "i": 2,
+                            "d": "Toxic Geyser 3/4",
+                            "x": 188.0499,
+                            "y": 226.14,
+                            "z": 269.9289
+                        },
+                        {
+                            "i": 3,
+                            "d": "Toxic Geyser 8",
+                            "x": 162.0466,
+                            "y": 228.2717,
+                            "z": 269.9909
+                        },
+                        {
+                            "i": 4,
+                            "d": "Toxic Geyser 13/14",
+                            "x": 124.3468,
+                            "y": 209.8496,
+                            "z": 269.9864
+                        },
+                        {
+                            "i": 5,
+                            "d": "Toxic Geyser 7/10",
+                            "x": 170.9074,
+                            "y": 202.4796,
+                            "z": 270.063
+                        },
+                        {
+                            "i": 6,
+                            "d": "Toxic Geyser 9",
+                            "x": 145.8318,
+                            "y": 258.4408,
+                            "z": 269.9348
+                        },
+                        {
+                            "i": 7,
+                            "d": "Toxic Geyser 5",
+                            "x": 165.7252,
+                            "y": 252.555,
+                            "z": 269.9348
+                        },
+                        {
+                            "i": 8,
+                            "d": "Toxic Geyser 12",
+                            "x": 122.4458,
+                            "y": 249.7821,
+                            "z": 269.9289
                         }
                     ]
                 }
