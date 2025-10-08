@@ -45,9 +45,10 @@ public class CornerIconSettingsView : View
         new Label()
         {
             Parent = buildPanel,
-            Location = new Point(20, buildPanel.Height - 30),
-            Text = "Special Thank You to the testers: QuitarHero, Kami, and Naru",
+            Location = new Point(20, buildPanel.Height - 50),
+            Text = "Special Thank You to the testers: QuitarHero, Kami, and Naru\nand to Metallis for the module icon",
             AutoSizeWidth = true,
+            AutoSizeHeight = true,
         };
     }
 }
