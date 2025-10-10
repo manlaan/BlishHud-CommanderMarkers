@@ -1,5 +1,6 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
+using Manlaan.CommanderMarkers.Presets.Services;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
@@ -95,7 +96,7 @@ public class ScreenMap : Control
 #endif*/
         if (!GameIntegration.Gw2Instance.IsInGame || _mapData.Current == null)
             return;
-        if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat) return;
+        if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat && !Service.Settings.AutoMarker_Allow_Combat_Placement.Value) return;
         if (
             (Service.Settings.AutoMarker_OnlyWhenCommander.Value && !GameService.Gw2Mumble.PlayerCharacter.IsCommander) 
             &&  !Service.LtMode.Value
@@ -109,7 +110,7 @@ public class ScreenMap : Control
         foreach (var entity in _entities)
         {
             entity.DrawToMap(spriteBatch, _mapBounds,this, playerPosition);
-            if(!promptDrawn && entity.DistanceFrom(playerPosition) < 15f){
+            if(!promptDrawn && entity.DistanceFrom(playerPosition) < MapWatchService.TRIGGER_DISTANCE_OPEN_MAP){
                 promptDrawn = true;
                 DrawPrompt(spriteBatch, entity);
             }

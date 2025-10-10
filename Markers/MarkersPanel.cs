@@ -6,6 +6,9 @@ using Blish_HUD.Input;
 using Blish_HUD.Settings;
 using Manlaan.CommanderMarkers.Settings.Services;
 using Manlaan.CommanderMarkers.Utils;
+using Manlaan.CommanderMarkers.Library.Services;
+using Manlaan.CommanderMarkers.Library.Models;
+using Manlaan.CommanderMarkers.Library.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -61,33 +64,8 @@ public class MarkersPanel : FlowPanel, IDisposable
         var objectIcons = CreateGroupingFlowPanel();
         objectIcons.VisiblityChanged(_settings._settingTargetMarkersEnabled);
 
-        //arrow
-        CreateIconButton(groundIcons, _textures._imgArrow, size, opacity, "Arrow Ground", _settings._settingArrowGndBinding, true);
-        CreateIconButton(objectIcons, _textures._imgArrow, size, opacity, "Arrow Object", _settings._settingArrowObjBinding, false);
-        //circle
-        CreateIconButton(groundIcons, _textures._imgCircle, size, opacity, "Circle Ground", _settings._settingCircleGndBinding, true);
-        CreateIconButton(objectIcons, _textures._imgCircle, size, opacity, "Circle Object", _settings._settingCircleObjBinding, false);
-        //heart
-        CreateIconButton(groundIcons, _textures._imgHeart, size, opacity, "Heart Ground", _settings._settingHeartGndBinding, true);
-        CreateIconButton(objectIcons, _textures._imgHeart, size, opacity, "Heart Object", _settings._settingHeartObjBinding, false);
-        //square
-        CreateIconButton(groundIcons, _textures._imgSquare, size, opacity, "Square Ground", _settings._settingSquareGndBinding, true);
-        CreateIconButton(objectIcons, _textures._imgSquare, size, opacity, "Square Object", _settings._settingSquareObjBinding, false);
-        //star
-        CreateIconButton(groundIcons, _textures._imgStar, size, opacity, "Star Ground", _settings._settingStarGndBinding, true);
-        CreateIconButton(objectIcons, _textures._imgStar, size, opacity, "Star Object", _settings._settingStarObjBinding, false);
-        //spiral
-        CreateIconButton(groundIcons, _textures._imgSpiral, size, opacity, "Spiral Ground", _settings._settingSpiralGndBinding, true);
-        CreateIconButton(objectIcons, _textures._imgSpiral, size, opacity, "Spiral Object", _settings._settingSpiralObjBinding, false);
-        //triangle
-        CreateIconButton(groundIcons, _textures._imgTriangle, size, opacity, "Triangle Ground", _settings._settingTriangleGndBinding, true);
-        CreateIconButton(objectIcons, _textures._imgTriangle, size, opacity, "Triangle Object", _settings._settingTriangleObjBinding, false);
-        //x
-        CreateIconButton(groundIcons, _textures._imgX, size, opacity, "X Ground", _settings._settingXGndBinding, true);
-        CreateIconButton(objectIcons, _textures._imgX, size, opacity, "X Object", _settings._settingXObjBinding, false);
-        //clear
-        CreateIconButton(groundIcons, _textures._imgClear, size, opacity, "Clear Ground", _settings._settingClearGndBinding, false);
-        CreateIconButton(objectIcons, _textures._imgClear, size, opacity, "Clear Object", _settings._settingClearObjBinding, false);
+        // Create marker buttons using the new definition system
+        CreateMarkerButtons(groundIcons, objectIcons, size, opacity);
 
         if(_mouseEventsEnabled)
             AddDragDelegates();
@@ -104,16 +82,85 @@ public class MarkersPanel : FlowPanel, IDisposable
             GameService.Input.Mouse.LeftMouseButtonPressed += OnMouseClick;
         }
     }
-/*#if DEBUG
-    public override void PaintBeforeChildren(SpriteBatch spriteBatch, Rectangle bounds)
+
+    /// <summary>
+    /// Creates marker buttons for all defined markers using the centralized definition system
+    /// </summary>
+    private void CreateMarkerButtons(FlowPanel groundIcons, FlowPanel objectIcons, int size, float opacity)
     {
-        base.PaintBeforeChildren(spriteBatch, bounds);
-        if (_mouseIsInsidePanel)
+        foreach (var markerDef in MarkerDefinitionService.AllMarkers)
         {
-            spriteBatch.DrawOnCtrl(this, ContentService.Textures.Pixel, new Rectangle(0, 0, this.Width, this.Height), new Color(200, 96, 96, 192));
+            // Create ground marker button if supported
+            if (markerDef.SupportsGroundTarget)
+            {
+                var groundBinding = GetKeyBindingForMarker(markerDef, true);
+                CreateIconButton(
+                    groundIcons, 
+                    GetTextureForMarker(markerDef.MarkerType), 
+                    size, 
+                    opacity, 
+                    markerDef.GetGroundTooltip(), 
+                    groundBinding, 
+                    true
+                );
+            }
+
+            // Create object marker button if supported
+            if (markerDef.SupportsObjectTarget)
+            {
+                var objectBinding = GetKeyBindingForMarker(markerDef, false);
+                CreateIconButton(
+                    objectIcons, 
+                    GetTextureForMarker(markerDef.MarkerType), 
+                    size, 
+                    opacity, 
+                    markerDef.GetObjectTooltip(), 
+                    objectBinding, 
+                    false
+                );
+            }
         }
     }
-#endif*/
+
+    /// <summary>
+    /// Gets the keybinding setting for a specific marker and target type
+    /// </summary>
+    private SettingEntry<KeyBinding> GetKeyBindingForMarker(MarkerDefinition markerDef, bool isGroundTarget)
+    {
+        return markerDef.MarkerType switch
+        {
+            SquadMarker.Arrow => isGroundTarget ? _settings._settingArrowGndBinding : _settings._settingArrowObjBinding,
+            SquadMarker.Circle => isGroundTarget ? _settings._settingCircleGndBinding : _settings._settingCircleObjBinding,
+            SquadMarker.Heart => isGroundTarget ? _settings._settingHeartGndBinding : _settings._settingHeartObjBinding,
+            SquadMarker.Square => isGroundTarget ? _settings._settingSquareGndBinding : _settings._settingSquareObjBinding,
+            SquadMarker.Star => isGroundTarget ? _settings._settingStarGndBinding : _settings._settingStarObjBinding,
+            SquadMarker.Spiral => isGroundTarget ? _settings._settingSpiralGndBinding : _settings._settingSpiralObjBinding,
+            SquadMarker.Triangle => isGroundTarget ? _settings._settingTriangleGndBinding : _settings._settingTriangleObjBinding,
+            SquadMarker.Cross => isGroundTarget ? _settings._settingXGndBinding : _settings._settingXObjBinding,
+            SquadMarker.Clear => isGroundTarget ? _settings._settingClearGndBinding : _settings._settingClearObjBinding,
+            _ => throw new ArgumentException($"Unknown marker type: {markerDef.MarkerType}")
+        };
+    }
+
+    /// <summary>
+    /// Gets the texture for a specific marker type
+    /// </summary>
+    private AsyncTexture2D GetTextureForMarker(SquadMarker markerType)
+    {
+        return markerType switch
+        {
+            SquadMarker.Arrow => _textures._imgArrow,
+            SquadMarker.Circle => _textures._imgCircle,
+            SquadMarker.Heart => _textures._imgHeart,
+            SquadMarker.Square => _textures._imgSquare,
+            SquadMarker.Star => _textures._imgStar,
+            SquadMarker.Spiral => _textures._imgSpiral,
+            SquadMarker.Triangle => _textures._imgTriangle,
+            SquadMarker.Cross => _textures._imgX,
+            SquadMarker.Clear => _textures._imgClear,
+            _ => _textures._imgArrow // fallback
+        };
+    }
 
     public override void PaintAfterChildren(SpriteBatch spriteBatch, Rectangle bounds)
     {
@@ -273,7 +320,7 @@ public class MarkersPanel : FlowPanel, IDisposable
     {
         if (_draggable) return;
         DoHotKey(key);
-        System.Threading.Thread.Sleep(50);
+        System.Threading.Thread.Sleep(Constants.Delays.HOTKEY_DELAY_MS);
         DoHotKey(key);
     }
     protected void DoHotKey(KeyBinding key)
@@ -290,7 +337,7 @@ public class MarkersPanel : FlowPanel, IDisposable
                 Blish_HUD.Controls.Intern.Keyboard.Press(VirtualKeyShort.SHIFT, true);
         }
         Blish_HUD.Controls.Intern.Keyboard.Press(ToVirtualKey(key.PrimaryKey), true);
-        System.Threading.Thread.Sleep(50);
+        System.Threading.Thread.Sleep(Constants.Delays.HOTKEY_DELAY_MS);
         Blish_HUD.Controls.Intern.Keyboard.Release(ToVirtualKey(key.PrimaryKey), true);
         if (key.ModifierKeys != ModifierKeys.None)
         {
