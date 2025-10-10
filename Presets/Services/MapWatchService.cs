@@ -25,18 +25,29 @@ public class MapWatchService : IDisposable
 
     private ScreenMap _screenMap;
     private List<BasicMarker> _triggerMarker = new();
+    private BillboardControl _billboards;
 
     private MarkerPreview? _previewMarkerSet;
+    private BillBoardPreview? _billboardPreview;
 
     private DateTime _lastTrigger = DateTime.Now;
+
+    public const float TRIGGER_DISTANCE_OPEN_MAP = 15f;
+    public const float TRIGGER_DISTANCE_CLOSED_MAP = 2f;
 
     public MapWatchService(MapData map, SettingService settings) {
 
         _screenMap = new ScreenMap(map) {
             Parent = GameService.Graphics.SpriteScreen
         };
+        _billboards = new BillboardControl(map)
+        {
+            Parent = GameService.Graphics.SpriteScreen
+        };
         _map = map;
         _setting = settings;
+        
+        
         GameService.Gw2Mumble.CurrentMap.MapChanged += CurrentMap_MapChanged;
         Service.MarkersListing.MarkersChanged += MarkersListing_MarkersChanged;
 
@@ -47,6 +58,7 @@ public class MapWatchService : IDisposable
         CurrentMap_MapChanged(this, new ValueEventArgs<int>(GameService.Gw2Mumble.CurrentMap.Id));
         _setting.AutoMarker_FeatureEnabled.SettingChanged += AutoMarkerBooleanSettingChanged;
         _setting.AutoMarker_ShowTrigger.SettingChanged += AutoMarkerBooleanSettingChanged;
+        _setting.AutoMarker_Billboard_FeatureEnabled.SettingChanged += AutoMarkerBooleanSettingChanged;
         Service.LtMode.SettingChanged += AutoMarkerBooleanSettingChanged;
     }
 
@@ -67,25 +79,38 @@ public class MapWatchService : IDisposable
 
         if ((now - _lastTrigger) < cooldown) return; 
         if (_markers.Count <= 0) return;
-        if (GameService.Gw2Mumble.UI.IsMapOpen == false) return;
+        if (!GameService.Gw2Mumble.UI.IsMapOpen && !Service.Settings.AutoMarker_Billboard_Placement.Value) return;
         if (!ShouldAttemptPlacement()) return;
 
         _lastTrigger = now;
         var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
+        
+        // Find the closest markerset within range
+        MarkerSet? closestMarker = null;
+        float closestDistance = float.MaxValue;
+
+        var placementThreshold = GameService.Gw2Mumble.UI.IsMapOpen ? TRIGGER_DISTANCE_OPEN_MAP : TRIGGER_DISTANCE_CLOSED_MAP;
+
         foreach (MarkerSet marker in _markers)
         {
             var d = (playerPosition - marker.trigger?.ToVector3())?.Length() ?? 1000f;
-            if (d < 15f)
+            if (d < placementThreshold && d < closestDistance)
             {
-                PlaceMarkers(marker, _map);
-                return;
+                closestMarker = marker;
+                closestDistance = d;
             }
+        }
+        
+        if (closestMarker != null)
+        {
+            PlaceMarkers(closestMarker, _map);
         }
     }
 
     public void Update(GameTime gameTime)
     {
         _screenMap.Update(gameTime);
+        _billboards.Update(gameTime);
     }
 
     public Task PlaceMarkers(MarkerSet marders)
@@ -174,12 +199,16 @@ public class MapWatchService : IDisposable
     private void CurrentMap_MapChanged(object sender, ValueEventArgs<int> e)
     {
         _screenMap.ClearEntities();
-        if (!_setting.AutoMarker_ShowTrigger.Value) return;
+        _billboards.ClearEntities();
+        if (!_setting.AutoMarker_ShowTrigger.Value && !_setting.AutoMarker_Billboard_FeatureEnabled.Value) return;
         _currentmap= e.Value;
         _markers = Service.MarkersListing.GetMarkersForMap(e.Value).Where(m => m.enabled).ToList();
         foreach(var marker in _markers)
         {
-            _screenMap.AddEntity(new BasicMarker(_map, marker.trigger!.ToVector3(), marker.name, marker.description));
+            if(_setting.AutoMarker_ShowTrigger.Value)
+                _screenMap.AddEntity(new BasicMarker(_map, marker.trigger!.ToVector3(), marker.name, marker.description));
+            if(_setting.AutoMarker_Billboard_FeatureEnabled.Value)
+                _billboards.AddEntity(new BillBoardPreview(_map, marker));
             //PreviewMarkerSet(marker);
 
         }
@@ -193,20 +222,37 @@ public class MapWatchService : IDisposable
         {
             _previewMarkerSet = new MarkerPreview(_map, preview);
             _screenMap.AddEntity(_previewMarkerSet);
+            
+            if (!GameService.Gw2Mumble.UI.IsMapOpen)
+            {
+                _billboardPreview = new BillBoardPreview(_map, preview);
+                _billboards.AddEntity(_billboardPreview);
+            }
+
         }
 
     }
     public void PreviewClosestMarkerSet()
     {
         var playerPosition = GameService.Gw2Mumble.PlayerCharacter.Position;
+        
+        // Find the closest markerset within range
+        MarkerSet? closestMarker = null;
+        float closestDistance = float.MaxValue;
+        
         foreach (MarkerSet marker in _markers)
         {
             var d = (playerPosition - marker.trigger?.ToVector3())?.Length() ?? 1000f;
-            if (d < 15f)
+            if (d < 15f && d < closestDistance)
             {
-                PreviewMarkerSet(marker);
-                return;
+                closestMarker = marker;
+                closestDistance = d;
             }
+        }
+        
+        if (closestMarker != null)
+        {
+            PreviewMarkerSet(closestMarker);
         }
     }
     public void RemovePreviewMarkerSet()
@@ -214,6 +260,7 @@ public class MapWatchService : IDisposable
         if (_previewMarkerSet != null)
         {
             _screenMap.RemoveEntity(_previewMarkerSet);
+            _billboards.RemoveEntity(_billboardPreview);
             _previewMarkerSet = null;
         }
     }
@@ -221,7 +268,9 @@ public class MapWatchService : IDisposable
     public void Dispose()
     {
         _screenMap.Dispose();
+        _billboards.Dispose();
 
+        _setting.AutoMarker_Billboard_FeatureEnabled.SettingChanged -= AutoMarkerBooleanSettingChanged;
         _setting.AutoMarker_ShowTrigger.SettingChanged -= AutoMarkerBooleanSettingChanged;
         _setting.AutoMarker_FeatureEnabled.SettingChanged -= AutoMarkerBooleanSettingChanged;
         Service.LtMode.SettingChanged -= AutoMarkerBooleanSettingChanged;

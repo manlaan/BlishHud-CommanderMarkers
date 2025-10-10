@@ -16,8 +16,12 @@ public class ModuleSettingsTab : ISettingsMenuRegistrar
     
     public ModuleSettingsTab()
     {
-
-
+#if DEBUG
+        _registeredMenuItems.Add(new MenuViewItem(
+            new MenuItem("Setup Wizard"),
+            _ => new SetupWizardView()
+        ));
+#endif
         _registeredMenuItems.Add(new MenuViewItem(
             new MenuItem("Clickable Markers"),
             _ => new MarkerPanelSettingsView()

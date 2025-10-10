@@ -49,6 +49,11 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     public SettingEntry<bool> AutoMarker_LibraryFilterToCurrent { get; private set; }
     public SettingEntry<bool> AutoMarker_ShowPreview { get; private set; }
     public SettingEntry<bool> AutoMarker_ShowTrigger { get; private set; }
+    public SettingEntry<bool> AutoMarker_Allow_Combat_Placement { get; private set; }
+    
+    public SettingEntry<bool> AutoMarker_Billboard_FeatureEnabled { get; private set; }
+    public SettingEntry<bool> AutoMarker_Billboard_Placement { get; private set; }
+    public SettingEntry<bool> AutoMarker_Billboard_Preview { get; private set; }
     public SettingEntry<bool> CornerIconEnabled { get; private set; }
     public SettingEntry<CornerIconActions> CornerIconLeftClickAction { get; private set; }
     public SettingEntry<int> CornerIconPriority { get; }
@@ -100,7 +105,7 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
         _settingOrientation = settings.DefineSetting("CmdMrkOrientation2", Layout.Horizontal, () => "Orientation", () => "");
         _settingImgWidth = settings.DefineSetting("CmdMrkImgWidth", Constants.UI.DEFAULT_ICON_SIZE, () => "Icon Size", () => "Set the size of the on screen marker icons");
         _settingOpacity = settings.DefineSetting("CmdMrkOpacity", Constants.UI.DEFAULT_OPACITY, () => "Opacity", () => "Set the panel's transparency\nHidden<---->Visible");
-        _settingDrag = settings.DefineSetting("CmdMrkDrag", false, () => "Enable Dragging", () => "Allow the clickable markers to be repositioned");
+        _settingDrag = settings.DefineSetting("CmdMrkDrag", false, () => "Reposition the markers   -  Enable Dragging", () => "Allow the clickable markers to be repositioned");
         _settingShowMarkersPanel = settings.DefineSetting("CmdMrkShowMarkerPanelr", true, () => "Show clickable markers on screen", () => "Hide/show the clickable markers panel");
         _settingOnlyWhenCommander = settings.DefineSetting(
             "CmdMrkOnlyCommander",
@@ -113,6 +118,7 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
             () => "Placement Delay",
             () => "Delay in milliseconds to wait between marker placement\nFaster <-----> Slower"
             );
+
         //_settingMapVisible = settings.DefineSetting("CmdMrkShow", VisibleOnMap.HideOnMap, ()=>"Show on map", () => "");
 
         AutoMarker_PlacementDelay.SetRange(Constants.AutoMarker.MIN_PLACEMENT_DELAY_MS, Constants.AutoMarker.MAX_PLACEMENT_DELAY_MS);
@@ -130,7 +136,7 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
             "CmdMrkAMEnabled",
             true,
             () => "Enable",
-            () => ""
+            () => "Enable/Disable the entire AutoMarker feature"
         );
         AutoMarker_LibraryFilterToCurrent = settings.DefineSetting(
             "CmdMrkAMLibraryFilter",
@@ -141,14 +147,42 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
         AutoMarker_ShowPreview = settings.DefineSetting(
             "CmdMrkAMShowPreview",
             true,
-            () => "Show preview of markers",
-            () => "Allows for drawing a preview of the markers on the map"
+            () => "Show preview when map is open",
+            () => "Show a preview of the markers when the map is open and you are close enough to place the set"
         );
         AutoMarker_ShowTrigger = settings.DefineSetting(
             "CmdMrkAMShowTrigger",
             true,
-            () => "Show map marker for AutoMarker set locations",
+            () => "Enable Map Marker",
             () => "Display the Blish holding markers map icon in locations where AutoMarker sets may be activated from the map"
+        );
+
+        AutoMarker_Billboard_FeatureEnabled = settings.DefineSetting(
+            "CmdMrkBillboardEnabled",
+            true,
+            () => "Enable markers in 3D game world",
+            () => "Show markers in the 3D game world"
+        );
+        
+        AutoMarker_Billboard_Placement = settings.DefineSetting(
+            "CmdMrkAMCanBypassMapOpen",
+            true,
+            () => "Allow placement without having the map open",
+            () => "Allow the marker placement even when the map is closed"
+        );
+
+        AutoMarker_Billboard_Preview = settings.DefineSetting(
+            "CmdMrkBillboardPreview",
+            true,
+            () => "Preview marker set when near trigger",
+            () => "Show a preview of the markers to be placed in the game world"
+        );
+
+        AutoMarker_Allow_Combat_Placement = settings.DefineSetting(
+            "CmdMrkCombatPlacement",
+            false,
+            () => "Allow AutoMarker features while In Combat",
+            () => "AutoMarker features will be available while in combat"
         );
 
         CornerIconEnabled = settings.DefineSetting(

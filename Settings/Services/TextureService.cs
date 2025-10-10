@@ -10,7 +10,7 @@ public class TextureService : IDisposable
     {
         SettingWindowBackground = contentsManager.GetTexture(@"window\background.png");
 
-
+        
         _imgArrow = contentsManager.GetTexture(@"arrow.png");
         _imgCircle = contentsManager.GetTexture(@"circle.png");
         _imgHeart = contentsManager.GetTexture(@"heart.png");
@@ -51,7 +51,7 @@ public class TextureService : IDisposable
 
     public void Dispose()
     {
-        SettingWindowBackground?.Dispose(); 
+        SettingWindowBackground?.Dispose();
         _imgArrow?.Dispose();
         _imgCircle?.Dispose();
         _imgHeart?.Dispose();    
