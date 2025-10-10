@@ -7,6 +7,8 @@ For ground markers, click the icon, which highlights it, then click on the mini 
 # For Community Marker pull requests, make PR to [Static Hosting Branch](https://github.com/manlaan/BlishHud-CommanderMarkers/tree/bhud-static/Manlaan.CommanderMarkers)
 
 ## Changelog
+### 3.4.0 2025-10-09
+Added in game world 3d billboards
 
 ### 3.2.1: 2023-09-24
 Added automarker display setting
