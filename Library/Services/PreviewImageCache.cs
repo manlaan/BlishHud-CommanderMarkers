@@ -37,7 +37,34 @@ public class PreviewImageCache : IDisposable
             return null;
         }
 
-        if (_textures.TryGetValue(communitySetId, out var cached))
+        return LoadTexture(communitySetId, path);
+    }
+
+    public string? PreviewPathForSet(string communitySetId)
+    {
+        if (string.IsNullOrEmpty(communitySetId))
+        {
+            return null;
+        }
+
+        var path = GetPreviewFilePath(communitySetId);
+        return File.Exists(path) ? path : null;
+    }
+
+    public Texture2D? GetPreviewTexture(string communitySetId)
+    {
+        var path = PreviewPathForSet(communitySetId);
+        if (path == null)
+        {
+            return null;
+        }
+
+        return LoadTexture("preview:" + communitySetId, path);
+    }
+
+    private Texture2D? LoadTexture(string cacheKey, string path)
+    {
+        if (_textures.TryGetValue(cacheKey, out var cached))
         {
             return cached;
         }
@@ -46,13 +73,41 @@ public class PreviewImageCache : IDisposable
         {
             using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
             var texture = TextureUtil.FromStreamPremultiplied(stream);
-            _textures[communitySetId] = texture;
+            _textures[cacheKey] = texture;
             return texture;
         }
         catch (Exception)
         {
             return null;
         }
+    }
+
+    public void RequestPreview(string communitySetId, string previewLargeUrl, Action<string>? onReady = null)
+    {
+        if (string.IsNullOrEmpty(communitySetId))
+        {
+            return;
+        }
+
+        var existing = PreviewPathForSet(communitySetId);
+        if (existing != null)
+        {
+            onReady?.Invoke(existing);
+            return;
+        }
+
+        var url = ResolvePreviewDownloadUrl(communitySetId, previewLargeUrl);
+        Task.Run(() =>
+        {
+            if (DownloadPreview(communitySetId, url))
+            {
+                var path = PreviewPathForSet(communitySetId);
+                if (path != null)
+                {
+                    onReady?.Invoke(path);
+                }
+            }
+        });
     }
 
     public void RequestThumb(string communitySetId, string previewThumbUrl, Action<string>? onReady = null)
@@ -86,6 +141,9 @@ public class PreviewImageCache : IDisposable
     private string GetThumbFilePath(string communitySetId) =>
         Path.Combine(_moduleDirectory, "thumbs", communitySetId + ".png");
 
+    private string GetPreviewFilePath(string communitySetId) =>
+        Path.Combine(_moduleDirectory, "previews", communitySetId + ".png");
+
     private string ResolveDownloadUrl(string communitySetId, string previewThumbUrl)
     {
         if (!string.IsNullOrEmpty(previewThumbUrl))
@@ -104,6 +162,24 @@ public class PreviewImageCache : IDisposable
         return server + "/commander-markers/v1/sets/" + communitySetId + "/thumb.png";
     }
 
+    private string ResolvePreviewDownloadUrl(string communitySetId, string previewLargeUrl)
+    {
+        if (!string.IsNullOrEmpty(previewLargeUrl))
+        {
+            if (previewLargeUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+                previewLargeUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                return previewLargeUrl;
+            }
+
+            var baseUrl = _serverUrl.TrimEnd('/');
+            return previewLargeUrl.StartsWith("/") ? baseUrl + previewLargeUrl : baseUrl + "/" + previewLargeUrl;
+        }
+
+        var server = _serverUrl.TrimEnd('/');
+        return server + "/commander-markers/v1/sets/" + communitySetId + "/preview.png";
+    }
+
     private bool DownloadThumb(string communitySetId, string url)
     {
         try
@@ -118,6 +194,28 @@ public class PreviewImageCache : IDisposable
             var dir = Path.Combine(_moduleDirectory, "thumbs");
             Directory.CreateDirectory(dir);
             File.WriteAllBytes(GetThumbFilePath(communitySetId), bytes);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    private bool DownloadPreview(string communitySetId, string url)
+    {
+        try
+        {
+            using var client = new WebClient();
+            var bytes = client.DownloadData(url);
+            if (bytes.Length == 0)
+            {
+                return false;
+            }
+
+            var dir = Path.Combine(_moduleDirectory, "previews");
+            Directory.CreateDirectory(dir);
+            File.WriteAllBytes(GetPreviewFilePath(communitySetId), bytes);
             return true;
         }
         catch (Exception)

@@ -34,6 +34,9 @@ public class CommunitySetSummary
     [JsonProperty("previewThumbUrl")]
     public string PreviewThumbUrl { get; set; } = "";
 
+    [JsonProperty("previewLargeUrl")]
+    public string PreviewLargeUrl { get; set; } = "";
+
     [JsonProperty("updatedAt")]
     public string UpdatedAt { get; set; } = "";
 }

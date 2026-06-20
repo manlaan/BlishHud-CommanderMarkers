@@ -61,15 +61,94 @@ public class MarkerListing
 
     private static bool MarkerSetsEqual(MarkerSet a, MarkerSet b)
     {
-        if (!string.IsNullOrWhiteSpace(a.communitySetId) && a.communitySetId == b.communitySetId)
+        if (!string.IsNullOrWhiteSpace(a.communitySetId) && a.communitySetId == b.communitySetId &&
+            !a.syncDetached && !b.syncDetached)
         {
             return true;
         }
 
         return a.name == b.name && a.mapId == b.mapId && a.description == b.description;
     }
-    public void EditMarker(int index, MarkerSet markerSet) 
+
+    private static bool MarkerSetContentEqual(MarkerSet a, MarkerSet b)
     {
+        if (a.name != b.name || a.description != b.description || a.mapId != b.mapId)
+        {
+            return false;
+        }
+
+        if (a.Trigger.x != b.Trigger.x || a.Trigger.y != b.Trigger.y || a.Trigger.z != b.Trigger.z)
+        {
+            return false;
+        }
+
+        if (a.marks.Count != b.marks.Count)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < a.marks.Count; i++)
+        {
+            var left = a.marks[i];
+            var right = b.marks[i];
+            if (left.icon != right.icon || left.name != right.name || left.x != right.x ||
+                left.y != right.y || left.z != right.z)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static bool IsCommunityLinked(MarkerSet markerSet)
+    {
+        return !string.IsNullOrWhiteSpace(markerSet.communitySetId) && !markerSet.syncDetached;
+    }
+
+    public static bool IsShareableWithCommunity(MarkerSet markerSet)
+    {
+        if (IsCommunityLinked(markerSet))
+        {
+            return false;
+        }
+
+        return markerSet.source != "builtin";
+    }
+
+    public static MarkerSet DuplicateAsEditableCopy(MarkerSet markerSet)
+    {
+        var copy = new MarkerSet();
+        copy.CloneFromMarkerSet(markerSet);
+        copy.id = Guid.NewGuid().ToString();
+        copy.communitySetId = null;
+        copy.communityUpdatedAt = null;
+        copy.localModifiedAt = null;
+        copy.author = null;
+        copy.syncDetached = false;
+        copy.source = "custom";
+        copy.syncBaselineHash = SyncBaselineHash.Compute(copy);
+        if (copy.name == markerSet.name && !string.IsNullOrWhiteSpace(copy.name))
+        {
+            copy.name += " (personal)";
+        }
+        return copy;
+    }
+
+    public void EditMarker(int index, MarkerSet markerSet)
+    {
+        if (index < 0 || index >= presets.Count)
+        {
+            return;
+        }
+
+        var existing = presets[index];
+        if (IsCommunityLinked(existing) && markerSet.id == existing.id &&
+            !MarkerSetContentEqual(existing, markerSet))
+        {
+            return;
+        }
+
         if (!string.IsNullOrWhiteSpace(markerSet.communitySetId) && !markerSet.syncDetached)
         {
             markerSet.localModifiedAt = DateTime.UtcNow.ToString("o");

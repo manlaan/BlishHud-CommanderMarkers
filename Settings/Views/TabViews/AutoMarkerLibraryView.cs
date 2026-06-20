@@ -3,16 +3,15 @@ using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Manlaan.CommanderMarkers.Library.Controls;
 using Manlaan.CommanderMarkers.Library.Enums;
+using Manlaan.CommanderMarkers.Library.Models;
 using Manlaan.CommanderMarkers.Library.Services;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Manlaan.CommanderMarkers.Presets.Services;
 using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Manlaan.CommanderMarkers.Settings.Views.SubViews;
 
@@ -25,23 +24,23 @@ public class AutoMarkerLibraryView : View
     private FlowPanel? _listingPanel;
     private MarkerSetEditor? _detailsPanel;
     private bool _showingDetails = false;
-    private List<(DetailsButton,MarkerSet)> _markerSetButtons = new List<(DetailsButton, MarkerSet)>();
 
     private Checkbox? _currentMapFilter;
-
+    private TextBox? _searchBox;
 
     private MarkerSet? _editingMarkerSet;
-    private int _editingMarkerSetIndex=-1;
+    private int _editingMarkerSetIndex = -1;
+
     protected override void Build(Container buildPanel)
     {
         base.Build(buildPanel);
-        
+
         _listingHeader = new Panel()
         {
             Parent = buildPanel,
             Size = new Point(buildPanel.Width, HEADER_HEIGHT),
             Location = new Point(0, 0),
-            ShowBorder= true,
+            ShowBorder = true,
         };
         _detailsHeader = new Panel()
         {
@@ -52,7 +51,7 @@ public class AutoMarkerLibraryView : View
             Visible = false,
             ClipsBounds = false
         };
-        
+
         var newMarkerSet = new StandardButton()
         {
             Text = "Add New",
@@ -67,6 +66,14 @@ public class AutoMarkerLibraryView : View
             Location = new Point(230, 10),
             Checked = Service.Settings.AutoMarker_LibraryFilterToCurrent.Value
         };
+        _searchBox = new TextBox()
+        {
+            Parent = _listingHeader,
+            Width = LibrarySearch.SearchFieldWidth,
+            Location = new Point(_listingHeader.Width - LibrarySearch.SearchFieldWidth - 20, 8),
+            BasicTooltipText = "Search name, description, or map"
+        };
+        _searchBox.TextChanged += (_, __) => ReloadMarkerList(_currentMapFilter!.Checked);
         newMarkerSet.Click += (s, e) =>
         {
             var newSet = new MarkerSet();
@@ -76,7 +83,6 @@ public class AutoMarkerLibraryView : View
             newSet.description = "description";
             newSet.mapId = Gw2MumbleService.Gw2Mumble.CurrentMap.Id;
             newSet.trigger = new WorldCoord();
-            //newSet.trigger.SetFromMumbleLocation();
             var mark = new MarkerCoord();
             mark.name = "marker name";
             newSet.marks.Add(mark);
@@ -87,7 +93,7 @@ public class AutoMarkerLibraryView : View
         {
             Parent = _detailsHeader,
             Text = "Cancel",
-            Width= 100,
+            Width = 100,
             Location = new Point(10, 0),
             Icon = Service.Textures!.IconGoBack
         };
@@ -114,24 +120,8 @@ public class AutoMarkerLibraryView : View
             Text = "Import",
             Width = 95,
             Location = new Point(320, 0),
-            Icon =Service.Textures!.IconImport,
-            BasicTooltipText = "Copy a marker set to your clipboard, then import it by clicking this button"
-        };
-        _submitCategoryBox = new TextBox()
-        {
-            Parent = _detailsHeader,
-            Width = 140,
-            Location = new Point(505, 5),
-            BasicTooltipText = "Suggested category for community submission"
-        };
-        var submitButton = new StandardButton()
-        {
-            Parent = _detailsHeader,
-            Text = "Submit",
-            Width = 80,
-            Location = new Point(650, 0),
             Icon = Service.Textures!.IconImport,
-            BasicTooltipText = "Submit this marker set to the community library (requires account API permission)"
+            BasicTooltipText = "Copy a marker set to your clipboard, then import it by clicking this button"
         };
         var deleteButton = new StandardButton()
         {
@@ -139,7 +129,7 @@ public class AutoMarkerLibraryView : View
             Icon = Service.Textures!.IconDelete,
             Width = 80,
             Text = "Delete",
-            BasicTooltipText = $"Delete Marker Set",
+            BasicTooltipText = "Delete Marker Set",
             Location = new Point(420, 0)
         };
 
@@ -154,9 +144,11 @@ public class AutoMarkerLibraryView : View
                 }
                 var base64 = MarkerSetShareCode.Export(_editingMarkerSet);
                 System.Windows.Forms.Clipboard.SetText(base64);
-                ScreenNotification.ShowNotification($"Marker set {_editingMarkerSet.name} copied to your clipboard!", ScreenNotification.NotificationType.Blue, Service.Textures!._blishHeart, 4);
-            } catch (Exception)
-            { 
+                ScreenNotification.ShowNotification($"Marker set {_editingMarkerSet.name} copied to your clipboard!",
+                    ScreenNotification.NotificationType.Blue, Service.Textures!._blishHeart, 4);
+            }
+            catch (Exception)
+            {
             }
         };
         import.Click += (s, e) =>
@@ -170,52 +162,15 @@ public class AutoMarkerLibraryView : View
                 {
                     throw new Exception("Invalid share code");
                 }
-                ScreenNotification.ShowNotification($"Imported marker set {markerSet.name}", ScreenNotification.NotificationType.Green, Service.Textures!._blishHeart, 4);
+                ScreenNotification.ShowNotification($"Imported marker set {markerSet.name}",
+                    ScreenNotification.NotificationType.Green, Service.Textures!._blishHeart, 4);
                 _editingMarkerSet?.CloneFromMarkerSet(markerSet);
                 _detailsPanel!.LoadMarkerSet(_editingMarkerSet, _editingMarkerSetIndex);
-
             }
             catch (Exception)
             {
-                ScreenNotification.ShowNotification("Unable to import clipboard content\nDid you copy a marker set first?", ScreenNotification.NotificationType.Red, null, 5);
-            }
-
-        };
-        submitButton.Click += async (s, e) =>
-        {
-            if (_editingMarkerSet == null)
-            {
-                return;
-            }
-
-            var category = _submitCategoryBox?.Text?.Trim();
-            if (string.IsNullOrEmpty(category))
-            {
-                ScreenNotification.ShowNotification("Enter a suggested category before submitting.", ScreenNotification.NotificationType.Warning);
-                return;
-            }
-
-            var subtoken = await Service.SubtokenService.GetValidSubtokenAsync();
-            if (string.IsNullOrEmpty(subtoken))
-            {
-                ScreenNotification.ShowNotification("Account API permission required to submit marker sets.", ScreenNotification.NotificationType.Error);
-                return;
-            }
-
-            try
-            {
-                var payload = Newtonsoft.Json.Linq.JObject.FromObject(_editingMarkerSet);
-                payload["suggestedCategory"] = category;
-                using var client = new System.Net.WebClient();
-                client.Headers[System.Net.HttpRequestHeader.Authorization] = "Bearer " + subtoken;
-                client.Headers[System.Net.HttpRequestHeader.ContentType] = "application/json";
-                var url = Service.ManifestService.Manifest.Absolute(Service.ManifestService.Manifest.SubmissionsUrl);
-                client.UploadString(url, payload.ToString(Newtonsoft.Json.Formatting.None));
-                ScreenNotification.ShowNotification("Submission sent for moderator review.", ScreenNotification.NotificationType.Green);
-            }
-            catch (Exception)
-            {
-                ScreenNotification.ShowNotification("Submission failed.", ScreenNotification.NotificationType.Error);
+                ScreenNotification.ShowNotification("Unable to import clipboard content\nDid you copy a marker set first?",
+                    ScreenNotification.NotificationType.Red, null, 5);
             }
         };
         saveButton.Click += (s, e) =>
@@ -240,7 +195,7 @@ public class AutoMarkerLibraryView : View
         };
         deleteButton.Click += (s, e) =>
         {
-            if (_editingMarkerSetIndex > 0)
+            if (_editingMarkerSetIndex >= 0)
             {
                 Service.MarkersListing.DeleteMarker(_editingMarkerSet!);
             }
@@ -248,10 +203,10 @@ public class AutoMarkerLibraryView : View
         };
 
         _listingPanel = new FlowPanel()
-            .BeginFlow(buildPanel, new(-10,-HEADER_HEIGHT), new(0, HEADER_HEIGHT));
+            .BeginFlow(buildPanel, new(-10, -HEADER_HEIGHT), new(0, HEADER_HEIGHT));
         _listingPanel.ControlPadding = new Vector2(0, 10);
         _listingPanel.OuterControlPadding = new Vector2(20, 10);
-        _listingPanel.CanScroll= true;
+        _listingPanel.CanScroll = true;
         _listingPanel.Visible = !_showingDetails;
 
         _detailsPanel = new MarkerSetEditor(SwapView)
@@ -259,26 +214,23 @@ public class AutoMarkerLibraryView : View
             FlowDirection = ControlFlowDirection.SingleTopToBottom,
             OuterControlPadding = new Vector2(20, 10),
             Parent = buildPanel,
-            Size = buildPanel.Size + new Point(-10,-HEADER_HEIGHT),
+            Size = buildPanel.Size + new Point(-10, -HEADER_HEIGHT),
             ShowBorder = true,
             Location = new(0, 0),
         };
         _detailsPanel.Visible = _showingDetails;
         _detailsPanel.CanScroll = true;
 
-
         ReloadMarkerList(_currentMapFilter.Checked);
-        Service.MarkersListing.MarkersChanged += (s, e) => ReloadMarkerList(_currentMapFilter.Checked);
-        GameService.Gw2Mumble.CurrentMap.MapChanged += (s,e) => ReloadMarkerList(_currentMapFilter.Checked);
+        Service.MarkersListing.MarkersChanged += (s, e) => ReloadMarkerList(_currentMapFilter!.Checked);
+        GameService.Gw2Mumble.CurrentMap.MapChanged += (s, e) => ReloadMarkerList(_currentMapFilter!.Checked);
 
-        _currentMapFilter.CheckedChanged += (s, e) => {
+        _currentMapFilter.CheckedChanged += (s, e) =>
+        {
             Service.Settings.AutoMarker_LibraryFilterToCurrent.Value = _currentMapFilter.Checked;
             ReloadMarkerList(_currentMapFilter.Checked);
         };
-    
     }
-
-
 
     protected void SwapView(bool wasUpdated)
     {
@@ -298,9 +250,16 @@ public class AutoMarkerLibraryView : View
 
         _listingPanel!.Visible = !_showingDetails;
     }
-    protected void SwapView(MarkerSet marker, int idx) 
+
+    protected void SwapView(MarkerSet marker, int idx)
     {
-        _editingMarkerSet = marker; 
+        if (MarkerListing.IsCommunityLinked(marker))
+        {
+            OpenPersonalizedEditor(marker);
+            return;
+        }
+
+        _editingMarkerSet = marker;
         _editingMarkerSetIndex = idx;
         _showingDetails = true;
         _listingHeader!.Visible = !_showingDetails;
@@ -308,23 +267,35 @@ public class AutoMarkerLibraryView : View
         _detailsHeader!.Visible = _showingDetails;
         _detailsPanel!.Visible = _showingDetails;
         _detailsPanel!.LoadMarkerSet(marker, idx);
-        
+    }
+
+    private void OpenPersonalizedEditor(MarkerSet template)
+    {
+        var personalized = MarkerListing.DuplicateAsEditableCopy(template);
+        _editingMarkerSet = personalized;
+        _editingMarkerSetIndex = -1;
+        _showingDetails = true;
+        _listingHeader!.Visible = !_showingDetails;
+        _listingPanel!.Visible = !_showingDetails;
+        _detailsHeader!.Visible = _showingDetails;
+        _detailsPanel!.Visible = _showingDetails;
+        _detailsPanel!.LoadMarkerSet(personalized, -1);
     }
 
     protected void ReloadMarkerList(bool filterToCurrent)
     {
         var currentMapId = Gw2MumbleService.Gw2Mumble.CurrentMap.Id;
         _markers = Service.MarkersListing.GetAllMarkerSets();
-        RenderLibraryList(_listingPanel,filterToCurrent, currentMapId);
+        RenderLibraryList(_listingPanel, filterToCurrent, currentMapId);
     }
 
     private bool CanShowPreviewAndPlaceButtons()
     {
         var shouldDoIt =
-          Service.Settings.AutoMarker_FeatureEnabled.Value &&
-          GameService.GameIntegration.Gw2Instance.Gw2IsRunning &&
-          GameService.GameIntegration.Gw2Instance.IsInGame &&
-          GameService.Gw2Mumble.IsAvailable;
+            Service.Settings.AutoMarker_FeatureEnabled.Value &&
+            GameService.GameIntegration.Gw2Instance.Gw2IsRunning &&
+            GameService.GameIntegration.Gw2Instance.IsInGame &&
+            GameService.Gw2Mumble.IsAvailable;
 
         if (Service.Settings._settingOnlyWhenCommander.Value || Service.LtMode.Value)
         {
@@ -336,96 +307,118 @@ public class AutoMarkerLibraryView : View
     protected void RenderLibraryList(FlowPanel? panel, bool shouldFilter, int currentMapId)
     {
         if (panel == null) return;
-        Texture2D editIcon = Service.Textures!._imgArrow;
-        Point editSize = new Point(editIcon.Width, editIcon.Height);
-        int DetailButtonWidth = panel.Width - ((int)panel.OuterControlPadding.X * 2) - 10;
-        var i = 0;
+        int detailButtonWidth = panel.Width - ((int)panel.OuterControlPadding.X * 2) - 10;
         bool showPlaceBtn = CanShowPreviewAndPlaceButtons();
 
         panel.Children.Clear();
-        _markers.ForEach( marker =>
-        {
-            var markerIdx = i++;
-            var mapName = marker.MapName;
 
-            
+        var searchLower = LibrarySearch.ToLowerCopy(_searchBox?.Text ?? "");
+
+        for (var markerIdx = 0; markerIdx < _markers.Count; markerIdx++)
+        {
+            var marker = _markers[markerIdx];
+            if (shouldFilter && marker.MapId != currentMapId)
+            {
+                continue;
+            }
+
+            var mapName = marker.MapName;
+            if (!LibrarySearch.MatchesLocal(marker, mapName, searchLower))
+            {
+                continue;
+            }
+            var communityLinked = MarkerListing.IsCommunityLinked(marker);
+
             Service.PreviewImageCache.RequestThumb(marker.communitySetId ?? "", "", _ =>
             {
                 GameService.GameThread.Enqueue(() => ReloadMarkerList(shouldFilter));
             });
+
             var thumb = !string.IsNullOrWhiteSpace(marker.communitySetId)
-                ? Service.PreviewImageCache.GetThumbTexture(marker.communitySetId!, ((SquadMarker)((i % 8) + 1)).GetIcon())
+                ? Service.PreviewImageCache.GetThumbTexture(marker.communitySetId!,
+                    ((SquadMarker)((markerIdx % 8) + 1)).GetIcon())
                 : null;
 
             var btn = new DetailsButton()
             {
-                Text = (marker.enabled?"":"(Disabled) ")+$"{ marker.name}\n{marker.description}\n{mapName}",
-                Icon = thumb ?? (marker.enabled?  ((SquadMarker)((i%8))+1).GetIcon(): Service.Textures._imgClear),
-                Width = DetailButtonWidth,
+                Text = (marker.enabled ? "" : "(Disabled) ") + $"{marker.name}\n{marker.description}\n{mapName}",
+                Icon = thumb ?? (marker.enabled ? ((SquadMarker)((markerIdx % 8) + 1)).GetIcon() : Service.Textures._imgClear),
+                Width = detailButtonWidth,
                 IconSize = DetailsIconSize.Small,
                 ShowToggleButton = true,
                 BasicTooltipText = $"{marker.name}\n{marker.description}\nMap: {mapName}\n\nMarkers in use:\n{marker.DescribeMarkers()}",
-                BackgroundColor = marker.enabled? Color.Transparent : new Color(.4f,.1f,.1f,0.1f),
-                Visible = shouldFilter ? marker.MapId == currentMapId : true,
+                BackgroundColor = marker.enabled ? Color.Transparent : new Color(.4f, .1f, .1f, 0.1f),
             };
+
+            if (!string.IsNullOrWhiteSpace(marker.communitySetId) && thumb != null)
+            {
+                MapPreviewTooltipService.Attach(btn, MapPreviewTarget.FromLocalMarker(marker));
+            }
+
             var edit = new StandardButton()
             {
                 Parent = btn,
-                Text = "Edit",
-                Width=60,
-                BasicTooltipText = $"Click to edit {marker.name}",
+                Text = communityLinked ? "Personalize" : "Edit",
+                Width = communityLinked ? 95 : 60,
+                BasicTooltipText = communityLinked
+                    ? "Open the editor with this set as a template. Save to add your personalized copy."
+                    : $"Click to edit {marker.name}",
                 Icon = Service.Textures!.IconEdit
             };
-            edit.Click += (s, e) => {
-                SwapView(marker, markerIdx);
+            edit.Click += (s, e) =>
+            {
+                if (communityLinked)
+                {
+                    OpenPersonalizedEditor(marker);
+                }
+                else
+                {
+                    SwapView(marker, markerIdx);
+                }
             };
 
             new Label()
             {
                 Parent = btn,
                 Text = $"Author: {MarkerListing.DisplayAuthor(marker)}",
-                Width = marker.MapId == currentMapId && showPlaceBtn ? 210: 340,
+                Width = marker.MapId == currentMapId && showPlaceBtn ? 210 : 340,
             };
-            
+
             if (marker.MapId == currentMapId && showPlaceBtn)
             {
-                var Preview = new IconButton()
+                var preview = new IconButton()
                 {
                     Parent = btn,
                     Icon = Service.Textures!.IconEye,
-                    BasicTooltipText = "Preview",
+                    BasicTooltipText = "Hover to preview markers on the map",
                     Size = new Point(30, 30)
                 };
-                Preview.MouseEntered += (s, e) => Service.MapWatch.PreviewMarkerSet(marker);
-                Preview.MouseLeft += (s, e) => Service.MapWatch.RemovePreviewMarkerSet();
+                preview.MouseEntered += (s, e) => Service.MapWatch.PreviewMarkerSet(marker);
+                preview.MouseLeft += (s, e) => Service.MapWatch.RemovePreviewMarkerSet();
                 var placeBtn = new StandardButton()
                 {
                     Parent = btn,
                     Icon = Service.Textures!._blishHeartSmall,
                     Text = "Place",
-                    Width=100
+                    Width = 100
                 };
                 placeBtn.Click += (s, e) => Service.MapWatch.PlaceMarkers(marker);
-                
             }
 
             var img = new EnabledIconButton(marker.enabled)
             {
-                Size = editSize,
+                Size = new Point(Service.Textures!._imgArrow.Width, Service.Textures._imgArrow.Height),
                 Parent = btn,
                 Opacity = 0.5f
             };
-            
+
             img.Click += (s, e) =>
             {
                 marker.enabled = img.WatchValue;
                 Service.MarkersListing.EditMarker(markerIdx, marker);
-                
             };
 
-
             panel.AddFlowControl(btn);
-            _markerSetButtons.Add((btn,marker));
-        });
+        }
     }
 }
