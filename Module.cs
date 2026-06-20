@@ -6,7 +6,6 @@ using Blish_HUD.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.ComponentModel.Composition;
-using System.Threading.Tasks;
 using Blish_HUD.Graphics.UI;
 using Manlaan.CommanderMarkers.Settings.Services;
 using Manlaan.CommanderMarkers.Markers;
@@ -19,6 +18,10 @@ using Manlaan.CommanderMarkers.Presets.Services;
 using Manlaan.CommanderMarkers.CornerIcon;
 using Manlaan.CommanderMarkers.Settings.Enums;
 using Manlaan.CommanderMarkers.Library.Controls;
+using Manlaan.CommanderMarkers.Library.Services;
+using System;
+using System.Threading.Tasks;
+using Gw2Sharp.WebApi.V2.Models;
 
 namespace Manlaan.CommanderMarkers
 {
@@ -51,6 +54,23 @@ namespace Manlaan.CommanderMarkers
         {
             Service.Textures = new TextureService(Service.ContentsManager);
             IconsPanel = new MarkersPanel(Settings, Service.Textures);
+
+            var moduleDirectory = Service.DirectoriesManager.GetFullDirectoryPath(DIRECTORY_PATH);
+            Service.ManifestService = new CommanderMarkersManifestService();
+            Service.ManifestService.LoadOrFetch();
+            Service.CommunityCatalog = new CommunityCatalogService(Service.ManifestService, moduleDirectory);
+            Service.PreviewImageCache = new PreviewImageCache();
+            Service.PreviewImageCache.SetModuleDirectory(moduleDirectory);
+            Service.PreviewImageCache.SetServerUrl(Service.ManifestService.Manifest.ServerUrl);
+            Service.SubtokenService = new SubtokenService();
+            Service.CommunityCatalog.LoadCached();
+            _ = Task.Run(() => Service.CommunityCatalog.SyncCatalog());
+
+            if (Service.Gw2ApiManager != null)
+            {
+                Service.Gw2ApiManager.SubtokenUpdated += OnSubtokenUpdated;
+                _ = Service.SubtokenService.RefreshAccountNameAsync();
+            }
 
             Service.MapDataCache = new MapData(GetCacheFile().FullName);
 
@@ -124,6 +144,11 @@ namespace Manlaan.CommanderMarkers
         /// <inheritdoc />
         protected override void Unload()
         {
+            if (Service.Gw2ApiManager != null)
+            {
+                Service.Gw2ApiManager.SubtokenUpdated -= OnSubtokenUpdated;
+            }
+
             if(Service.CornerIcon != null)
                 Service.CornerIcon.IconLeftClicked -= CornerIcon_IconLeftClicked;
 
@@ -137,9 +162,15 @@ namespace Manlaan.CommanderMarkers
             IconsPanel?.Dispose();
             Service.Settings?.Dispose();
             Service.Textures?.Dispose();
+            Service.PreviewImageCache?.Dispose();
 
             
 
+        }
+
+        private void OnSubtokenUpdated(object? sender, ValueEventArgs<IEnumerable<TokenPermission>> e)
+        {
+            _ = Service.SubtokenService.RefreshAccountNameAsync();
         }
 
         private FileInfo GetCacheFile()

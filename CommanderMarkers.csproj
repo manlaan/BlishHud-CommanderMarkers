@@ -36,4 +36,8 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="assets\data\builtin_marker_set_ids.json" />
+  </ItemGroup>
+
 </Project>

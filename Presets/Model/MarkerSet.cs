@@ -9,8 +9,31 @@ namespace Manlaan.CommanderMarkers.Presets.Model;
 [Serializable]
 public class MarkerSet
 {
+    [JsonProperty("id")]
+    public string? id { get; set; }
+
+    [JsonProperty("communitySetId")]
+    public string? communitySetId { get; set; }
+
+    [JsonProperty("author")]
+    public string? author { get; set; }
+
+    [JsonProperty("source")]
+    public string? source { get; set; }
+
+    [JsonProperty("communityUpdatedAt")]
+    public string? communityUpdatedAt { get; set; }
+
+    [JsonProperty("localModifiedAt")]
+    public string? localModifiedAt { get; set; }
+
+    [JsonProperty("syncBaselineHash")]
+    public string? syncBaselineHash { get; set; }
+
+    [JsonProperty("syncDetached")]
+    public bool syncDetached { get; set; }
+
     [JsonProperty("name")]
-    
     public string? name { get; set; }
 
     [JsonProperty("description")]
@@ -45,6 +68,14 @@ public class MarkerSet
 
     public void CloneFromMarkerSet(MarkerSet otherSet)
     {
+        id = otherSet.id;
+        communitySetId = otherSet.communitySetId;
+        author = otherSet.author;
+        source = otherSet.source;
+        communityUpdatedAt = otherSet.communityUpdatedAt;
+        localModifiedAt = otherSet.localModifiedAt;
+        syncBaselineHash = otherSet.syncBaselineHash;
+        syncDetached = otherSet.syncDetached;
         name = otherSet.name;
         description = otherSet.description;
         mapId = otherSet.mapId;

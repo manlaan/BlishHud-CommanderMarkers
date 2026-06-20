@@ -1,9 +1,13 @@
 ﻿using Manlaan.CommanderMarkers.Presets.Model;
+using Manlaan.CommanderMarkers.Library.Services;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 namespace Manlaan.CommanderMarkers.Presets.Services;
 
 
@@ -16,7 +20,10 @@ public class MarkerListing
     public static string FILENAME = "custom_markers.json";
 
     [JsonProperty("version")]
-    public string Version { get; set; } = "2.0.0";
+    public string Version { get; set; } = "3.0.0";
+
+    [JsonProperty("migratedAt")]
+    public string? MigratedAt { get; set; }
 
     [JsonProperty("squadMarkerPreset")]
     public List<MarkerSet> presets { get; set; } = new();
@@ -25,14 +32,48 @@ public class MarkerListing
 
     public void SaveMarker(MarkerSet markerSet)
     {
-        if (presets.Contains(markerSet)) return;
+        if (presets.Any(p => MarkerSetsEqual(p, markerSet))) return;
 
         presets.Add(markerSet);
         Save();
 
     }
+
+    public bool ContainsCommunitySetId(string communitySetId)
+    {
+        if (string.IsNullOrWhiteSpace(communitySetId))
+        {
+            return false;
+        }
+
+        return presets.Any(p => p.communitySetId == communitySetId);
+    }
+
+    public static string DisplayAuthor(MarkerSet markerSet)
+    {
+        if (!string.IsNullOrWhiteSpace(markerSet.author))
+        {
+            return markerSet.author!;
+        }
+
+        return "You";
+    }
+
+    private static bool MarkerSetsEqual(MarkerSet a, MarkerSet b)
+    {
+        if (!string.IsNullOrWhiteSpace(a.communitySetId) && a.communitySetId == b.communitySetId)
+        {
+            return true;
+        }
+
+        return a.name == b.name && a.mapId == b.mapId && a.description == b.description;
+    }
     public void EditMarker(int index, MarkerSet markerSet) 
     {
+        if (!string.IsNullOrWhiteSpace(markerSet.communitySetId) && !markerSet.syncDetached)
+        {
+            markerSet.localModifiedAt = DateTime.UtcNow.ToString("o");
+        }
         presets[index] = markerSet;
         Save();
     }
@@ -119,6 +160,10 @@ public class MarkerListing
         {
             loadedCharacterConfiguration = MigrateToVersion2(loadedCharacterConfiguration);
         }
+        if (loadedCharacterConfiguration.Version != "3.0.0")
+        {
+            loadedCharacterConfiguration = MigrateToVersion3(loadedCharacterConfiguration);
+        }
 
         return loadedCharacterConfiguration;
     }
@@ -139,6 +184,103 @@ public class MarkerListing
 
 
        
+        return loadedFromFile;
+    }
+
+    private sealed class BuiltinEntry
+    {
+        public string id { get; set; } = "";
+        public string author { get; set; } = "";
+        public string name { get; set; } = "";
+    }
+
+    private static List<BuiltinEntry> LoadBuiltinMap()
+    {
+        try
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = assembly.GetManifestResourceNames()
+                .FirstOrDefault(n => n.EndsWith("builtin_marker_set_ids.json", StringComparison.OrdinalIgnoreCase));
+            if (resourceName == null)
+            {
+                return new List<BuiltinEntry>();
+            }
+
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+            {
+                return new List<BuiltinEntry>();
+            }
+
+            using var reader = new StreamReader(stream, Encoding.UTF8);
+            return JsonConvert.DeserializeObject<List<BuiltinEntry>>(reader.ReadToEnd()) ?? new List<BuiltinEntry>();
+        }
+        catch (Exception)
+        {
+            return new List<BuiltinEntry>();
+        }
+    }
+
+    private static string NormalizeNameKey(string name) =>
+        new string(name.Where(c => !char.IsWhiteSpace(c)).ToArray()).ToLowerInvariant();
+
+    private static BuiltinEntry? MatchBuiltin(IReadOnlyList<BuiltinEntry> map, string name)
+    {
+        var key = NormalizeNameKey(name);
+        var matches = map.Where(row => NormalizeNameKey(row.name) == key).ToList();
+        if (matches.Count == 0)
+        {
+            return null;
+        }
+
+        var exact = matches.FirstOrDefault(row => row.name == name);
+        return exact ?? (matches.Count == 1 ? matches[0] : null);
+    }
+
+    private static void MigratePreset(MarkerSet preset, IReadOnlyList<BuiltinEntry> builtinMap)
+    {
+        if (string.IsNullOrWhiteSpace(preset.id))
+        {
+            preset.id = Guid.NewGuid().ToString();
+        }
+
+        if (!string.IsNullOrWhiteSpace(preset.communitySetId))
+        {
+            if (string.IsNullOrWhiteSpace(preset.source))
+            {
+                preset.source = preset.syncDetached ? "custom" : "community";
+            }
+            return;
+        }
+
+        var match = MatchBuiltin(builtinMap, preset.name ?? "");
+        if (match != null)
+        {
+            preset.communitySetId = match.id;
+            preset.author = match.author;
+            preset.source = "builtin";
+            preset.syncDetached = false;
+            preset.syncBaselineHash = SyncBaselineHash.Compute(preset);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(preset.source))
+        {
+            preset.source = "custom";
+        }
+    }
+
+    protected static MarkerListing MigrateToVersion3(MarkerListing loadedFromFile)
+    {
+        var builtinMap = LoadBuiltinMap();
+        foreach (var preset in loadedFromFile.presets)
+        {
+            MigratePreset(preset, builtinMap);
+        }
+
+        loadedFromFile.Version = "3.0.0";
+        loadedFromFile.MigratedAt = DateTime.UtcNow.ToString("o");
+        loadedFromFile.Save();
         return loadedFromFile;
     }
 

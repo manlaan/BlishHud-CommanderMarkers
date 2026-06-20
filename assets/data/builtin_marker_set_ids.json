@@ -1,0 +1,176 @@
+[
+  {
+    "id": "c298117d-204e-4322-adb5-5ad178c56c39",
+    "author": "Soeed.4160",
+    "name": "Vale Guardian", 
+    "description": "Stack markers"
+  },
+  {
+    "id": "407004ed-8c8a-466b-a6b1-1288d679e06a",
+    "author": "Soeed.4160",
+    "name": "Sabetha",
+    "description": "Cannon platforms"
+  },
+  {
+    "id": "4522c60f-d76e-4e44-8ded-96c683940462",
+    "author": "Soeed.4160",
+    "name": "Qadim The Peerless (Omega Fires)",
+    "description": "Larger fire coverage for anomaly management"
+  },
+  {
+    "id": "e0f85e64-886a-4799-b2eb-624bcb4c5f93",
+    "author": "jozze.9532",
+    "name": "Qadim the Peerless (better fires)",
+    "description": "Good anomaly management, optimized for scourge kiters"
+  },
+  {
+    "id": "ce3692d0-3a1e-45ef-9355-a0368e8784b3",
+    "author": "Soeed.4160",
+    "name": "Dhuum",
+    "description": "Reaper markers - not on reaper"
+  },
+  {
+    "id": "cbb49f8b-8760-440d-a5bc-d6f80b131773",
+    "author": "UniqueStyles.7309",
+    "name": "Samarog CM", 
+    "description": "Tank Markers for Samarog CM"
+  },
+  {
+    "id": "04225485-5a6e-4179-b766-1170562cd792",
+    "author": "UniqueStyles.7309",
+    "name": "Greer CM", 
+    "description": "Greer CM Add Spawn"
+  },
+  {
+    "id": "fb4d7b69-0e87-4b48-acfb-0ae9695329cc",
+    "author": "Mike.8061",
+    "name": "Decima CM", 
+    "description": "Decima CM strategy markers"
+  },
+  {
+    "id": "1d647c77-62e1-4d50-9860-fcc70dd62040",
+    "author": "Minas.4572",
+    "name": "Ura CM/LM",
+    "description": "These markers show the most important Toxic Geysers and are also useful for general direction."
+  },
+  {
+    "id": "b1ee3e7c-8d05-4899-967b-46ea1c806189",
+    "author": "Mike.8061",
+    "name": "Cerus CM", 
+    "description": "Empowered wall strategy (Trigger from boss platform)"
+  },
+  {
+    "id": "5ad0abcf-738d-4b4d-a0d5-5e6490f4f176",
+    "author": "Lohkan.8134",
+    "name": "Kela",
+    "description": "Crab boss croc bait zone rotations for underground phase kiting."
+  },
+  {
+    "id": "6d78e04f-e9ab-44c2-bfe5-09b477dfd43b",
+    "author": "Deeos.8642",
+    "name": "Sabetha",
+    "description": "Cannon platforms"
+  },
+  {
+    "id": "a17c997b-e30e-4825-85b5-f67074fd415a",
+    "author": "Deeos.8642",
+    "name": "Sabetha 2", 
+    "description": "Cannon platforms"
+  },
+  {
+    "id": "4f704954-2dcf-4854-a0f0-23bef6f750a8",
+    "author": "Soeed.4160",
+    "name": "Gorseval",
+    "description": "Spirit Spawns"
+  },
+  {
+    "id": "57327e9f-6765-40d4-813a-8cf41d9fb1b0",
+    "author": "Soeed.4160",
+    "name": "Slothasor",
+    "description": "Mushroom Locations"
+  },
+  {
+    "id": "f124fbaa-b76b-48c5-b0ea-63f55f8cd3ac",
+    "author": "Soeed.4160",
+    "name": "Aerodrome Wing", 
+    "description": "Demo of the automarker feature"
+  },
+  {
+    "id": "5e257132-b819-4018-9f01-43f28d304d57",
+    "author": "Soeed.4160",
+    "name": "Mathias Gabriel", 
+    "description": "Fountain Locations"
+  },
+  {
+    "id": "e6bb71dc-9fbc-4db2-a2c5-f85298dba255",
+    "author": "Soeed.4160",
+    "name": "Keep Construct", 
+    "description": "Green Circles"
+  },
+  {
+    "id": "bad9bc36-e51e-474a-8001-ffd663c3c3c4",
+    "author": "Soeed.4160",
+    "name": "Xera",
+    "description": "Tanking Locations"
+  },
+  {
+    "id": "3d73eda8-edd3-47b3-adef-38799409275d",
+    "author": "Soeed.4160",
+    "name": "Qadim",
+    "description": "Stab/Prot pyres, Heart:Lamp3, Square:portal/stack"
+  },
+  {
+    "id": "80da47f7-7551-4637-a1b8-f709686aff5c",
+    "author": "Soeed.4160",
+    "name": "Cardinal Adina", 
+    "description": "Basic Pillar Spawns"
+  },
+  {
+    "id": "90df0fff-7535-47d8-ad75-b3c3daf5f9b1",
+    "author": "Soeed.4160",
+    "name": "Qadim The Peerless (PUG Fires)",
+    "description": "First fires on marker, second on opposite side"
+  },
+  {
+    "id": "92a2c2f1-ddda-4d8e-afd0-325725d6edb4",
+    "author": "Soeed.4160",
+    "name": "IBS - Voice and Claw",
+    "description": "Stack Spots - start at arrow"
+  },
+  {
+    "id": "fecc0613-5f77-474c-8196-8dd4ca2d575c",
+    "author": "Soeed.4160",
+    "name": "IBS - Fraenir",
+    "description": "Safe stack spots - start at arrow"
+  },
+  {
+    "id": "3ce7d186-a7f2-4a40-aced-d872e4e9cf03",
+    "author": "Soeed.4160",
+    "name": "EoD - Aetherblade CM Setup",
+    "description": "Assign color groups for green circles"
+  },
+  {
+    "id": "229605f4-5e59-49a5-9c81-5f459b9c98c3",
+    "author": "Soeed.4160",
+    "name": "EoD - Aetherblade CM Markers",
+    "description": "Destroy X, Stack at color groups"
+  },
+  {
+    "id": "ed59c31b-2311-4bd4-bc2b-49307d877131",
+    "author": "Soeed.4160",
+    "name": "EoD - Xunlai Jade Phase2",
+    "description": "Phase2CC"
+  },
+  {
+    "id": "7228b844-d495-45d6-bfbb-2735dec6215e",
+    "author": "Soeed.4160",
+    "name": "EoD - Xunlai Jade Phase 3",
+    "description": "Phase3CC"
+  },
+  {
+    "id": "acc2abb8-18b9-4714-8881-92e7e0091cf7",
+    "author": "Soeed.4160",
+    "name": "EoD - Harvest Temple",
+    "description": "Boss location and Mordremoth stack"
+  }
+]

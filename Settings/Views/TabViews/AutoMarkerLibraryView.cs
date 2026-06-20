@@ -3,7 +3,9 @@ using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Manlaan.CommanderMarkers.Library.Controls;
 using Manlaan.CommanderMarkers.Library.Enums;
+using Manlaan.CommanderMarkers.Library.Services;
 using Manlaan.CommanderMarkers.Presets.Model;
+using Manlaan.CommanderMarkers.Presets.Services;
 using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -68,6 +70,8 @@ public class AutoMarkerLibraryView : View
         newMarkerSet.Click += (s, e) =>
         {
             var newSet = new MarkerSet();
+            newSet.id = Guid.NewGuid().ToString();
+            newSet.source = "custom";
             newSet.name = "new set name";
             newSet.description = "description";
             newSet.mapId = Gw2MumbleService.Gw2Mumble.CurrentMap.Id;
@@ -113,6 +117,22 @@ public class AutoMarkerLibraryView : View
             Icon =Service.Textures!.IconImport,
             BasicTooltipText = "Copy a marker set to your clipboard, then import it by clicking this button"
         };
+        _submitCategoryBox = new TextBox()
+        {
+            Parent = _detailsHeader,
+            Width = 140,
+            Location = new Point(505, 5),
+            BasicTooltipText = "Suggested category for community submission"
+        };
+        var submitButton = new StandardButton()
+        {
+            Parent = _detailsHeader,
+            Text = "Submit",
+            Width = 80,
+            Location = new Point(650, 0),
+            Icon = Service.Textures!.IconImport,
+            BasicTooltipText = "Submit this marker set to the community library (requires account API permission)"
+        };
         var deleteButton = new StandardButton()
         {
             Parent = _detailsHeader,
@@ -128,10 +148,13 @@ public class AutoMarkerLibraryView : View
         {
             try
             {
-                string json = JsonConvert.SerializeObject(_editingMarkerSet);
-                string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+                if (_editingMarkerSet == null)
+                {
+                    return;
+                }
+                var base64 = MarkerSetShareCode.Export(_editingMarkerSet);
                 System.Windows.Forms.Clipboard.SetText(base64);
-                ScreenNotification.ShowNotification($"Marker set {_editingMarkerSet?.name} copied to your clipboard!", ScreenNotification.NotificationType.Blue, Service.Textures!._blishHeart, 4);
+                ScreenNotification.ShowNotification($"Marker set {_editingMarkerSet.name} copied to your clipboard!", ScreenNotification.NotificationType.Blue, Service.Textures!._blishHeart, 4);
             } catch (Exception)
             { 
             }
@@ -141,14 +164,11 @@ public class AutoMarkerLibraryView : View
             try
             {
                 string json = System.Windows.Forms.Clipboard.GetText();
-
-                var bytes = Convert.FromBase64String(json);
-                var parsedString = Encoding.UTF8.GetString(bytes);
-         
-                MarkerSet? markerSet = JsonConvert.DeserializeObject<MarkerSet>(parsedString);
+                MarkerSet? markerSet = MarkerSetShareCode.Import(json, (communitySetId, name) =>
+                    Service.CommunityCatalog.FetchSetDetail(communitySetId));
                 if (markerSet == null)
                 {
-                    throw new Exception("Invalid JSON");
+                    throw new Exception("Invalid share code");
                 }
                 ScreenNotification.ShowNotification($"Imported marker set {markerSet.name}", ScreenNotification.NotificationType.Green, Service.Textures!._blishHeart, 4);
                 _editingMarkerSet?.CloneFromMarkerSet(markerSet);
@@ -160,7 +180,44 @@ public class AutoMarkerLibraryView : View
                 ScreenNotification.ShowNotification("Unable to import clipboard content\nDid you copy a marker set first?", ScreenNotification.NotificationType.Red, null, 5);
             }
 
-        };   
+        };
+        submitButton.Click += async (s, e) =>
+        {
+            if (_editingMarkerSet == null)
+            {
+                return;
+            }
+
+            var category = _submitCategoryBox?.Text?.Trim();
+            if (string.IsNullOrEmpty(category))
+            {
+                ScreenNotification.ShowNotification("Enter a suggested category before submitting.", ScreenNotification.NotificationType.Warning);
+                return;
+            }
+
+            var subtoken = await Service.SubtokenService.GetValidSubtokenAsync();
+            if (string.IsNullOrEmpty(subtoken))
+            {
+                ScreenNotification.ShowNotification("Account API permission required to submit marker sets.", ScreenNotification.NotificationType.Error);
+                return;
+            }
+
+            try
+            {
+                var payload = Newtonsoft.Json.Linq.JObject.FromObject(_editingMarkerSet);
+                payload["suggestedCategory"] = category;
+                using var client = new System.Net.WebClient();
+                client.Headers[System.Net.HttpRequestHeader.Authorization] = "Bearer " + subtoken;
+                client.Headers[System.Net.HttpRequestHeader.ContentType] = "application/json";
+                var url = Service.ManifestService.Manifest.Absolute(Service.ManifestService.Manifest.SubmissionsUrl);
+                client.UploadString(url, payload.ToString(Newtonsoft.Json.Formatting.None));
+                ScreenNotification.ShowNotification("Submission sent for moderator review.", ScreenNotification.NotificationType.Green);
+            }
+            catch (Exception)
+            {
+                ScreenNotification.ShowNotification("Submission failed.", ScreenNotification.NotificationType.Error);
+            }
+        };
         saveButton.Click += (s, e) =>
         {
             if (_editingMarkerSetIndex >= 0)
@@ -169,7 +226,14 @@ public class AutoMarkerLibraryView : View
             }
             else
             {
-                Service.MarkersListing.SaveMarker(_editingMarkerSet!);
+                if (string.IsNullOrWhiteSpace(_editingMarkerSet!.id))
+                {
+                    _editingMarkerSet.id = Guid.NewGuid().ToString();
+                }
+                if (string.IsNullOrWhiteSpace(_editingMarkerSet.source))
+                {
+                    _editingMarkerSet.source = "custom";
+                }
                 Service.MarkersListing.SaveMarker(_editingMarkerSet!);
             }
             SwapView(true);
@@ -285,10 +349,18 @@ public class AutoMarkerLibraryView : View
             var mapName = marker.MapName;
 
             
+            Service.PreviewImageCache.RequestThumb(marker.communitySetId ?? "", "", _ =>
+            {
+                GameService.GameThread.Enqueue(() => ReloadMarkerList(shouldFilter));
+            });
+            var thumb = !string.IsNullOrWhiteSpace(marker.communitySetId)
+                ? Service.PreviewImageCache.GetThumbTexture(marker.communitySetId!, ((SquadMarker)((i % 8) + 1)).GetIcon())
+                : null;
+
             var btn = new DetailsButton()
             {
                 Text = (marker.enabled?"":"(Disabled) ")+$"{ marker.name}\n{marker.description}\n{mapName}",
-                Icon = marker.enabled?  ((SquadMarker)((i%8))+1).GetIcon(): Service.Textures._imgClear,
+                Icon = thumb ?? (marker.enabled?  ((SquadMarker)((i%8))+1).GetIcon(): Service.Textures._imgClear),
                 Width = DetailButtonWidth,
                 IconSize = DetailsIconSize.Small,
                 ShowToggleButton = true,
@@ -311,6 +383,7 @@ public class AutoMarkerLibraryView : View
             new Label()
             {
                 Parent = btn,
+                Text = $"Author: {MarkerListing.DisplayAuthor(marker)}",
                 Width = marker.MapId == currentMapId && showPlaceBtn ? 210: 340,
             };
             

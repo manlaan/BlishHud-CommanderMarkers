@@ -1,4 +1,4 @@
-﻿using Blish_HUD;
+using Blish_HUD;
 using Blish_HUD.Controls;
 using Blish_HUD.Controls.Extern;
 using Blish_HUD.Input;
@@ -153,7 +153,8 @@ public class MapWatchService : IDisposable
         };
             var delay = _setting.AutoMarker_PlacementDelay.Value;
 
-            var originalMousePos = Mouse.GetState().Position;
+            bool useScreenCoords = MarkerPlacementHelper.UseScreenCoordinatesForPlacement();
+            var originalMousePos = MarkerPlacementHelper.GetPlacementCursorPosition(useScreenCoords);
 
             var screenBounds = ScreenMap.Data.ScreenBounds;
             InputHelper.DoHotKey(keys[0]);
@@ -166,10 +167,10 @@ public class MapWatchService : IDisposable
                 if (marker.icon > 9 || marker.icon < 0) continue;
 
                 var blishCoord = mapData.WorldToScreenMap(marker.ToVector3());
-                var d = blishCoord * scale;
+                var placementPos = MarkerPlacementHelper.BlishToPlacementPosition(blishCoord, scale);
                 if (screenBounds.Contains(blishCoord))
                 {
-                    Mouse.SetPosition((int)d.X, (int)d.Y);
+                    MarkerPlacementHelper.SetPlacementMousePosition(placementPos, useScreenCoords);
                 Thread.Sleep((int) delay/2);
                     InputHelper.DoHotKey(keys[marker.icon]);
                     Thread.Sleep(delay);
@@ -190,7 +191,7 @@ public class MapWatchService : IDisposable
                 );
             }
 
-            Mouse.SetPosition(originalMousePos.X, originalMousePos.Y);
+            MarkerPlacementHelper.SetPlacementMousePosition(originalMousePos, useScreenCoords);
 
         return Task.CompletedTask;
     
