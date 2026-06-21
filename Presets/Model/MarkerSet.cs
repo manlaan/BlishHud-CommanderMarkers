@@ -49,7 +49,7 @@ public class MarkerSet
     public List<MarkerCoord> marks { get; set; } = new() {};
 
     [JsonProperty("enabled")]
-    public bool enabled = true;
+    public bool enabled { get; set; } = true;
 
     [JsonIgnore()]
     public WorldCoord Trigger { get => trigger ?? new WorldCoord(); }

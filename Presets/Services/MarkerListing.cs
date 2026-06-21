@@ -56,6 +56,12 @@ public class MarkerListing
             return markerSet.author!;
         }
 
+        if (markerSet.source == "builtin" || markerSet.source == "community" ||
+            IsCommunityLinked(markerSet))
+        {
+            return "Community";
+        }
+
         return "You";
     }
 
@@ -157,6 +163,34 @@ public class MarkerListing
         Save();
     }
 
+    public void SetMarkerEnabled(MarkerSet markerSet, bool enabled)
+    {
+        var index = presets.FindIndex(p => ReferenceEquals(p, markerSet) ||
+            (!string.IsNullOrWhiteSpace(markerSet.id) && p.id == markerSet.id));
+        if (index < 0)
+        {
+            return;
+        }
+
+        SetMarkerEnabled(index, enabled);
+    }
+
+    public void SetMarkerEnabled(int index, bool enabled)
+    {
+        if (index < 0 || index >= presets.Count)
+        {
+            return;
+        }
+
+        if (presets[index].enabled == enabled)
+        {
+            return;
+        }
+
+        presets[index].enabled = enabled;
+        Save();
+    }
+
     public void DeleteMarker(MarkerSet markerSet)
     {
         presets.Remove(markerSet);
@@ -171,14 +205,15 @@ public class MarkerListing
     {
         if (Service.Settings.AutoMarker_FeatureEnabled.Value == false) return new List<MarkerSet>();
 
-        return presets.Where(m => m.mapId == mapId).ToList();
+        return presets.Where(m => m.MapId == mapId && m.enabled).ToList();
     }
 
     public void ResetToDefault()
     {
         presets.Clear();
         InitEmptyFile();
-        
+        TryRepairBuiltinPresets(this);
+        Save();
     }
 
     public void Save()
@@ -244,14 +279,20 @@ public class MarkerListing
             loadedCharacterConfiguration = MigrateToVersion3(loadedCharacterConfiguration);
         }
 
+        if (TryRepairBuiltinPresets(loadedCharacterConfiguration))
+        {
+            loadedCharacterConfiguration.Save();
+        }
+
         return loadedCharacterConfiguration;
     }
 
     private static MarkerListing CreateNewCharacterConfiguration()
     {
         var newCharacterConfiguration = new MarkerListing();
-        newCharacterConfiguration.Save();
         newCharacterConfiguration.InitEmptyFile();
+        TryRepairBuiltinPresets(newCharacterConfiguration);
+        newCharacterConfiguration.Save();
         return newCharacterConfiguration;
     }
 
@@ -271,7 +312,15 @@ public class MarkerListing
         public string id { get; set; } = "";
         public string author { get; set; } = "";
         public string name { get; set; } = "";
+        public string description { get; set; } = "";
     }
+
+    private static readonly Dictionary<string, string> LegacyBuiltinNames =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["EoD Xunlai Jade Phase2"] = "EoD - Xunlai Jade Phase2",
+            ["EoD Xunlai Jade Phase 3"] = "EoD - Xunlai Jade Phase 3",
+        };
 
     private static List<BuiltinEntry> LoadBuiltinMap()
     {
@@ -279,7 +328,9 @@ public class MarkerListing
         {
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = assembly.GetManifestResourceNames()
-                .FirstOrDefault(n => n.EndsWith("builtin_marker_set_ids.json", StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(n => n.Equals("builtin_marker_set_ids.json", StringComparison.OrdinalIgnoreCase) ||
+                                     n.EndsWith(".builtin_marker_set_ids.json", StringComparison.OrdinalIgnoreCase) ||
+                                     n.EndsWith("builtin_marker_set_ids.json", StringComparison.OrdinalIgnoreCase));
             if (resourceName == null)
             {
                 return new List<BuiltinEntry>();
@@ -303,17 +354,86 @@ public class MarkerListing
     private static string NormalizeNameKey(string name) =>
         new string(name.Where(c => !char.IsWhiteSpace(c)).ToArray()).ToLowerInvariant();
 
-    private static BuiltinEntry? MatchBuiltin(IReadOnlyList<BuiltinEntry> map, string name)
+    private static bool DescriptionLikelyMatch(string? left, string? right)
     {
-        var key = NormalizeNameKey(name);
+        if (string.IsNullOrWhiteSpace(left) || string.IsNullOrWhiteSpace(right))
+        {
+            return false;
+        }
+
+        var normalizedLeft = NormalizeNameKey(left);
+        var normalizedRight = NormalizeNameKey(right);
+        return normalizedLeft == normalizedRight ||
+               normalizedLeft.Contains(normalizedRight) ||
+               normalizedRight.Contains(normalizedLeft);
+    }
+
+    private static string ResolveBuiltinLookupName(string name)
+    {
+        return LegacyBuiltinNames.TryGetValue(name, out var canonical) ? canonical : name;
+    }
+
+    private static BuiltinEntry? MatchBuiltin(IReadOnlyList<BuiltinEntry> map, string name, string? description)
+    {
+        var lookupName = ResolveBuiltinLookupName(name);
+        var key = NormalizeNameKey(lookupName);
         var matches = map.Where(row => NormalizeNameKey(row.name) == key).ToList();
         if (matches.Count == 0)
         {
             return null;
         }
 
-        var exact = matches.FirstOrDefault(row => row.name == name);
-        return exact ?? (matches.Count == 1 ? matches[0] : null);
+        if (!string.IsNullOrWhiteSpace(description))
+        {
+            var described = matches
+                .Where(row => DescriptionLikelyMatch(row.description, description))
+                .ToList();
+            if (described.Count == 1)
+            {
+                return described[0];
+            }
+
+            if (described.Count > 1)
+            {
+                matches = described;
+            }
+        }
+
+        var exact = matches.FirstOrDefault(row => row.name == lookupName);
+        if (exact != null)
+        {
+            return exact;
+        }
+
+        return matches.Count == 1 ? matches[0] : null;
+    }
+
+    private static bool TryRepairBuiltinPresets(MarkerListing listing)
+    {
+        var builtinMap = LoadBuiltinMap();
+        if (builtinMap.Count == 0)
+        {
+            return false;
+        }
+
+        var changed = false;
+        foreach (var preset in listing.presets)
+        {
+            if (!string.IsNullOrWhiteSpace(preset.communitySetId))
+            {
+                continue;
+            }
+
+            var beforeCommunitySetId = preset.communitySetId;
+            MigratePreset(preset, builtinMap);
+            if (string.IsNullOrWhiteSpace(beforeCommunitySetId) &&
+                !string.IsNullOrWhiteSpace(preset.communitySetId))
+            {
+                changed = true;
+            }
+        }
+
+        return changed;
     }
 
     private static void MigratePreset(MarkerSet preset, IReadOnlyList<BuiltinEntry> builtinMap)
@@ -332,7 +452,7 @@ public class MarkerListing
             return;
         }
 
-        var match = MatchBuiltin(builtinMap, preset.name ?? "");
+        var match = MatchBuiltin(builtinMap, preset.name ?? "", preset.description);
         if (match != null)
         {
             preset.communitySetId = match.id;
@@ -685,7 +805,7 @@ public class MarkerListing
         //new MarkerCoord(){ x=-53.279f, y = 127.418f, z = 156.726f, icon =1, name=""},
         ms = new MarkerSet
         {
-            name = "EoD Xunlai Jade Phase2",
+            name = "EoD - Xunlai Jade Phase2",
             description = "Phase2CC",
             mapId = 1450,
             trigger = new WorldCoord { x = 28.72438f, y = 5.002136f, z = 118.4035f },
@@ -699,7 +819,7 @@ public class MarkerListing
         SaveMarker(ms);
         ms = new MarkerSet
         {
-            name = "EoD Xunlai Jade Phase 3",
+            name = "EoD - Xunlai Jade Phase 3",
             description = "Phase3CC",
             mapId = 1450,
             trigger = new WorldCoord { x = -24.7418f, y = 123.3096f, z = 157.8843f },

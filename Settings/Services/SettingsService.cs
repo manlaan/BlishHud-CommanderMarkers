@@ -47,6 +47,7 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     public SettingEntry<bool>AutoMarker_OnlyWhenCommander { get; private set; }
     public SettingEntry<bool> AutoMarker_FeatureEnabled { get; private set; }
     public SettingEntry<bool> AutoMarker_LibraryFilterToCurrent { get; private set; }
+    public SettingEntry<bool> AutoMarker_LibraryFilterMine { get; private set; }
     public SettingEntry<bool> AutoMarker_ShowPreview { get; private set; }
     public SettingEntry<bool> AutoMarker_ShowTrigger { get; private set; }
     public SettingEntry<bool> AutoMarker_Allow_Combat_Placement { get; private set; }
@@ -141,8 +142,14 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
         AutoMarker_LibraryFilterToCurrent = settings.DefineSetting(
             "CmdMrkAMLibraryFilter",
             false,
-            () => "Filter to current map",
+            () => "Current map",
             () => "Filter the library list to only show marker sets for your current map"
+        );
+        AutoMarker_LibraryFilterMine = settings.DefineSetting(
+            "CmdMrkAMLibraryFilterMine",
+            false,
+            () => "Mine",
+            () => "Hide marker sets imported from the community library"
         );
         AutoMarker_ShowPreview = settings.DefineSetting(
             "CmdMrkAMShowPreview",

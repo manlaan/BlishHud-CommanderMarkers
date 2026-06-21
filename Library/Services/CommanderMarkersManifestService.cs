@@ -1,3 +1,4 @@
+using Manlaan.CommanderMarkers.Library;
 using Manlaan.CommanderMarkers.Library.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,7 +9,7 @@ namespace Manlaan.CommanderMarkers.Library.Services;
 
 public class CommanderMarkersManifestService
 {
-    public const string ManifestUrl = "https://gw2geoguesser.fly.dev/commander_markers_v1.json";
+    public static string ManifestUrl => DevEndpoints.ManifestUrl;
 
     private CommanderMarkersManifest _manifest = new();
     private bool _loaded;
@@ -23,7 +24,11 @@ public class CommanderMarkersManifestService
             using var client = new WebClient();
             var json = client.DownloadString(ManifestUrl);
             var j = JObject.Parse(json);
+#if DEBUG
+            _manifest.ServerUrl = DevEndpoints.ApiBaseUrl;
+#else
             _manifest.ServerUrl = j.Value<string>("server_url") ?? _manifest.ServerUrl;
+#endif
             _manifest.CommunityCheckUrl = j.Value<string>("community_check_url") ?? _manifest.CommunityCheckUrl;
             _manifest.CommunityMarkersUrl = j.Value<string>("community_markers_url") ?? _manifest.CommunityMarkersUrl;
             _manifest.SetsUrl = j.Value<string>("sets_url") ?? _manifest.SetsUrl;

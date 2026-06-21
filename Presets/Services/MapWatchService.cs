@@ -69,7 +69,37 @@ public class MapWatchService : IDisposable
 
     private void MarkersListing_MarkersChanged(object sender, EventArgs e)
     {
-        CurrentMap_MapChanged(this, new ValueEventArgs<int>(GameService.Gw2Mumble.CurrentMap.Id));
+        var mapId = _currentmap != 0 ? _currentmap : GameService.Gw2Mumble.CurrentMap.Id;
+        RefreshMapMarkers(mapId);
+    }
+
+    private void RefreshMapMarkers(int mapId)
+    {
+        RemovePreviewMarkerSet();
+        _screenMap.ResetPreviewState();
+        _screenMap.ClearEntities();
+        _billboards.ClearEntities();
+
+        _currentmap = mapId;
+        _markers = Service.MarkersListing.GetMarkersForMap(mapId);
+
+        if (!_setting.AutoMarker_ShowTrigger.Value && !_setting.AutoMarker_Billboard_FeatureEnabled.Value)
+        {
+            return;
+        }
+
+        foreach (var marker in _markers)
+        {
+            if (_setting.AutoMarker_ShowTrigger.Value)
+            {
+                _screenMap.AddEntity(new BasicMarker(_map, marker.trigger!.ToVector3(), marker.name, marker.description));
+            }
+
+            if (_setting.AutoMarker_Billboard_FeatureEnabled.Value)
+            {
+                _billboards.AddEntity(new BillBoardPreview(_map, marker));
+            }
+        }
     }
 
     private void _interactKeybind_Activated(object sender, EventArgs e)
@@ -115,6 +145,11 @@ public class MapWatchService : IDisposable
 
     public Task PlaceMarkers(MarkerSet marders)
     {
+        if (!marders.enabled)
+        {
+            return Task.CompletedTask;
+        }
+
         return PlaceMarkers(marders, _map);
     }
 
@@ -199,26 +234,18 @@ public class MapWatchService : IDisposable
 
     private void CurrentMap_MapChanged(object sender, ValueEventArgs<int> e)
     {
-        _screenMap.ClearEntities();
-        _billboards.ClearEntities();
-        if (!_setting.AutoMarker_ShowTrigger.Value && !_setting.AutoMarker_Billboard_FeatureEnabled.Value) return;
-        _currentmap= e.Value;
-        _markers = Service.MarkersListing.GetMarkersForMap(e.Value).Where(m => m.enabled).ToList();
-        foreach(var marker in _markers)
-        {
-            if(_setting.AutoMarker_ShowTrigger.Value)
-                _screenMap.AddEntity(new BasicMarker(_map, marker.trigger!.ToVector3(), marker.name, marker.description));
-            if(_setting.AutoMarker_Billboard_FeatureEnabled.Value)
-                _billboards.AddEntity(new BillBoardPreview(_map, marker));
-            //PreviewMarkerSet(marker);
-
-        }
+        RefreshMapMarkers(e.Value);
     }
 
 
     public void PreviewMarkerSet(MarkerSet preview)
     {
         RemovePreviewMarkerSet();
+        if (!preview.enabled)
+        {
+            return;
+        }
+
         if (Service.Settings.AutoMarker_ShowPreview.Value)
         {
             _previewMarkerSet = new MarkerPreview(_map, preview);
@@ -261,8 +288,13 @@ public class MapWatchService : IDisposable
         if (_previewMarkerSet != null)
         {
             _screenMap.RemoveEntity(_previewMarkerSet);
-            _billboards.RemoveEntity(_billboardPreview);
+            if (_billboardPreview != null)
+            {
+                _billboards.RemoveEntity(_billboardPreview);
+            }
+
             _previewMarkerSet = null;
+            _billboardPreview = null;
         }
     }
 

@@ -1,8 +1,10 @@
+using Manlaan.CommanderMarkers.Library;
+
 namespace Manlaan.CommanderMarkers.Library.Models;
 
 public class CommanderMarkersManifest
 {
-    public string ServerUrl { get; set; } = "https://gw2geoguesser.fly.dev";
+    public string ServerUrl { get; set; } = DevEndpoints.ApiBaseUrl;
     public string CommunityCheckUrl { get; set; } = "/commander-markers/v1/community/check";
     public string CommunityMarkersUrl { get; set; } = "/commander-markers/v1/community/markers.json";
     public string SetsUrl { get; set; } = "/commander-markers/v1/sets";

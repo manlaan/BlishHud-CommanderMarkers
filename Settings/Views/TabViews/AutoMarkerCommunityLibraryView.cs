@@ -3,9 +3,9 @@ using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
 using Gw2Sharp.WebApi.V2.Models;
 using Manlaan.CommanderMarkers.Library.Controls;
+using Manlaan.CommanderMarkers.Settings.Controls;
 using Manlaan.CommanderMarkers.Library.Enums;
 using Manlaan.CommanderMarkers.Library.Models;
-using Manlaan.CommanderMarkers.Library.Services;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Manlaan.CommanderMarkers.Presets.Services;
 using Manlaan.CommanderMarkers.Utils;
@@ -13,15 +13,17 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Manlaan.CommanderMarkers.Settings.Views.SubViews;
 
 public class AutoMarkerCommunityLibraryView : View
 {
-    const int HEADER_HEIGHT = 45;
-    const int SHARE_SECTION_HEIGHT = 190;
+    const int HEADER_HEIGHT = 68;
+    const int HEADER_SIDE_PADDING = 20;
+    const int HEADER_ROW1_Y = 4;
+    const int HEADER_ROW2_Y = 36;
+    const int SHARE_SECTION_HEIGHT = 0;
 
     private Panel? _listingHeader;
     private FlowPanel? _listingPanel;
@@ -59,35 +61,36 @@ public class AutoMarkerCommunityLibraryView : View
         {
             Parent = _listingHeader,
             Width = 200,
-            Location = new(20, 3)
+            Location = new Point(HEADER_SIDE_PADDING, HEADER_ROW1_Y)
         };
         _categorySelection.Items.Add("All categories");
         _categorySelection.SelectedItem = _categorySelection.Items[0];
-
-        _currentMapFilter = new Checkbox()
-        {
-            Text = "Filter to current map",
-            Parent = _listingHeader,
-            Location = new Point(230, 10),
-            Checked = Service.Settings.AutoMarker_LibraryFilterToCurrent.Value
-        };
-
-        _hideImportedFilter = new Checkbox()
-        {
-            Text = "Only show available",
-            Parent = _listingHeader,
-            Location = new Point(400, 10),
-            Checked = false
-        };
 
         _searchBox = new TextBox()
         {
             Parent = _listingHeader,
             Width = LibrarySearch.SearchFieldWidth,
-            Location = new Point(_listingHeader.Width - LibrarySearch.SearchFieldWidth - 120, 8),
+            Location = new Point(_listingHeader.Width - LibrarySearch.SearchFieldWidth - HEADER_SIDE_PADDING, HEADER_ROW1_Y + 2),
             BasicTooltipText = "Search name, description, author, or map"
         };
         _searchBox.TextChanged += (_, __) => ReloadMarkerList(_currentMapFilter!.Checked);
+
+        _currentMapFilter = new Checkbox()
+        {
+            Text = "Current map",
+            Parent = _listingHeader,
+            Location = new Point(HEADER_SIDE_PADDING, HEADER_ROW2_Y),
+            Checked = Service.Settings.AutoMarker_LibraryFilterToCurrent.Value
+        };
+
+        _hideImportedFilter = new Checkbox()
+        {
+            Text = "Available",
+            Parent = _listingHeader,
+            Location = new Point(150, HEADER_ROW2_Y),
+            Checked = false,
+            BasicTooltipText = "Only show sets you have not imported yet"
+        };
 
         var reload = new NuclearOptionButton()
         {
@@ -95,14 +98,14 @@ public class AutoMarkerCommunityLibraryView : View
             Width = 100,
             Text = "Redownload",
             BasicTooltipText = "Force a redownload of the community library.\n\nHold Ctrl and Shift to activate the button",
-            Location = new Point(_listingHeader.Width - 100, 0)
+            Location = new Point(_listingHeader.Width - 100 - HEADER_SIDE_PADDING, HEADER_ROW2_Y - 2)
         };
         reload.Click += (s, e) =>
         {
             Task.Run(() =>
             {
                 Service.CommunityCatalog.SyncCatalog();
-                GameService.GameThread.Enqueue(() =>
+                GameThreadUtil.Enqueue(() =>
                 {
                     LoadCategorySelection();
                     ReloadMarkerList(_currentMapFilter!.Checked);
@@ -123,7 +126,8 @@ public class AutoMarkerCommunityLibraryView : View
         {
             Parent = buildPanel,
             Location = new Point(0, buildPanel.Height - SHARE_SECTION_HEIGHT),
-            Size = new Point(buildPanel.Width, SHARE_SECTION_HEIGHT),
+            //Size = new Point(buildPanel.Width, SHARE_SECTION_HEIGHT),
+            Size = new Point(0,0),
             FlowDirection = ControlFlowDirection.SingleTopToBottom,
             OuterControlPadding = new Vector2(20, 8),
             ControlPadding = new Vector2(0, 6),
@@ -133,17 +137,17 @@ public class AutoMarkerCommunityLibraryView : View
 
         Service.CommunityCatalog.CatalogUpdated += (_, __) =>
         {
-            GameService.GameThread.Enqueue(() =>
+            GameThreadUtil.Enqueue(() =>
             {
                 LoadCategorySelection();
                 ReloadMarkerList(_currentMapFilter!.Checked);
-                RenderShareSection();
+                //RenderShareSection();
             });
         };
 
         LoadCategorySelection();
         ReloadMarkerList(_currentMapFilter.Checked);
-        RenderShareSection();
+        //RenderShareSection();
         GameService.Gw2Mumble.CurrentMap.MapChanged += (s, e) => ReloadMarkerList(_currentMapFilter!.Checked);
 
         _currentMapFilter.CheckedChanged += (s, e) =>
@@ -256,37 +260,47 @@ public class AutoMarkerCommunityLibraryView : View
                 ? Service.MapDataCache.Describe(summary.MapId)
                 : summary.MapName;
 
-            Service.PreviewImageCache.RequestThumb(summary.Id, summary.PreviewThumbUrl, _ =>
-            {
-                GameService.GameThread.Enqueue(() => ReloadMarkerList(shouldFilter));
-            });
-
-            var thumb = Service.PreviewImageCache.GetThumbTexture(summary.Id,
-                ((SquadMarker)((markerIdx % 8) + 1)).GetIcon());
+            var fallbackIcon = ((SquadMarker)((markerIdx % 8) + 1)).GetIcon();
             var btn = new DetailsButton()
             {
-                Parent = panel,
                 Text = $"{summary.Name}\n{summary.Description}\n{mapName}",
-                Icon = thumb ?? ((SquadMarker)((markerIdx % 8) + 1)).GetIcon(),
+                Icon = fallbackIcon,
+                IconDetails = summary.Author ?? "",
                 Width = detailButtonWidth,
-                IconSize = DetailsIconSize.Small,
+                BottomSectionHeight = summary.MapId == currentMapId ? 40 : 35,
+                HighlightType = DetailsHighlightType.LightHighlight,
                 ShowToggleButton = true,
-                BasicTooltipText = $"{summary.Name}\n{summary.Description}\nMap: {mapName}\nAuthor: {summary.Author}",
-                BackgroundColor = summary.Enabled ? Color.Transparent : new Color(.4f, .1f, .1f, 0.1f),
+                BackgroundColor = summary.Enabled ? Microsoft.Xna.Framework.Color.Transparent : new Microsoft.Xna.Framework.Color(.4f, .1f, .1f, 0.1f),
             };
 
+            var thumb = Service.PreviewImageCache.GetThumbTexture(summary.Id, fallbackIcon);
             if (thumb != null)
             {
-                MapPreviewTooltipService.Attach(btn, MapPreviewTarget.FromCommunitySummary(summary));
+                btn.Icon = thumb;
+            }
+            else
+            {
+                var capturedBtn = btn;
+                var capturedId = summary.Id;
+                Service.PreviewImageCache.RequestThumb(summary.Id, summary.PreviewThumbUrl, _ =>
+                {
+                    if (capturedBtn.Parent == null)
+                    {
+                        return;
+                    }
+
+                    var loaded = Service.PreviewImageCache.GetThumbTexture(capturedId, fallbackIcon);
+                    if (loaded != null)
+                    {
+                        capturedBtn.Icon = loaded;
+                    }
+                });
             }
 
-            new Label()
+            if (!string.IsNullOrEmpty(summary.Id))
             {
-                Parent = btn,
-                Text = $"Author: {summary.Author}",
-                Width = summary.MapId == currentMapId ? 180 : 300,
-                Height = 30
-            };
+                MapPreviewTooltip.Apply(btn, MapPreviewTarget.FromCommunitySummary(summary));
+            }
 
             if (summary.MapId == currentMapId)
             {
@@ -353,44 +367,6 @@ public class AutoMarkerCommunityLibraryView : View
         }
     }
 
-    private List<string> ShareCategoryNames()
-    {
-        var names = new List<string>();
-        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var category in Service.CommunityCatalog.Categories)
-        {
-            if (!string.IsNullOrWhiteSpace(category.Name) && seen.Add(category.Name))
-            {
-                names.Add(category.Name);
-            }
-        }
-        if (names.Count == 0)
-        {
-            foreach (var summary in Service.CommunityCatalog.Sets)
-            {
-                if (!string.IsNullOrWhiteSpace(summary.CategoryName) && seen.Add(summary.CategoryName))
-                {
-                    names.Add(summary.CategoryName);
-                }
-            }
-        }
-        return names;
-    }
-
-    private string ResolveShareCategory(ShareRowState rowState, IReadOnlyList<string> categoryNames)
-    {
-        var customIndex = categoryNames.Count;
-        if (rowState.CategoryIndex == customIndex || categoryNames.Count == 0)
-        {
-            return rowState.CustomCategory.Trim();
-        }
-        if (rowState.CategoryIndex >= 0 && rowState.CategoryIndex < categoryNames.Count)
-        {
-            return categoryNames[rowState.CategoryIndex];
-        }
-        return rowState.CustomCategory.Trim();
-    }
-
     private void RenderShareSection()
     {
         if (_sharePanel == null)
@@ -419,7 +395,7 @@ public class AutoMarkerCommunityLibraryView : View
             return;
         }
 
-        var categoryNames = ShareCategoryNames();
+        var categoryNames = CommunityShareHelper.CategoryNames();
         var shareable = Service.MarkersListing.GetAllMarkerSets()
             .Where(MarkerListing.IsShareableWithCommunity)
             .ToList();
@@ -537,7 +513,7 @@ public class AutoMarkerCommunityLibraryView : View
                     rowState.CustomCategory = customCategoryBox.Text;
                 }
 
-                var category = ResolveShareCategory(rowState, categoryNames);
+                var category = CommunityShareHelper.ResolveCategory(rowState.CategoryIndex, rowState.CustomCategory, categoryNames);
                 if (string.IsNullOrWhiteSpace(category))
                 {
                     rowState.Error = "Enter a category name.";
@@ -556,36 +532,18 @@ public class AutoMarkerCommunityLibraryView : View
                 var capturedRow = rowState;
                 Task.Run(async () =>
                 {
-                    try
+                    var result = await CommunityShareHelper.SubmitAsync(capturedSet, capturedCategory).ConfigureAwait(false);
+                    if (result.Success)
                     {
-                        var subtoken = await Service.SubtokenService.GetValidSubtokenAsync().ConfigureAwait(false);
-                        if (string.IsNullOrEmpty(subtoken))
-                        {
-                            capturedRow.Error = "Account API permission required.";
-                            return;
-                        }
+                        capturedRow.Status = result.Message;
+                    }
+                    else
+                    {
+                        capturedRow.Error = result.Message;
+                    }
 
-                        var payload = MarkerSetSubmission.ToSubmissionPayload(capturedSet, capturedCategory);
-                        using var client = new WebClient();
-                        client.Headers[HttpRequestHeader.Authorization] = "Bearer " + subtoken;
-                        client.Headers[HttpRequestHeader.ContentType] = "application/json";
-                        var url = Service.ManifestService.Manifest.Absolute(Service.ManifestService.Manifest.SubmissionsUrl);
-                        client.UploadString(url, payload.ToString(Newtonsoft.Json.Formatting.None));
-                        capturedRow.Status = "Sent for moderator review.";
-                    }
-                    catch (WebException ex) when (ex.Response is HttpWebResponse response)
-                    {
-                        capturedRow.Error = $"Share failed ({(int)response.StatusCode}).";
-                    }
-                    catch (Exception)
-                    {
-                        capturedRow.Error = "Share failed.";
-                    }
-                    finally
-                    {
-                        capturedRow.Sharing = false;
-                        GameService.GameThread.Enqueue(RenderShareSection);
-                    }
+                    capturedRow.Sharing = false;
+                    GameThreadUtil.Enqueue(RenderShareSection);
                 });
             };
         }

@@ -1,5 +1,7 @@
+using Blish_HUD;
 using Blish_HUD.Content;
 using Manlaan.CommanderMarkers.Library.Models;
+using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,9 @@ namespace Manlaan.CommanderMarkers.Library.Services;
 public class PreviewImageCache : IDisposable
 {
     private readonly Dictionary<string, Texture2D> _textures = new();
+    private readonly HashSet<string> _thumbDownloadsInFlight = new();
+    private readonly HashSet<string> _previewDownloadsInFlight = new();
+    private readonly object _downloadLock = new();
     private string _moduleDirectory = "";
     private string _serverUrl = "";
 
@@ -92,19 +97,37 @@ public class PreviewImageCache : IDisposable
         var existing = PreviewPathForSet(communitySetId);
         if (existing != null)
         {
-            onReady?.Invoke(existing);
+            NotifyReady(onReady, existing);
             return;
+        }
+
+        lock (_downloadLock)
+        {
+            if (!_previewDownloadsInFlight.Add(communitySetId))
+            {
+                return;
+            }
         }
 
         var url = ResolvePreviewDownloadUrl(communitySetId, previewLargeUrl);
         Task.Run(() =>
         {
-            if (DownloadPreview(communitySetId, url))
+            try
             {
-                var path = PreviewPathForSet(communitySetId);
-                if (path != null)
+                if (DownloadPreview(communitySetId, url))
                 {
-                    onReady?.Invoke(path);
+                    var path = PreviewPathForSet(communitySetId);
+                    if (path != null)
+                    {
+                        NotifyReady(onReady, path);
+                    }
+                }
+            }
+            finally
+            {
+                lock (_downloadLock)
+                {
+                    _previewDownloadsInFlight.Remove(communitySetId);
                 }
             }
         });
@@ -120,22 +143,50 @@ public class PreviewImageCache : IDisposable
         var existing = ThumbPathForSet(communitySetId);
         if (existing != null)
         {
-            onReady?.Invoke(existing);
+            NotifyReady(onReady, existing);
             return;
+        }
+
+        lock (_downloadLock)
+        {
+            if (!_thumbDownloadsInFlight.Add(communitySetId))
+            {
+                return;
+            }
         }
 
         var url = ResolveDownloadUrl(communitySetId, previewThumbUrl);
         Task.Run(() =>
         {
-            if (DownloadThumb(communitySetId, url))
+            try
             {
-                var path = ThumbPathForSet(communitySetId);
-                if (path != null)
+                if (DownloadThumb(communitySetId, url))
                 {
-                    onReady?.Invoke(path);
+                    var path = ThumbPathForSet(communitySetId);
+                    if (path != null)
+                    {
+                        NotifyReady(onReady, path);
+                    }
+                }
+            }
+            finally
+            {
+                lock (_downloadLock)
+                {
+                    _thumbDownloadsInFlight.Remove(communitySetId);
                 }
             }
         });
+    }
+
+    private static void NotifyReady(Action<string>? onReady, string path)
+    {
+        if (onReady == null)
+        {
+            return;
+        }
+
+        GameThreadUtil.Enqueue(() => onReady(path));
     }
 
     private string GetThumbFilePath(string communitySetId) =>

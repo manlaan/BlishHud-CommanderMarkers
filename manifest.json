@@ -27,7 +27,7 @@
   "api_permissions": {
     "account": {
       "optional": true,
-      "details": "Required to submit marker sets to the community library"
+      "details": "Used to submit marker sets to the community library"
     }
   }
 }
