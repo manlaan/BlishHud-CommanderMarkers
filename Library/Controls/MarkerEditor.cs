@@ -75,7 +75,7 @@ public class MarkerEditor : FlowPanel
         };
         deleteButton.Click += (s, e) => _onDeleteCallback(this);
 
-        _position = new PositionFields(marker)
+        _position = new PositionFields(marker, () => marker.icon >= 1 && marker.icon <= 8 ? marker.icon - 1 : null)
         {
             Parent = this,
         };

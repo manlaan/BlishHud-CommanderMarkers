@@ -264,7 +264,7 @@ public class AutoMarkerLibraryView : View
 
         if (Service.Settings._settingOnlyWhenCommander.Value || Service.LtMode.Value)
         {
-            shouldDoIt &= (GameService.Gw2Mumble.PlayerCharacter.IsCommander || Service.LtMode.Value);
+            shouldDoIt &= CommanderPermissionHelper.PassesCommanderGate();
         }
         return shouldDoIt;
     }

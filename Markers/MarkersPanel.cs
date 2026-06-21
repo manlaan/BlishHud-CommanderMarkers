@@ -195,7 +195,7 @@ public class MarkersPanel : FlowPanel, IDisposable
         
         if (_settings._settingOnlyWhenCommander.Value || Service.LtMode.Value)
         {
-            shouldBeVisible = shouldBeVisible && (GameService.Gw2Mumble.PlayerCharacter.IsCommander || Service.LtMode.Value);
+            shouldBeVisible = shouldBeVisible && CommanderPermissionHelper.PassesCommanderGate();
         }
         
 

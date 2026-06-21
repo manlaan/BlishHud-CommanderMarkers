@@ -2,6 +2,7 @@
 using Blish_HUD.Content;
 using Blish_HUD.Controls;
 using Manlaan.CommanderMarkers.Presets.Model;
+using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
@@ -88,8 +89,7 @@ public class BillboardControl : Control
             return;
         if (GameService.Gw2Mumble.PlayerCharacter.IsInCombat && !Service.Settings.AutoMarker_Allow_Combat_Placement.Value) return;
         if (
-            (Service.Settings.AutoMarker_OnlyWhenCommander.Value && !GameService.Gw2Mumble.PlayerCharacter.IsCommander) 
-            &&  !Service.LtMode.Value
+            Service.Settings.AutoMarker_OnlyWhenCommander.Value && !CommanderPermissionHelper.HasCommanderPermissions()
             ) return;
         if (GameService.Gw2Mumble.UI.IsMapOpen) return;
     
