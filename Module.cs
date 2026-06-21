@@ -77,6 +77,8 @@ namespace Manlaan.CommanderMarkers
             Service.MarkersListing = MarkerListing.Load();
             Service.MapWatch = new MapWatchService(Service.MapDataCache, Settings);
 
+            Service.RtApiConnection = new Services.RtApiConnection();
+
             Service.SettingsWindow = new();
 
 
@@ -158,6 +160,9 @@ namespace Manlaan.CommanderMarkers
 
             Service.MapWatch?.Dispose();
             Service.MapDataCache?.Dispose();
+
+            Service.RtApiConnection?.Dispose();
+            Service.RtApiConnection = null;
 
             IconsPanel?.Dispose();
             Service.Settings?.Dispose();

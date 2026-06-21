@@ -51,7 +51,7 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
     public SettingEntry<bool> AutoMarker_ShowPreview { get; private set; }
     public SettingEntry<bool> AutoMarker_ShowTrigger { get; private set; }
     public SettingEntry<bool> AutoMarker_Allow_Combat_Placement { get; private set; }
-    
+    public SettingEntry<bool> RtApiIntegrationEnabled { get; private set; }
     public SettingEntry<bool> AutoMarker_Billboard_FeatureEnabled { get; private set; }
     public SettingEntry<bool> AutoMarker_Billboard_Placement { get; private set; }
     public SettingEntry<bool> AutoMarker_Billboard_Preview { get; private set; }
@@ -190,6 +190,13 @@ public class SettingService: IDisposable // singular because Setting"s"Service a
             false,
             () => "Allow AutoMarker features while In Combat",
             () => "AutoMarker features will be available while in combat"
+        );
+
+        RtApiIntegrationEnabled = settings.DefineSetting(
+            "CmdMrkRtApiEnabled",
+            false,
+            () => "Enable Raidcore.GG Nexus Real-Time API integration",
+            () => "Use RTAPI (via Nexus game memory reading) to import active squad marker positions in the library editor"
         );
 
         CornerIconEnabled = settings.DefineSetting(

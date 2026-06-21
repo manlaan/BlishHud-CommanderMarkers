@@ -4,18 +4,19 @@ using Manlaan.CommanderMarkers.Settings.Controls;
 using Manlaan.CommanderMarkers.Settings.Services;
 using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace Manlaan.CommanderMarkers.Settings.Views.SubViews;
 
 public class AutoMarkerSettingsView : View
 {
     protected SettingService _settings;
+
     protected override void Build(Container buildPanel)
     {
         _settings = Service.Settings;
 
         base.Build(buildPanel);
-
 
         var panel = new FlowPanel()
             .BeginFlow(buildPanel)
@@ -80,7 +81,5 @@ public class AutoMarkerSettingsView : View
         {
             (delayLabel as Label).Text = $"  Delay Time: {_settings.AutoMarker_PlacementDelay.Value} ms";
         };
-
     }
-
 }

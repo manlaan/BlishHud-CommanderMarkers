@@ -1,6 +1,7 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
 using Manlaan.CommanderMarkers.Presets.Model;
+using Manlaan.CommanderMarkers.RtApi;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -11,14 +12,17 @@ public class PositionFields: Container
     public event EventHandler<WorldCoord>? WorldCoordChanged;
 
     private StandardButton _locBtn;
+    private StandardButton? _importBtn;
     private Label _xPos;
     private Label _yPos;
     private Label _zPos;
     private WorldCoord _worldCoord;
-    public PositionFields(WorldCoord? marker): base()
-    {
+    private readonly Func<int?>? _getRtApiSlotIndex;
 
-        Size = new(400, 30);
+    public PositionFields(WorldCoord? marker, Func<int?>? getRtApiSlotIndex = null): base()
+    {
+        _getRtApiSlotIndex = getRtApiSlotIndex;
+        Size = _getRtApiSlotIndex != null ? new(510, 30) : new(400, 30);
 
         _worldCoord = marker ?? new WorldCoord();
 
@@ -30,10 +34,28 @@ public class PositionFields: Container
             Size = new Point(100, 30),
             Location = new Point(0, 0)
         };
+
+        var coordX = _getRtApiSlotIndex != null ? 210 : 110;
+        if (_getRtApiSlotIndex != null)
+        {
+            _importBtn = new StandardButton()
+            {
+                Parent = this,
+                Text = "Import",
+                Size = new Point(80, 30),
+                Location = new Point(105, 0),
+                Icon = Service.Textures!.IconImport,
+                BasicTooltipText = "Import this marker's position from squad markers placed in-game.\nRequires the Real-Time API addon.",
+                Enabled = Service.RtApiConnection?.IsActive == true,
+            };
+            _importBtn.Click += ImportBtn_Click;
+            Service.RtApiConnection!.ConnectionStateChanged += OnRtApiConnectionStateChanged;
+        }
+
         var xLbl = new Label()
         {
             Parent = this,
-            Location = new Point(110, 0),
+            Location = new Point(coordX, 0),
             Size = new Point(15, 30),
             Text ="X:"
         };
@@ -42,12 +64,12 @@ public class PositionFields: Container
             Parent = this,
             Text = _worldCoord.x.ToString(),
             Size = new Point(85, 30),
-            Location = new Point(125, 0)
+            Location = new Point(coordX + 15, 0)
         };
         var yLbl = new Label()
         {
             Parent = this,
-            Location = new Point(210, 0),
+            Location = new Point(coordX + 100, 0),
             Size = new Point(15, 30),
             Text = "Y:"
         };
@@ -56,12 +78,12 @@ public class PositionFields: Container
             Parent = this,
             Text = _worldCoord.y.ToString(),
             Size = new Point(85, 30),
-            Location = new Point(225, 0)
+            Location = new Point(coordX + 115, 0)
         };
         var zLbl = new Label()
         {
             Parent = this,
-            Location = new Point(310, 0),
+            Location = new Point(coordX + 200, 0),
             Size = new Point(15, 30),
             Text = "Z:"
         };
@@ -70,12 +92,54 @@ public class PositionFields: Container
             Parent = this,
             Text = _worldCoord.z.ToString(),
             Size = new Point(85, 30),
-            Location = new Point(325, 0)
+            Location = new Point(coordX + 215, 0)
         };
 
         _locBtn.Click += _locBtn_Click;
-        
+    }
 
+    private void OnRtApiConnectionStateChanged(object? sender, RtApiConnectionState state)
+    {
+        if (_importBtn == null)
+        {
+            return;
+        }
+
+        _importBtn.Enabled = state == RtApiConnectionState.Active;
+    }
+
+    private void ImportBtn_Click(object sender, Blish_HUD.Input.MouseEventArgs e)
+    {
+        var slotIndex = _getRtApiSlotIndex?.Invoke();
+        if (!slotIndex.HasValue || Service.RtApiConnection == null)
+        {
+            return;
+        }
+
+        if (!Service.RtApiConnection.EnsureActive())
+        {
+            ScreenNotification.ShowNotification(
+                "Real-Time API is not available.",
+                ScreenNotification.NotificationType.Error,
+                null,
+                4);
+            return;
+        }
+
+        if (!Service.RtApiConnection.TryGetSquadMarkerPosition(slotIndex.Value, out var position))
+        {
+            ScreenNotification.ShowNotification(
+                "No squad marker is placed for this slot.",
+                ScreenNotification.NotificationType.Error,
+                null,
+                4);
+            return;
+        }
+
+        _worldCoord.x = position.X;
+        _worldCoord.y = position.Y;
+        _worldCoord.z = position.Z;
+        ApplyWorldCoord(_worldCoord);
     }
 
     private void _locBtn_Click(object sender, Blish_HUD.Input.MouseEventArgs e)
@@ -84,17 +148,28 @@ public class PositionFields: Container
         _worldCoord.x = pos.X;
         _worldCoord.y = pos.Y;
         _worldCoord.z = pos.Z;
-        _xPos.Text = _worldCoord.x.ToString();
-        _yPos.Text = _worldCoord.y.ToString();
-        _zPos.Text = _worldCoord.z.ToString();
-
-        WorldCoordChanged?.Invoke(this, _worldCoord);
+        ApplyWorldCoord(_worldCoord);
     }
 
- 
+    private void ApplyWorldCoord(WorldCoord coord)
+    {
+        _xPos.Text = coord.x.ToString();
+        _yPos.Text = coord.y.ToString();
+        _zPos.Text = coord.z.ToString();
+        WorldCoordChanged?.Invoke(this, coord);
+    }
 
     protected override void DisposeControl()
     {
-        _locBtn.Click -= _locBtn_Click; 
+        _locBtn.Click -= _locBtn_Click;
+        if (_importBtn != null)
+        {
+            _importBtn.Click -= ImportBtn_Click;
+        }
+
+        if (Service.RtApiConnection != null)
+        {
+            Service.RtApiConnection.ConnectionStateChanged -= OnRtApiConnectionStateChanged;
+        }
     }
 }
