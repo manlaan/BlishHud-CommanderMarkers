@@ -7,6 +7,7 @@ using Manlaan.CommanderMarkers.Library.Models;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,9 +17,12 @@ namespace Manlaan.CommanderMarkers.Library.Controls;
 public sealed class MapPreviewTooltipView : View, ITooltipView
 {
     private const int PreviewSize = 768;
+    private const int LegendPad = 8;
+    private static readonly Color LegendBackground = new(12, 12, 12, 205);
 
     private readonly MapPreviewTarget _target;
     private Container? _buildPanel;
+    private Panel? _previewContainer;
     private Image? _previewImage;
     private FlowPanel? _legendPanel;
     private int _detailFetchGeneration;
@@ -72,22 +76,37 @@ public sealed class MapPreviewTooltipView : View, ITooltipView
             };
         }
 
-        _previewImage = new Image
+        var hasPreviewImage = !string.IsNullOrEmpty(_target.CommunitySetId);
+
+        _previewContainer = new Panel
         {
             Parent = root,
             Size = new Point(PreviewSize, PreviewSize),
-            Visible = !string.IsNullOrEmpty(_target.CommunitySetId)
+            Visible = hasPreviewImage
+        };
+
+        _previewImage = new Image
+        {
+            Parent = _previewContainer,
+            Location = Point.Zero,
+            Size = new Point(PreviewSize, PreviewSize),
+            Visible = false
         };
 
         _legendPanel = new FlowPanel
         {
-            Parent = root,
-            Width = PreviewSize,
-            //Height = 72,
+            Parent = hasPreviewImage ? _previewContainer : root,
             FlowDirection = ControlFlowDirection.SingleTopToBottom,
-            ControlPadding = new Vector2(4, 2),
+            ControlPadding = new Vector2(LegendPad, LegendPad),
+            WidthSizingMode = SizingMode.AutoSize,
+            HeightSizingMode = SizingMode.AutoSize,
+            BackgroundColor = LegendBackground,
             Visible = false
         };
+        if (hasPreviewImage)
+        {
+            _legendPanel.Resized += (_, _) => UpdateLegendPosition();
+        }
 
         ApplyPreviewTexture();
         RenderLegend(_target.Markers);
@@ -156,6 +175,22 @@ public sealed class MapPreviewTooltipView : View, ITooltipView
     private void InvalidateLayout()
     {
         _buildPanel?.Invalidate();
+        UpdateLegendPosition();
+    }
+
+    private void UpdateLegendPosition()
+    {
+        if (_legendPanel == null || _previewContainer == null || !_legendPanel.Visible ||
+            _legendPanel.Parent != _previewContainer)
+        {
+            return;
+        }
+
+        var legendHeight = _legendPanel.Height;
+        var containerHeight = _previewContainer.Height;
+        _legendPanel.Location = new Point(
+            LegendPad,
+            Math.Max(LegendPad, containerHeight - legendHeight - LegendPad));
     }
 
     private void RenderLegend(IEnumerable<MarkerCoord> markers)
@@ -174,10 +209,12 @@ public sealed class MapPreviewTooltipView : View, ITooltipView
         _legendPanel.Visible = entries.Count > 0;
         foreach (var mark in entries)
         {
-            var row = new Panel
+            var row = new FlowPanel
             {
                 Parent = _legendPanel,
-                Width = 140,
+                FlowDirection = ControlFlowDirection.SingleLeftToRight,
+                ControlPadding = new Vector2(6, 0),
+                WidthSizingMode = SizingMode.AutoSize,
                 Height = 22
             };
 
@@ -185,7 +222,6 @@ public sealed class MapPreviewTooltipView : View, ITooltipView
             {
                 Parent = row,
                 Size = new Point(18, 18),
-                Location = new Point(2, 2),
                 Texture = ((SquadMarker)mark.icon).GetIcon()
             };
 
@@ -193,13 +229,20 @@ public sealed class MapPreviewTooltipView : View, ITooltipView
             {
                 Parent = row,
                 Text = mark.name,
-                Location = new Point(24, 3),
                 AutoSizeWidth = true,
+                AutoSizeHeight = true,
                 TextColor = Color.White,
                 ShowShadow = true
             };
         }
 
+        GameThreadUtil.Enqueue(() =>
+        {
+            if (_legendPanel?.Parent == _previewContainer)
+            {
+                UpdateLegendPosition();
+            }
+        });
         InvalidateLayout();
     }
 }
