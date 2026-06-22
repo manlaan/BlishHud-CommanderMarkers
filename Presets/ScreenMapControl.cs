@@ -73,6 +73,8 @@ public class ScreenMap : Control
     public void RemoveEntity(IMapEntity entity)
         => _entities.Remove(entity);
 
+    public void ResetPreviewState() => _previewActive = false;
+
     public void ClearEntities() => _entities.Clear();
     public override void DoUpdate(GameTime gameTime)
     {

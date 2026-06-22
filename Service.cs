@@ -27,16 +27,6 @@ public static class Service
 
     public static CornerIconService? CornerIcon { get; set; } = null;
 
-    public static CommanderMarkersManifestService ManifestService { get; set; } = null!;
-    public static CommunityCatalogService CommunityCatalog { get; set; } = null!;
-    public static PreviewImageCache PreviewImageCache { get; set; } = null!;
-    public static SubtokenService SubtokenService { get; set; } = null!;
-
-    public static RtApiConnection? RtApiConnection { get; set; }
-    public static RtApiEventListener? RtApiEvents { get; set; }
-
-    public static string? AccountDisplayName { get; set; }
-
     public static SettingEntry<bool> LtMode { get; set; } = new SettingEntry<bool>()
     {
         Value = false

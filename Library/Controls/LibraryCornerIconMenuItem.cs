@@ -30,10 +30,9 @@ public class LibrayCornerIconMenuItem : ContextMenuStripItem
         var currentMap = Gw2MumbleService.Gw2Mumble.CurrentMap.Id;
         var libraryMarkers = Service.MarkersListing.GetMarkersForMap(currentMap);
         var menuListItems = new List<ContextMenuStripItem>();
-        libraryMarkers.ForEach( marker =>
+        libraryMarkers.ForEach(marker =>
         {
-            if(marker.enabled)
-                menuListItems.Add(new MarkerPlaceMenuItem(marker));
+            menuListItems.Add(new MarkerPlaceMenuItem(marker));
         });
         if(menuListItems.Count <= 0)
         {

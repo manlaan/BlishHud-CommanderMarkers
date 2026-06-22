@@ -1,4 +1,5 @@
-﻿using Manlaan.CommanderMarkers.Library.Models;
+﻿using Manlaan.CommanderMarkers.Library;
+using Manlaan.CommanderMarkers.Library.Models;
 using Newtonsoft.Json;
 using System;
 
@@ -6,7 +7,7 @@ namespace Manlaan.CommanderMarkers.Library.Services;
 
 public class CommunityMarkerService
 {
-    protected const string FILE_URL = "https://bhm.blishhud.com/Manlaan.CommanderMarkers/Community/Markers.json";
+    protected static string FileUrl => DevEndpoints.LegacyCommunityMarkersUrl;
 
     protected CommunitySets? _communitySets;
 
@@ -36,7 +37,7 @@ public class CommunityMarkerService
         {
             using (var webClient = new System.Net.WebClient())
             {
-                var json = webClient.DownloadString(FILE_URL);
+                var json = webClient.DownloadString(FileUrl);
 
                 CommunitySets? sets = JsonConvert.DeserializeObject<CommunitySets>(json);
 
