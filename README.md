@@ -7,10 +7,11 @@ For ground markers, click the icon, which highlights it, then click on the mini 
 # For Community Marker pull requests, make PR to [Static Hosting Branch](https://github.com/manlaan/BlishHud-CommanderMarkers/tree/bhud-static/Manlaan.CommanderMarkers)
 
 ## Changelog
-### Unreleased
+### 3.5.0 2026-06-21
+- Community Library Overhaul, web hosting for sharing and map previews
 - Optional Real-Time API (RTAPI) integration: import active squad marker positions in the AutoMarker library editor when the RTAPI addon is running via Nexus
-- RTAPI squad commander/lieutenant roles can satisfy commander-only gates when RTAPI group events are available
-- AutoMarker settings show RTAPI connection status
+- RTAPI integration toggle and connection status on the General settings page
+- Per-marker and import-all squad marker buttons in the set editor when RTAPI integration is enabled
 
 ### 3.4.0 2025-10-09
 Added in game world 3d billboards

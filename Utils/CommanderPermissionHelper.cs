@@ -1,5 +1,4 @@
 using Blish_HUD;
-using Manlaan.CommanderMarkers.Services;
 
 namespace Manlaan.CommanderMarkers.Utils;
 
@@ -12,12 +11,7 @@ public static class CommanderPermissionHelper
             return true;
         }
 
-        if (GameService.Gw2Mumble.IsAvailable && GameService.Gw2Mumble.PlayerCharacter.IsCommander)
-        {
-            return true;
-        }
-
-        return Service.RtApiEvents?.GrantsCommanderPermissions() == true;
+        return GameService.Gw2Mumble.IsAvailable && GameService.Gw2Mumble.PlayerCharacter.IsCommander;
     }
 
     public static bool RequiresCommanderGate()

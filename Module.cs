@@ -78,8 +78,6 @@ namespace Manlaan.CommanderMarkers
             Service.MapWatch = new MapWatchService(Service.MapDataCache, Settings);
 
             Service.RtApiConnection = new Services.RtApiConnection();
-            Service.RtApiEvents = new Services.RtApiEventListener(Service.RtApiConnection);
-            Service.RtApiEvents.Start();
 
             Service.SettingsWindow = new();
 
@@ -163,9 +161,7 @@ namespace Manlaan.CommanderMarkers
             Service.MapWatch?.Dispose();
             Service.MapDataCache?.Dispose();
 
-            Service.RtApiEvents?.Dispose();
             Service.RtApiConnection?.Dispose();
-            Service.RtApiEvents = null;
             Service.RtApiConnection = null;
 
             IconsPanel?.Dispose();

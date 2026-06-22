@@ -1,5 +1,6 @@
 ﻿using Blish_HUD.Controls;
 using Manlaan.CommanderMarkers.Presets.Model;
+using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -75,7 +76,11 @@ public class MarkerEditor : FlowPanel
         };
         deleteButton.Click += (s, e) => _onDeleteCallback(this);
 
-        _position = new PositionFields(marker, () => marker.icon >= 1 && marker.icon <= 8 ? marker.icon - 1 : null)
+        _position = new PositionFields(
+            marker,
+            RtApiIntegrationHelper.IsEnabled && marker.icon >= 1 && marker.icon <= 8
+                ? () => marker.icon - 1
+                : null)
         {
             Parent = this,
         };

@@ -64,21 +64,6 @@ public sealed class RtApiConnection : IDisposable
         }
     }
 
-    public bool TryGetGroupType(out RealTimeDataLayout.GroupTypeValue groupType)
-    {
-        groupType = RealTimeDataLayout.GroupTypeValue.None;
-        lock (_sync)
-        {
-            if (_accessor == null || !IsGameBuildActive())
-            {
-                return false;
-            }
-
-            groupType = (RealTimeDataLayout.GroupTypeValue)_accessor.ReadUInt32(RealTimeDataLayout.GroupType);
-            return true;
-        }
-    }
-
     public bool TryGetSquadMarkerPosition(int slotIndex, out Vector3 position)
     {
         position = Vector3.Zero;
@@ -128,22 +113,6 @@ public sealed class RtApiConnection : IDisposable
         lock (_sync)
         {
             DisconnectInternal(RtApiConnectionState.NotDetected);
-        }
-    }
-
-    internal MemoryMappedViewAccessor? BorrowAccessor()
-    {
-        lock (_sync)
-        {
-            return _accessor;
-        }
-    }
-
-    internal bool IsConnectedForProcess(int processId)
-    {
-        lock (_sync)
-        {
-            return _mappedFile != null && _connectedProcessId == processId && IsGameBuildActive();
         }
     }
 
@@ -234,7 +203,7 @@ public sealed class RtApiConnection : IDisposable
 
     private static bool IsSquadMarkerPlaced(float x, float y, float z)
     {
-        if (!float.IsFinite(x) || !float.IsFinite(y) || !float.IsFinite(z))
+        if (float.IsInfinity(x) || float.IsInfinity(y) || float.IsInfinity(z))
         {
             return false;
         }

@@ -2,6 +2,7 @@
 using Blish_HUD.Controls;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Manlaan.CommanderMarkers.RtApi;
+using Manlaan.CommanderMarkers.Utils;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,10 @@ public class MarkerSetEditor : FlowPanel
         _updateListingIndex = idx;
         ClearChildren();
 
-        Service.RtApiConnection?.EnsureActive();
+        if (RtApiIntegrationHelper.IsEnabled)
+        {
+            Service.RtApiConnection?.EnsureActive();
+        }
 
         var metaFlow = new FlowPanel()
         {
@@ -114,19 +118,22 @@ public class MarkerSetEditor : FlowPanel
             label.Text = $"Map: {Service.MapDataCache.Describe(_markerSet.MapId)}";
         };
 
-        _importAllButton = new StandardButton()
+        if (RtApiIntegrationHelper.IsEnabled)
         {
-            Parent = this,
-            Text = "Import active squad markers",
-            Width = 410,
-            Icon = Service.Textures!.IconImport,
-            BasicTooltipText = "Copy currently placed squad marker locations from the Real-Time API.\nRequires the Real-Time API addon.",
-            Enabled = Service.RtApiConnection?.IsActive == true,
-        };
-        _importAllButton.Click += ImportAllButton_Click;
-        if (Service.RtApiConnection != null)
-        {
-            Service.RtApiConnection.ConnectionStateChanged += OnRtApiConnectionStateChanged;
+            _importAllButton = new StandardButton()
+            {
+                Parent = this,
+                Text = "Import active squad markers",
+                Width = 410,
+                Icon = Service.Textures!.IconImport,
+                BasicTooltipText = "Copy currently placed squad marker locations from the Real-Time API.\nRequires the Real-Time API addon.",
+                Enabled = Service.RtApiConnection?.IsActive == true,
+            };
+            _importAllButton.Click += ImportAllButton_Click;
+            if (Service.RtApiConnection != null)
+            {
+                Service.RtApiConnection.ConnectionStateChanged += OnRtApiConnectionStateChanged;
+            }
         }
 
         _AddMarkerButton = new StandardButton()

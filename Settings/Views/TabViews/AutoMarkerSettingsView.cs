@@ -1,6 +1,5 @@
 ﻿using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
-using Manlaan.CommanderMarkers.RtApi;
 using Manlaan.CommanderMarkers.Settings.Controls;
 using Manlaan.CommanderMarkers.Settings.Services;
 using Manlaan.CommanderMarkers.Utils;
@@ -12,21 +11,12 @@ namespace Manlaan.CommanderMarkers.Settings.Views.SubViews;
 public class AutoMarkerSettingsView : View
 {
     protected SettingService _settings;
-    private Label? _rtApiStatusLabel;
 
     protected override void Build(Container buildPanel)
     {
         _settings = Service.Settings;
 
         base.Build(buildPanel);
-
-        Service.RtApiConnection?.EnsureActive();
-
-        if (Service.RtApiConnection != null)
-        {
-            Service.RtApiConnection.ConnectionStateChanged -= OnRtApiConnectionStateChanged;
-            Service.RtApiConnection.ConnectionStateChanged += OnRtApiConnectionStateChanged;
-        }
 
         var panel = new FlowPanel()
             .BeginFlow(buildPanel)
@@ -35,14 +25,6 @@ public class AutoMarkerSettingsView : View
             .AddSpace()
             .AddSetting(_settings.AutoMarker_FeatureEnabled)
             .AddSetting(_settings.AutoMarker_OnlyWhenCommander)
-            .AddSpace()
-            .AddString("Real-Time API")
-            .AddString("Optional squad marker import and lieutenant detection when RTAPI is running via Nexus.")
-            .AddFlowControl(new Label()
-            {
-                Text = RtApiStatusText.ForState(Service.RtApiConnection?.State ?? RtApiConnectionState.NotDetected),
-                AutoSizeWidth = true,
-            }, out _rtApiStatusLabel)
             .AddSpace()
             .AddString("Map Icons")
             .AddSetting(_settings.AutoMarker_ShowTrigger)
@@ -100,13 +82,4 @@ public class AutoMarkerSettingsView : View
             (delayLabel as Label).Text = $"  Delay Time: {_settings.AutoMarker_PlacementDelay.Value} ms";
         };
     }
-
-    private void OnRtApiConnectionStateChanged(object? sender, RtApiConnectionState state)
-    {
-        if (_rtApiStatusLabel != null)
-        {
-            _rtApiStatusLabel.Text = RtApiStatusText.ForState(state);
-        }
-    }
-
 }

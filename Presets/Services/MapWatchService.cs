@@ -1,4 +1,4 @@
-using Blish_HUD;
+﻿using Blish_HUD;
 using Blish_HUD.Controls;
 using Blish_HUD.Controls.Extern;
 using Blish_HUD.Input;
@@ -60,21 +60,7 @@ public class MapWatchService : IDisposable
         _setting.AutoMarker_ShowTrigger.SettingChanged += AutoMarkerBooleanSettingChanged;
         _setting.AutoMarker_Billboard_FeatureEnabled.SettingChanged += AutoMarkerBooleanSettingChanged;
         Service.LtMode.SettingChanged += AutoMarkerBooleanSettingChanged;
-
-        if (Service.RtApiEvents != null)
-        {
-            Service.RtApiEvents.SelfRoleChanged += RtApiRoleChanged;
-            Service.RtApiEvents.RoleCleared += RtApiRoleChanged;
-        }
-    }
-
-    private void RtApiRoleChanged(object? sender, EventArgs e)
-    {
-        GameThreadUtil.Enqueue(() =>
-        {
-            var mapId = _currentmap != 0 ? _currentmap : GameService.Gw2Mumble.CurrentMap.Id;
-            CurrentMap_MapChanged(this, new ValueEventArgs<int>(mapId));
-        });
+        _setting.RtApiIntegrationEnabled.SettingChanged += AutoMarkerBooleanSettingChanged;
     }
 
     private void AutoMarkerBooleanSettingChanged(object sender, ValueChangedEventArgs<bool> e)
@@ -322,11 +308,7 @@ public class MapWatchService : IDisposable
         _setting.AutoMarker_ShowTrigger.SettingChanged -= AutoMarkerBooleanSettingChanged;
         _setting.AutoMarker_FeatureEnabled.SettingChanged -= AutoMarkerBooleanSettingChanged;
         Service.LtMode.SettingChanged -= AutoMarkerBooleanSettingChanged;
-        if (Service.RtApiEvents != null)
-        {
-            Service.RtApiEvents.SelfRoleChanged -= RtApiRoleChanged;
-            Service.RtApiEvents.RoleCleared -= RtApiRoleChanged;
-        }
+        _setting.RtApiIntegrationEnabled.SettingChanged -= AutoMarkerBooleanSettingChanged;
         Service.MarkersListing.MarkersChanged -= MarkersListing_MarkersChanged;
         GameService.Gw2Mumble.CurrentMap.MapChanged -= CurrentMap_MapChanged;
         _setting._settingInteractKeyBinding.Value.Enabled= false;
