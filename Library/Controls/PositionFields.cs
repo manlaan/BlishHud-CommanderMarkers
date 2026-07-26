@@ -49,7 +49,10 @@ public class PositionFields: Container
                 Enabled = Service.RtApiConnection?.IsActive == true,
             };
             _importBtn.Click += ImportBtn_Click;
-            Service.RtApiConnection!.ConnectionStateChanged += OnRtApiConnectionStateChanged;
+            if (Service.RtApiConnection != null)
+            {
+                Service.RtApiConnection.ConnectionStateChanged += OnRtApiConnectionStateChanged;
+            }
         }
 
         var xLbl = new Label()

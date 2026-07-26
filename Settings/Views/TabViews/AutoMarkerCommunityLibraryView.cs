@@ -311,15 +311,35 @@ public class AutoMarkerCommunityLibraryView : View
                     BasicTooltipText = "Hover to preview markers on the map",
                     Size = new Point(30, 30)
                 };
+                var previewHoverGeneration = 0;
                 preview.MouseEntered += (s, e) =>
                 {
-                    var markerSet = Service.CommunityCatalog.FetchSetDetail(summary.Id);
-                    if (markerSet != null)
+                    var generation = ++previewHoverGeneration;
+                    var setId = summary.Id;
+                    Task.Run(() =>
                     {
-                        Service.MapWatch.PreviewMarkerSet(markerSet);
-                    }
+                        var markerSet = Service.CommunityCatalog.FetchSetDetail(setId);
+                        if (markerSet == null)
+                        {
+                            return;
+                        }
+
+                        GameThreadUtil.Enqueue(() =>
+                        {
+                            if (generation != previewHoverGeneration || preview.Parent == null)
+                            {
+                                return;
+                            }
+
+                            Service.MapWatch.PreviewMarkerSet(markerSet);
+                        });
+                    });
                 };
-                preview.MouseLeft += (s, e) => Service.MapWatch.RemovePreviewMarkerSet();
+                preview.MouseLeft += (s, e) =>
+                {
+                    previewHoverGeneration++;
+                    Service.MapWatch.RemovePreviewMarkerSet();
+                };
                 var placeBtn = new StandardButton()
                 {
                     Parent = btn,

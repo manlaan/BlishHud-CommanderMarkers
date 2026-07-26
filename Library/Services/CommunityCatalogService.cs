@@ -3,21 +3,28 @@ using Manlaan.CommanderMarkers.Presets.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Manlaan.CommanderMarkers.Library.Services;
 
 public class CommunityCatalogService
 {
     public const string IndexFileName = "community_index.json";
+    private const int MaxDetailCacheEntries = 100;
 
     private readonly CommanderMarkersManifestService _manifestService;
     private readonly string _moduleDirectory;
     private readonly List<CommunitySetSummary> _sets = new();
     private readonly List<CommunityCategoryEntry> _categories = new();
+    private readonly ConcurrentDictionary<string, (MarkerSet Set, long Version)> _detailCache = new();
+    private readonly ConcurrentDictionary<string, Task<MarkerSet?>> _detailInflight = new();
+    private readonly ConcurrentQueue<(string SetId, long Version)> _detailCacheOrder = new();
+    private long _detailCacheVersion;
     private string _lastEdit = "";
 
     public event EventHandler? CatalogUpdated;
@@ -67,7 +74,7 @@ public class CommunityCatalogService
         var manifest = _manifestService.Manifest;
         try
         {
-            using var client = new WebClient();
+            using var client = ModuleHttp.CreateClient();
             var checkUrl = manifest.Absolute(manifest.CommunityCheckUrl);
             var checkJson = JObject.Parse(client.DownloadString(checkUrl));
             var remoteLastEdit = checkJson.Value<string>("lastEdit") ?? "";
@@ -76,6 +83,7 @@ public class CommunityCatalogService
                 return false;
             }
 
+            var previousLastEdit = _lastEdit;
             var fetched = new List<CommunitySetSummary>();
             var offset = 0;
             const int limit = 200;
@@ -114,6 +122,11 @@ public class CommunityCatalogService
             _sets.Clear();
             _sets.AddRange(fetched);
             _lastEdit = remoteLastEdit;
+            if (previousLastEdit != remoteLastEdit)
+            {
+                ClearDetailCache();
+            }
+
             SaveIndex();
             CatalogUpdated?.Invoke(this, EventArgs.Empty);
             return true;
@@ -124,6 +137,10 @@ public class CommunityCatalogService
         }
     }
 
+    /// <summary>
+    /// Returns a cloned marker set for the given community id. Uses an in-memory cache
+    /// and coalesces concurrent fetches for the same id.
+    /// </summary>
     public MarkerSet? FetchSetDetail(string setId)
     {
         if (string.IsNullOrWhiteSpace(setId))
@@ -131,9 +148,35 @@ public class CommunityCatalogService
             return null;
         }
 
+        if (_detailCache.TryGetValue(setId, out var cached))
+        {
+            TouchDetailCache(setId, cached);
+            return CloneMarkerSet(cached.Set);
+        }
+
+        var task = _detailInflight.GetOrAdd(setId, id => Task.Run(() => DownloadSetDetail(id)));
         try
         {
-            using var client = new WebClient();
+            var result = task.GetAwaiter().GetResult();
+            return result == null ? null : CloneMarkerSet(result);
+        }
+        finally
+        {
+            _detailInflight.TryRemove(setId, out _);
+        }
+    }
+
+    private MarkerSet? DownloadSetDetail(string setId)
+    {
+        if (_detailCache.TryGetValue(setId, out var cached))
+        {
+            TouchDetailCache(setId, cached);
+            return cached.Set;
+        }
+
+        try
+        {
+            using var client = ModuleHttp.CreateClient();
             var url = _manifestService.Manifest.Resolve(_manifestService.Manifest.SetDetailUrl, setId);
             var json = client.DownloadString(url);
             var summary = _sets.FirstOrDefault(s => s.Id == setId);
@@ -151,12 +194,70 @@ public class CommunityCatalogService
             markerSet.syncDetached = false;
             markerSet.localModifiedAt = null;
             markerSet.syncBaselineHash = SyncBaselineHash.Compute(markerSet);
+
+            StoreDetailCache(setId, markerSet);
             return markerSet;
         }
         catch (Exception)
         {
             return null;
         }
+    }
+
+    private void StoreDetailCache(string setId, MarkerSet markerSet)
+    {
+        // Store a stable clone so callers cannot mutate the cached instance.
+        var stored = CloneMarkerSet(markerSet);
+        var version = Interlocked.Increment(ref _detailCacheVersion);
+        _detailCache[setId] = (stored, version);
+        _detailCacheOrder.Enqueue((setId, version));
+        TrimDetailCache();
+    }
+
+    /// <summary>
+    /// Marks a cache hit as most-recently used. ConcurrentQueue cannot move entries, so we
+    /// enqueue a new version and ignore stale versions during eviction.
+    /// </summary>
+    private void TouchDetailCache(string setId, (MarkerSet Set, long Version) current)
+    {
+        var version = Interlocked.Increment(ref _detailCacheVersion);
+        if (_detailCache.TryUpdate(setId, (current.Set, version), current))
+        {
+            _detailCacheOrder.Enqueue((setId, version));
+        }
+    }
+
+    private void TrimDetailCache()
+    {
+        while (_detailCache.Count > MaxDetailCacheEntries &&
+               _detailCacheOrder.TryDequeue(out var oldest))
+        {
+            // Only evict when this queue entry is still the live version; otherwise it is a
+            // stale duplicate left behind by an update or cache hit.
+            if (_detailCache.TryGetValue(oldest.SetId, out var current) &&
+                current.Version == oldest.Version)
+            {
+                _detailCache.TryRemove(
+                    new KeyValuePair<string, (MarkerSet Set, long Version)>(oldest.SetId, current));
+            }
+        }
+    }
+
+    private void ClearDetailCache()
+    {
+        _detailCache.Clear();
+        while (_detailCacheOrder.TryDequeue(out _))
+        {
+        }
+
+        // In-flight tasks may still complete and re-populate; that is fine after a sync.
+    }
+
+    private static MarkerSet CloneMarkerSet(MarkerSet source)
+    {
+        // Round-trip JSON for a deep clone; callers mutate id / placement fields.
+        return JsonConvert.DeserializeObject<MarkerSet>(JsonConvert.SerializeObject(source))
+               ?? new MarkerSet();
     }
 
     private void SaveIndex()

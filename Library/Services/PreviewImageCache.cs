@@ -235,7 +235,7 @@ public class PreviewImageCache : IDisposable
     {
         try
         {
-            using var client = new WebClient();
+            using var client = ModuleHttp.CreateClient();
             var bytes = client.DownloadData(url);
             if (bytes.Length == 0)
             {
@@ -257,7 +257,7 @@ public class PreviewImageCache : IDisposable
     {
         try
         {
-            using var client = new WebClient();
+            using var client = ModuleHttp.CreateClient();
             var bytes = client.DownloadData(url);
             if (bytes.Length == 0)
             {

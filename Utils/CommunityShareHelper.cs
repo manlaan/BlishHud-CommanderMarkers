@@ -1,3 +1,4 @@
+using Manlaan.CommanderMarkers.Library.Services;
 using Manlaan.CommanderMarkers.Presets.Model;
 using Newtonsoft.Json;
 using System;
@@ -77,7 +78,7 @@ public static class CommunityShareHelper
             }
 
             var payload = MarkerSetSubmission.ToSubmissionPayload(markerSet, category);
-            using var client = new WebClient();
+            using var client = ModuleHttp.CreateClient();
             client.Headers[HttpRequestHeader.Authorization] = "Bearer " + subtoken;
             client.Headers[HttpRequestHeader.ContentType] = "application/json";
             var url = Service.ManifestService.Manifest.Absolute(Service.ManifestService.Manifest.SubmissionsUrl);

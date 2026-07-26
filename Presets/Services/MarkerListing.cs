@@ -73,38 +73,13 @@ public class MarkerListing
             return true;
         }
 
-        return a.name == b.name && a.mapId == b.mapId && a.description == b.description;
-    }
-
-    private static bool MarkerSetContentEqual(MarkerSet a, MarkerSet b)
-    {
-        if (a.name != b.name || a.description != b.description || a.mapId != b.mapId)
+        // Distinct custom sets must not collide on name/map/description alone.
+        if (!string.IsNullOrWhiteSpace(a.id) && !string.IsNullOrWhiteSpace(b.id))
         {
-            return false;
+            return a.id == b.id;
         }
 
-        if (a.Trigger.x != b.Trigger.x || a.Trigger.y != b.Trigger.y || a.Trigger.z != b.Trigger.z)
-        {
-            return false;
-        }
-
-        if (a.marks.Count != b.marks.Count)
-        {
-            return false;
-        }
-
-        for (var i = 0; i < a.marks.Count; i++)
-        {
-            var left = a.marks[i];
-            var right = b.marks[i];
-            if (left.icon != right.icon || left.name != right.name || left.x != right.x ||
-                left.y != right.y || left.z != right.z)
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return false;
     }
 
     public static bool IsCommunityLinked(MarkerSet markerSet)
@@ -144,13 +119,6 @@ public class MarkerListing
     public void EditMarker(int index, MarkerSet markerSet)
     {
         if (index < 0 || index >= presets.Count)
-        {
-            return;
-        }
-
-        var existing = presets[index];
-        if (IsCommunityLinked(existing) && markerSet.id == existing.id &&
-            !MarkerSetContentEqual(existing, markerSet))
         {
             return;
         }
@@ -419,15 +387,19 @@ public class MarkerListing
         var changed = false;
         foreach (var preset in listing.presets)
         {
-            if (!string.IsNullOrWhiteSpace(preset.communitySetId))
-            {
-                continue;
-            }
-
             var beforeCommunitySetId = preset.communitySetId;
+            var beforeId = preset.id;
+            var beforeSource = preset.source;
+            var beforeAuthor = preset.author;
+            var beforeHash = preset.syncBaselineHash;
+
             MigratePreset(preset, builtinMap);
-            if (string.IsNullOrWhiteSpace(beforeCommunitySetId) &&
-                !string.IsNullOrWhiteSpace(preset.communitySetId))
+
+            if (beforeCommunitySetId != preset.communitySetId ||
+                beforeId != preset.id ||
+                beforeSource != preset.source ||
+                beforeAuthor != preset.author ||
+                beforeHash != preset.syncBaselineHash)
             {
                 changed = true;
             }

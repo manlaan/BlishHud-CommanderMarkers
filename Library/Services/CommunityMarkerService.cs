@@ -35,7 +35,7 @@ public class CommunityMarkerService
     {
         try
         {
-            using (var webClient = new System.Net.WebClient())
+            using (var webClient = ModuleHttp.CreateClient())
             {
                 var json = webClient.DownloadString(FileUrl);
 
