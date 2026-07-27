@@ -13,7 +13,7 @@ public class MarkerCoord : WorldCoord
     public int icon { get; set; }
 
     [JsonProperty("d")]
-    public string name { get; set; }
+    public string name { get; set; } = "";
 
     public SquadMarker ToSquadMarkerEnum()
     {

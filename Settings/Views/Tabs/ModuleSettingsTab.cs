@@ -11,7 +11,9 @@ namespace Manlaan.CommanderMarkers.Settings.Views.Tabs;
 
 public class ModuleSettingsTab : ISettingsMenuRegistrar
 {
+#pragma warning disable CS0067 // Required by ISettingsMenuRegistrar; menu is fixed at construction.
     public event EventHandler<EventArgs>? RegistrarListChanged;
+#pragma warning restore CS0067
     private readonly List<MenuViewItem> _registeredMenuItems = new();
     
     public ModuleSettingsTab()

@@ -42,6 +42,6 @@ public static class LibrarySearch
             return false;
         }
 
-        return ToLowerCopy(text).Contains(queryLower);
+        return ToLowerCopy(text!).Contains(queryLower);
     }
 }

@@ -19,8 +19,8 @@ public class CommunityCatalogService
 
     private readonly CommanderMarkersManifestService _manifestService;
     private readonly string _moduleDirectory;
-    private readonly List<CommunitySetSummary> _sets = new();
-    private readonly List<CommunityCategoryEntry> _categories = new();
+    private readonly List<CommunitySetSummary> _sets = [];
+    private readonly List<CommunityCategoryEntry> _categories = [];
     private readonly ConcurrentDictionary<string, (MarkerSet Set, long Version)> _detailCache = new();
     private readonly ConcurrentDictionary<string, Task<MarkerSet?>> _detailInflight = new();
     private readonly ConcurrentQueue<(string SetId, long Version)> _detailCacheOrder = new();
@@ -237,8 +237,12 @@ public class CommunityCatalogService
             if (_detailCache.TryGetValue(oldest.SetId, out var current) &&
                 current.Version == oldest.Version)
             {
-                _detailCache.TryRemove(
-                    new KeyValuePair<string, (MarkerSet Set, long Version)>(oldest.SetId, current));
+                // net48 ConcurrentDictionary has no KeyValuePair conditional remove overload.
+                if (_detailCache.TryRemove(oldest.SetId, out var removed) &&
+                    removed.Version != oldest.Version)
+                {
+                    _detailCache.TryAdd(oldest.SetId, removed);
+                }
             }
         }
     }

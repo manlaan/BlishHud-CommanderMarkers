@@ -8,7 +8,7 @@ namespace Manlaan.CommanderMarkers.Settings.Views.SubViews;
 
 public class MarkerPanelSettingsView : View
 {
-    protected SettingService _settings;
+    protected SettingService _settings = null!;
     protected override void Build(Container buildPanel)
     {
         _settings = Service.Settings;

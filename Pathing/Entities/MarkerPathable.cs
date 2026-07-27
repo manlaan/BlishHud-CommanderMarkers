@@ -21,7 +21,7 @@ public class MarkerPathable : Entity
     #region Load Static
 
     private static readonly MarkerEffect _sharedMarkerEffect;
-    private static readonly Texture2D _fadeTexture;
+    private static readonly Texture2D _fadeTexture = null!;
 
     static MarkerPathable() {
         _sharedMarkerEffect = new MarkerEffect(GameService.Content.ContentManager.Load<Effect>(@"effects\marker"));
@@ -203,7 +203,5 @@ public class MarkerPathable : Entity
             graphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
         }
     }
-
-    private bool _mouseOver = false;
 
 }

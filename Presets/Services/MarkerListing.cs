@@ -329,8 +329,8 @@ public class MarkerListing
             return false;
         }
 
-        var normalizedLeft = NormalizeNameKey(left);
-        var normalizedRight = NormalizeNameKey(right);
+        var normalizedLeft = NormalizeNameKey(left!);
+        var normalizedRight = NormalizeNameKey(right!);
         return normalizedLeft == normalizedRight ||
                normalizedLeft.Contains(normalizedRight) ||
                normalizedRight.Contains(normalizedLeft);

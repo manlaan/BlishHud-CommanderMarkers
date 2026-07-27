@@ -12,7 +12,7 @@ namespace Manlaan.CommanderMarkers.Settings.Views.SubViews;
 
 public class CornerIconSettingsView : View
 {
-    protected SettingService _settings;
+    protected SettingService _settings = null!;
     private Label? _rtApiStatusLabel;
 
     protected override void Build(Container buildPanel)

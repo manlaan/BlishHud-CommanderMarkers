@@ -52,7 +52,8 @@ public class CommunityMarkerService
                 return _communitySets ;
             }
         }
-        catch (Exception r) {
+        catch (Exception)
+        {
             return new CommunitySets();
         }
 
