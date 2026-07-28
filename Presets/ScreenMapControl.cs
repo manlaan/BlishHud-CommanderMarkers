@@ -132,7 +132,7 @@ public class ScreenMap : Control
     protected void DrawPrompt(SpriteBatch spriteBatch, IMapEntity marker)
     {
         var interactKey = Service.Settings._settingInteractKeyBinding.Value.GetBindingDisplayText();
-        Rectangle _promptRectangle = new Rectangle(GameService.Graphics.SpriteScreen.Width / 2 - 150, GameService.Graphics.SpriteScreen.Height - 120, 300, 120);
+        Rectangle _promptRectangle = new(GameService.Graphics.SpriteScreen.Width / 2 - 150, GameService.Graphics.SpriteScreen.Height - 120, 300, 120);
         spriteBatch.DrawStringOnCtrl(this, $"Press '{interactKey}' to place markers\n{marker.GetMarkerText()}", _bitmapFont, _promptRectangle, Color.Black, false, true, 3, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Center, verticalAlignment: VerticalAlignment.Top);
         spriteBatch.DrawStringOnCtrl(this, $"Press '{interactKey}' to place markers\n{marker.GetMarkerText()}", _bitmapFont, _promptRectangle, Color.Orange, horizontalAlignment: Blish_HUD.Controls.HorizontalAlignment.Center, verticalAlignment: VerticalAlignment.Top);
 

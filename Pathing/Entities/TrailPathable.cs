@@ -29,7 +29,7 @@ public class TrailPathable : Entity
     #region Load Static
 
     private static readonly TrailEffect _sharedTrailEffect;
-    private static readonly Texture2D _fadeTexture;
+    private static readonly Texture2D _fadeTexture = null!;
 
     static TrailPathable() {
         _sharedTrailEffect = new TrailEffect(GameService.Content.ContentManager.Load<Effect>("effects\\trail"));

@@ -7,7 +7,7 @@ internal static class DevEndpoints
     public const string ManifestUrl = ApiBaseUrl + "/commander_markers_v1.json";
     public const string LegacyCommunityMarkersUrl = ApiBaseUrl + "/commander-markers/v1/community/markers.json";
 #else
-    public const string ApiBaseUrl = "https://gw2geoguesser.fly.dev";
+    public const string ApiBaseUrl = "https://addons.soeed.com";
     public const string ManifestUrl = ApiBaseUrl + "/commander_markers_v1.json";
     public const string LegacyCommunityMarkersUrl =
         "https://bhm.blishhud.com/Manlaan.CommanderMarkers/Community/Markers.json";

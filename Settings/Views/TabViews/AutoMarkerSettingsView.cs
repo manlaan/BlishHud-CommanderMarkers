@@ -10,7 +10,7 @@ namespace Manlaan.CommanderMarkers.Settings.Views.SubViews;
 
 public class AutoMarkerSettingsView : View
 {
-    protected SettingService _settings;
+    protected SettingService _settings = null!;
 
     protected override void Build(Container buildPanel)
     {
@@ -79,7 +79,10 @@ public class AutoMarkerSettingsView : View
 
         _settings.AutoMarker_PlacementDelay.SettingChanged += (s, e) =>
         {
-            (delayLabel as Label).Text = $"  Delay Time: {_settings.AutoMarker_PlacementDelay.Value} ms";
+            if (delayLabel is Label label)
+            {
+                label.Text = $"  Delay Time: {_settings.AutoMarker_PlacementDelay.Value} ms";
+            }
         };
     }
 }

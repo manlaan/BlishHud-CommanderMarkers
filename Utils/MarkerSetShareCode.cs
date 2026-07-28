@@ -95,7 +95,8 @@ public static class MarkerSetShareCode
             return false;
         }
 
-        var hasMapPayload = j["mapId"] != null && j["mapId"].Type != JTokenType.Null;
+        var mapIdToken = j["mapId"];
+        var hasMapPayload = mapIdToken != null && mapIdToken.Type != JTokenType.Null;
         if (!hasMapPayload && j["markers"] is JArray markers && markers.Count > 0)
         {
             hasMapPayload = true;

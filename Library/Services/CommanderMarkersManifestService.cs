@@ -3,7 +3,6 @@ using Manlaan.CommanderMarkers.Library.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Net;
 
 namespace Manlaan.CommanderMarkers.Library.Services;
 
@@ -21,7 +20,7 @@ public class CommanderMarkersManifestService
     {
         try
         {
-            using var client = new WebClient();
+            using var client = ModuleHttp.CreateClient();
             var json = client.DownloadString(ManifestUrl);
             var j = JObject.Parse(json);
 #if DEBUG

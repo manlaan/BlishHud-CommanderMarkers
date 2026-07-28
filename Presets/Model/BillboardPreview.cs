@@ -37,6 +37,7 @@ public class BillBoardPreview
     {
         _markerSet = markerSet;
         _mapData = mapData;
+        _trigger = markerSet.trigger?.ToVector3() ?? Vector3.Zero;
         markerSet.marks.ForEach(mark =>
         {
             Texture2D markerIcon = ((SquadMarker)mark.icon).GetIcon();

@@ -1,0 +1,33 @@
+### Community catalog — same calls the module makes
+@host = https://addons.soeed.com
+# @host = http://localhost:3000
+@ua = COMM-MARKERS-Blish/0.0.0-rest-client
+@setId = 56916543-f438-4007-aba6-73192a81fd89
+### 1) Manifest (resolves endpoint paths)
+GET {{host}}/commander_markers_v1.json
+User-Agent: {{ua}}
+### 2) Version check (SyncCatalog gate — lastEdit)
+GET {{host}}/commander-markers/v1/community/check
+User-Agent: {{ua}}
+### 3) Index page 0 (SyncCatalog — summaries only)
+GET {{host}}/commander-markers/v1/sets?limit=200&offset=0
+User-Agent: {{ua}}
+### 4) Index page 1
+GET {{host}}/commander-markers/v1/sets?limit=200&offset=200
+User-Agent: {{ua}}
+### 5) Categories
+GET {{host}}/commander-markers/v1/categories
+User-Agent: {{ua}}
+### 6) Set detail (FetchSetDetail / hover preview / place)
+# Copy an "id" from a sets page response into @setId above, then run this.
+GET {{host}}/commander-markers/v1/sets/{{setId}}
+User-Agent: {{ua}}
+### 7) Thumb (library list image)
+GET {{host}}/commander-markers/v1/sets/{{setId}}/thumb.png
+User-Agent: {{ua}}
+### 8) Large preview image
+GET {{host}}/commander-markers/v1/sets/{{setId}}/preview.png
+User-Agent: {{ua}}
+### 9) Legacy community markers dump (CommunityMarkerService)
+GET {{host}}/commander-markers/v1/community/markers.json
+User-Agent: {{ua}}

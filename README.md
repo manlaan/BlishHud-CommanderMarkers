@@ -7,6 +7,13 @@ For ground markers, click the icon, which highlights it, then click on the mini 
 # For Community Marker pull requests, make PR to [Static Hosting Branch](https://github.com/manlaan/BlishHud-CommanderMarkers/tree/bhud-static/Manlaan.CommanderMarkers)
 
 ## Changelog
+### 3.5.1 2026-07-27
+- Point community API traffic at addons.soeed.com and send an identifiable module User-Agent
+- Cache community set details in memory (with coalesced fetches) so map preview / place / import reuse recent downloads
+- Make community library map-preview hover non-blocking and cancel stale hover fetches
+- Fix custom preset identity matching and community-linked save/migration so edits persist correctly
+- Guard RTAPI connection subscription when the connection is unavailable
+
 ### 3.5.0 2026-06-21
 - Community Library Overhaul, web hosting for sharing and map previews
 - Optional Real-Time API (RTAPI) integration: import active squad marker positions in the AutoMarker library editor when the RTAPI addon is running via Nexus

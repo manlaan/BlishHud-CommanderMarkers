@@ -102,8 +102,8 @@ public class BillboardControl : Control
             entity.Draw();
             if (Service.Settings.AutoMarker_Billboard_Placement.Value && entity.PlayerWithinTriggerDistance())
             {
-                Rectangle _promptRectangle = new Rectangle(GameService.Graphics.SpriteScreen.Width / 2 + 150, GameService.Graphics.SpriteScreen.Height/2 + 120, 300, 150);
-                Rectangle _textRectangle = new Rectangle(GameService.Graphics.SpriteScreen.Width / 2 + 220, GameService.Graphics.SpriteScreen.Height/2 + 110, 300, 150);
+                Rectangle _promptRectangle = new(GameService.Graphics.SpriteScreen.Width / 2 + 150, GameService.Graphics.SpriteScreen.Height/2 + 120, 300, 150);
+                Rectangle _textRectangle = new(GameService.Graphics.SpriteScreen.Width / 2 + 220, GameService.Graphics.SpriteScreen.Height/2 + 110, 300, 150);
                 //InvertTexture(_interactBackground);
                 var textureToUse = _interactBackground;
                 var interactKey = Service.Settings._settingInteractKeyBinding.Value.GetBindingDisplayText();

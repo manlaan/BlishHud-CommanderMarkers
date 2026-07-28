@@ -12,11 +12,12 @@ public class MarkerPreview : IMapEntity
     private MapData _mapData;
     private Vector3 _trigger;
     private MarkerSet _markerSet;
-    private BitmapFont _bitmapFont = GameService.Content.DefaultFont16;
+    // private BitmapFont _bitmapFont = GameService.Content.DefaultFont16;
     public MarkerPreview(MapData mapData, MarkerSet markerSet)
     {
         _mapData = mapData;
         _markerSet = markerSet;
+        _trigger = markerSet.trigger?.ToVector3() ?? Vector3.Zero;
     }
     public float DistanceFrom(Vector3 playerPosition)
     {
